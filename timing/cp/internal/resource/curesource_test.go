@@ -281,7 +281,15 @@ var _ = Describe("cuResource", func() {
 	It("should support non-standard CU size", func() {
 		r.wfPoolFreeCount = []int{20, 20, 10, 10, 10}
 		r.vregCounts = []int{1024, 1024, 1024, 1024, 1024}
+		r.sregCounts = []int{1024, 1024, 1024, 1024, 1024}
 		r.vregMasks = []resourceMask{
+			newResourceMask(1024 / 4),
+			newResourceMask(1024 / 4),
+			newResourceMask(1024 / 4),
+			newResourceMask(1024 / 4),
+			newResourceMask(1024 / 4),
+		}
+		r.sregMasks = []resourceMask{
 			newResourceMask(1024 / 4),
 			newResourceMask(1024 / 4),
 			newResourceMask(1024 / 4),
@@ -290,15 +298,16 @@ var _ = Describe("cuResource", func() {
 		}
 
 		co.WIVgprCount = 20
+		co.WFSgprCount = 16
 
 		_, ok := r.ReserveResourceForWG(wg)
 
 		Expect(ok).To(BeTrue())
-		Expect(r.wfPoolFreeCount[0]).To(Equal(15))
-		Expect(r.wfPoolFreeCount[1]).To(Equal(15))
-		Expect(r.wfPoolFreeCount[2]).To(Equal(5))
-		Expect(r.wfPoolFreeCount[3]).To(Equal(5))
-		Expect(r.wfPoolFreeCount[4]).To(Equal(5))
+		Expect(r.wfPoolFreeCount[0]).To(Equal(16))
+		Expect(r.wfPoolFreeCount[1]).To(Equal(16))
+		Expect(r.wfPoolFreeCount[2]).To(Equal(6))
+		Expect(r.wfPoolFreeCount[3]).To(Equal(6))
+		Expect(r.wfPoolFreeCount[4]).To(Equal(6))
 	})
 
 	It("should clear reservation when unmap wg", func() {
