@@ -9,8 +9,8 @@ import (
 	"gitlab.com/akita/mgpusim/pagemigrationcontroller"
 	"gitlab.com/akita/mgpusim/protocol"
 	"gitlab.com/akita/mgpusim/rdma"
-	"gitlab.com/akita/mgpusim/timing/cp/internal/dispatching"
-	"gitlab.com/akita/mgpusim/timing/cp/internal/resource"
+	"gitlab.com/akita/navisim/timing/cp/internal/dispatching"
+	"gitlab.com/akita/navisim/timing/cp/internal/resource"
 	"gitlab.com/akita/util/akitaext"
 	"gitlab.com/akita/util/tracing"
 )

@@ -6,8 +6,8 @@ import (
 
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mgpusim/protocol"
-	"gitlab.com/akita/mgpusim/timing/cp/internal/dispatching"
-	"gitlab.com/akita/mgpusim/timing/cp/internal/resource"
+	"gitlab.com/akita/navisim/timing/cp/internal/dispatching"
+	"gitlab.com/akita/navisim/timing/cp/internal/resource"
 	"gitlab.com/akita/util"
 	"gitlab.com/akita/util/akitaext"
 	"gitlab.com/akita/util/tracing"

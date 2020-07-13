@@ -11,7 +11,7 @@ import (
 	"gitlab.com/akita/mgpusim/pagemigrationcontroller"
 	"gitlab.com/akita/mgpusim/protocol"
 	rdma2 "gitlab.com/akita/mgpusim/rdma"
-	"gitlab.com/akita/mgpusim/timing/cp/internal/dispatching"
+	"gitlab.com/akita/navisim/timing/cp/internal/dispatching"
 )
 
 var _ = Describe("CommandProcessor", func() {

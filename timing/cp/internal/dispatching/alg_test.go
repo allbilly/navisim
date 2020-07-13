@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"gitlab.com/akita/mgpusim/kernels"
-	"gitlab.com/akita/mgpusim/timing/cp/internal/resource"
+	"gitlab.com/akita/navisim/timing/cp/internal/resource"
 )
 
 var _ = Describe("Round Robin Algorithm", func() {

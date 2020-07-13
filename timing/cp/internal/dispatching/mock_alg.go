@@ -5,10 +5,11 @@
 package dispatching
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	kernels "gitlab.com/akita/mgpusim/kernels"
 	resource "gitlab.com/akita/mgpusim/timing/cp/internal/resource"
-	reflect "reflect"
 )
 
 // MockAlgorithm is a mock of algorithm interface

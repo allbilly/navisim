@@ -38,17 +38,17 @@ type ComputeUnit struct {
 
 	running bool
 
-	Scheduler        Scheduler
+	Scheduler        []Scheduler
 	BranchUnit       SubComponent
 	VectorMemDecoder SubComponent
 	VectorMemUnit    SubComponent
 	ScalarDecoder    SubComponent
 	VectorDecoder    SubComponent
 	LDSDecoder       SubComponent
-	ScalarUnit       SubComponent
+	ScalarUnit       []SubComponent
 	SIMDUnit         []SubComponent
 	LDSUnit          SubComponent
-	SRegFile         RegisterFile
+	SRegFile         []RegisterFile
 	VRegFile         []RegisterFile
 
 	InstMem          akita.Port

@@ -18,7 +18,7 @@ type Builder struct {
 	name              string
 	simdCount         int
 	vgprCount         []int
-	sgprCount         int
+	sgprCount         []int
 	log2CachelineSize uint64
 
 	decoder            emu.Decoder
@@ -34,8 +34,8 @@ func MakeBuilder() Builder {
 	var b Builder
 	b.freq = 1000 * akita.MHz
 	b.simdCount = 4
-	b.sgprCount = 3200
-	b.vgprCount = []int{16384, 16384, 16384, 16384}
+	b.sgprCount = []int{2560, 2560, 2560, 2560}
+	b.vgprCount = []int{32768, 32768, 32768, 32768}
 	b.log2CachelineSize = 6
 
 	return b

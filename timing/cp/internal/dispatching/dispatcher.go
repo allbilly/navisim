@@ -8,7 +8,7 @@ import (
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mgpusim/kernels"
 	"gitlab.com/akita/mgpusim/protocol"
-	"gitlab.com/akita/mgpusim/timing/cp/internal/resource"
+	"gitlab.com/akita/navisim/timing/cp/internal/resource"
 	"gitlab.com/akita/util/tracing"
 )
 
