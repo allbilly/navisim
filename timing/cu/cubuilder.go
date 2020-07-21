@@ -70,8 +70,8 @@ func (b Builder) WithVGPRCount(counts []int) Builder {
 }
 
 // WithSGPRCount equals the number of SGPRs in the Compute Unit.
-func (b Builder) WithSGPRCount(count int) Builder {
-	b.sgprCount = count
+func (b Builder) WithSGPRCount(counts []int) Builder {
+	b.sgprCount = counts
 	return b
 }
 
@@ -190,11 +190,13 @@ func (b *Builder) equipVectorMemoryUnit(cu *ComputeUnit) {
 }
 
 func (b *Builder) equipRegisterFiles(cu *ComputeUnit) {
-	sRegFile := NewSimpleRegisterFile(uint64(b.sgprCount*4), 0)
-	cu.SRegFile = sRegFile
-
+	
+	
 	for i := 0; i < b.simdCount; i++ {
 		vRegFile := NewSimpleRegisterFile(uint64(b.vgprCount[i]*4), 1024)
 		cu.VRegFile = append(cu.VRegFile, vRegFile)
+		sRegFile := NewSimpleRegisterFile(uint64(b.sgprCount[i]*4), 0)
+		cu.SRegFile = append(cu.SRegFile, sRegFile)
+
 	}
 }
