@@ -4,11 +4,12 @@
 package cp
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	akita "gitlab.com/akita/akita"
 	protocol "gitlab.com/akita/mgpusim/protocol"
-	resource "gitlab.com/akita/mgpusim/timing/cp/internal/resource"
-	reflect "reflect"
+	resource "gitlab.com/akita/navisim/timing/cp/internal/resource"
 )
 
 // MockDispatcher is a mock of Dispatcher interface

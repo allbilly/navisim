@@ -9,7 +9,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	kernels "gitlab.com/akita/mgpusim/kernels"
-	resource "gitlab.com/akita/mgpusim/timing/cp/internal/resource"
+	resource "gitlab.com/akita/navisim/timing/cp/internal/resource"
 )
 
 // MockAlgorithm is a mock of algorithm interface
