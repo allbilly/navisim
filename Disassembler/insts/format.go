@@ -47,12 +47,12 @@ func init() {
 
 func initFormatTable() {
 	FormatTable = make(map[FormatType]*Format)
-	FormatTable[SOP1] = &Format{SOP1, "sop1", 0xBE800000, 0xFF800000, 4, 8, 15}
-	FormatTable[SOPC] = &Format{SOPC, "sopc", 0xBF000000, 0xFF800000, 4, 16, 22}
-	FormatTable[SOPP] = &Format{SOPP, "sopp", 0xBF800000, 0xFF800000, 4, 16, 22}
-	FormatTable[VOP1] = &Format{VOP1, "vop1", 0x7E000000, 0xFE000000, 4, 9, 16}
+	FormatTable[SOP1] = &Format{SOP1, "sop1", 0xBE800000, 0xFF800000, 4, 8, 15}  //Done
+	FormatTable[SOPC] = &Format{SOPC, "sopc", 0xBF000000, 0xFF800000, 4, 16, 22} //Done
+	FormatTable[SOPP] = &Format{SOPP, "sopp", 0xBF800000, 0xFF800000, 4, 16, 22} //Done
+	FormatTable[VOP1] = &Format{VOP1, "vop1", 0x7E000000, 0xFE000000, 4, 9, 16}  //Working
 	FormatTable[VOPC] = &Format{VOPC, "vopc", 0x7C000000, 0xFE000000, 4, 17, 24}
-	FormatTable[SMEM] = &Format{SMEM, "smem", 0xC0000000, 0xFC000000, 8, 18, 25}
+	FormatTable[SMEM] = &Format{SMEM, "smem", 0xF4000000, 0xFC000000, 8, 18, 25} //Changed encoding from GCN3 (done)
 	FormatTable[VOP3a] = &Format{VOP3a, "vop3a", 0xD0000000, 0xFC000000, 8, 16, 25}
 	FormatTable[VOP3b] = &Format{VOP3b, "vop3b", 0xD0000000, 0xFC000000, 8, 16, 25}
 	FormatTable[VINTRP] = &Format{VINTRP, "vintrp", 0xC8000000, 0xFC000000, 4, 16, 17}
@@ -62,7 +62,7 @@ func initFormatTable() {
 	FormatTable[MIMG] = &Format{MIMG, "mimg", 0xF0000000, 0xFC000000, 8, 18, 24}
 	FormatTable[EXP] = &Format{EXP, "exp", 0xC4000000, 0xFC000000, 8, 0, 0}
 	FormatTable[FLAT] = &Format{FLAT, "flat", 0xDC000000, 0xFC000000, 8, 18, 24}
-	FormatTable[SOPK] = &Format{SOPK, "sopk", 0xB0000000, 0xF0000000, 4, 23, 27}
-	FormatTable[SOP2] = &Format{SOP2, "sop2", 0x80000000, 0xA0000000, 4, 23, 29}
+	FormatTable[SOPK] = &Format{SOPK, "sopk", 0xB0000000, 0xF0000000, 4, 23, 27} //Done
+	FormatTable[SOP2] = &Format{SOP2, "sop2", 0x80000000, 0xA0000000, 4, 23, 29} //Think mask should be 0xC0000000 (done)
 	FormatTable[VOP2] = &Format{VOP2, "vop2", 0x00000000, 0x80000000, 4, 25, 30}
 }
