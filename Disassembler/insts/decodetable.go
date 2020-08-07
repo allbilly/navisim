@@ -174,20 +174,34 @@ func (d *Disassembler) initializeDecodeTable() {
 
 	// VOP1 instructions
 	d.addInstType(&InstType{"v_nop", 0, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_mov_b32_e32", 1, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	// New lines
+	d.addInstType(&InstType{"v_mov_b32", 1, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	/*d.addInstType(&InstType{"v_mov_b32_e32", 1, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})*/
 	d.addInstType(&InstType{"v_readfirstlane_b32", 2, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_i32_f64", 3, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_f64_i32_e32", 4, FormatTable[VOP1], 0, ExeUnitVALU, 64, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_f32_i32", 5, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_cvt_f32_u32_e32", 6, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	//New lines
+	d.addInstType(&InstType{"v_cvt_f32_u32", 0, FormatTable[VOP1], 6, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cvt_u32_f32", 0, FormatTable[VOP1], 7, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cvt_i32_f32", 0, FormatTable[VOP1], 8, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	/*d.addInstType(&InstType{"v_cvt_f32_u32_e32", 6, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_u32_f32_e32", 7, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_cvt_i32_f32_e32", 8, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cvt_i32_f32_e32", 8, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})*/
 	d.addInstType(&InstType{"v_cvt_f16_f32", 10, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_f32_f16", 11, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_rpi_i32_f32", 12, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_flr_i32_f32", 13, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_off_f32_i4", 14, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_cvt_f32_f64_e32", 15, FormatTable[VOP1], 0, ExeUnitVALU, 32, 64, 32, 0, 0})
+
+	//New lines
+	d.addInstType(&InstType{"v_cvt_f32_f64", 15, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	/*d.addInstType(&InstType{"v_cvt_f32_f64_e32", 15, FormatTable[VOP1], 0, ExeUnitVALU, 32, 64, 32, 0, 0})*/
 	d.addInstType(&InstType{"v_cvt_f64_f32", 16, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_f32_ubyte0", 17, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_f32_ubyte1", 18, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
@@ -199,56 +213,82 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_ceil_f64", 24, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_rndne_f64", 25, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_floor_f64", 26, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_fract_f32", 27, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_trunc_f32_e32", 28, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_ceil_f32", 29, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_rndne_f32_e32", 30, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_floor_f32", 31, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_exp_f32", 32, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_log_f32", 33, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_rcp_f32_e32", 34, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	//New Lines
+	d.addInstType(&InstType{"v_pipeflush", 27, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	d.addInstType(&InstType{"v_fract_f32", 32, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_trunc_f32_e32", 33, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_ceil_f32", 34, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_rndne_f32_e32", 35, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_floor_f32", 36, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_exp_f32", 37, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_log_f32", 39, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	//New Lines
+	d.addInstType(&InstType{"v_rcp_f32", 42, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_rcp_iflag_f32", 43, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_rsq_f32", 46, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	/*d.addInstType(&InstType{"v_rcp_f32_e32", 34, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_rcp_iflag_f32_e32", 35, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_rsq_f32_e32", 36, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_rcp_f64", 37, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_rsq_f64", 38, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_sqrt_f32", 39, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_sqrt_f64", 40, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_sin_f32", 41, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_rsq_f32_e32", 36, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})*/
+
+	d.addInstType(&InstType{"v_rcp_f64", 47, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_rsq_f64", 49, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_sqrt_f32", 51, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_sqrt_f64", 52, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	/*d.addInstType(&InstType{"v_sin_f32", 41, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cos_f32", 42, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_not_b32_e32", 43, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_bfrev_b32_e32", 44, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_ffbh_u32_e32", 45, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_ffbl_b32", 46, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_ffbh_i32", 47, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_frexp_exp_i32_f64", 48, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_frexp_mant_f64", 49, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_fract_f64", 50, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_frexp_exp_i32_f32", 51, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_frexp_mant_f32", 52, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_clrexcp", 53, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_movreld_b32", 54, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_movrels_b32", 55, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_movrelsd_b32", 56, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_cvt_f16_u16", 57, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_cvt_f16_i16", 58, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_cvt_u16_f16", 59, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_cvt_i16_f16", 60, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_rcp_f16", 61, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_sqrt_f16", 62, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_rsq_f16", 63, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_log_f16", 64, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_exp_f16", 65, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_frexp_mant_f16", 66, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_frexp_exp_i16_f16", 67, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_floor_f16", 68, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_ceil_f16", 69, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_trunc_f16", 70, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_rndne_f16", 71, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_fract_f16", 72, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_sin_f16", 73, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_cos_f16", 74, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_exp_legacy_f32", 75, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_log_legacy_f32", 76, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_ffbh_u32_e32", 45, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})*/
+
+	d.addInstType(&InstType{"v_ffbh_u32", 57, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_ffbl_b32", 58, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_ffbh_i32", 59, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_frexp_exp_i32_f64", 60, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_frexp_mant_f64", 61, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_fract_f64", 62, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_frexp_exp_i32_f32", 63, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_frexp_mant_f32", 64, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_clrexcp", 65, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_movreld_b32", 66, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_movrels_b32", 67, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_movrelsd_b32", 68, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	//New Lines
+	d.addInstType(&InstType{"v_movrelsd_2_b32", 72, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	d.addInstType(&InstType{"v_cvt_f16_u16", 80, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cvt_f16_i16", 81, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cvt_u16_f16", 82, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cvt_i16_f16", 83, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_rcp_f16", 84, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_sqrt_f16", 85, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_rsq_f16", 86, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_log_f16", 87, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_exp_f16", 88, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_frexp_mant_f16", 89, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_frexp_exp_i16_f16", 90, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_floor_f16", 91, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_ceil_f16", 92, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_trunc_f16", 93, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_rndne_f16", 94, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_fract_f16", 95, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_sin_f16", 96, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cos_f16", 97, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	// New lines
+	d.addInstType(&InstType{"v_sat_pk_u8_i16", 98, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cvt_norm_i16_f16", 99, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cvt_norm_u16_f16", 100, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_swap_b32", 101, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_swaprel_b32", 104, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
+	/*d.addInstType(&InstType{"v_exp_legacy_f32", 98, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_log_legacy_f32", 99, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 32, 0, 0})*/
 
 	// FLAT Instructions
 	d.addInstType(&InstType{"flat_load_ubyte", 16, FormatTable[FLAT], 0, ExeUnitVMem, 32, 32, 32, 0, 0})
