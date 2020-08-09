@@ -26,7 +26,8 @@ const (
 	formatTypeCount
 	//Added Instructions from RDNA structure
 	VOP3P
-	//GLOBAL and SCRATCH are a subset of FLAT
+	GLOBAL
+	SCRATCH
 )
 
 // Format defines the possible microcode format of instructions
@@ -50,24 +51,28 @@ func init() {
 
 func initFormatTable() {
 	FormatTable = make(map[FormatType]*Format)
+
+	// Need to check width
 	FormatTable[SOP1] = &Format{SOP1, "sop1", 0xBE800000, 0xFF800000, 4, 8, 15}        //Done
 	FormatTable[SOPC] = &Format{SOPC, "sopc", 0xBF000000, 0xFF800000, 4, 16, 22}       //Done
 	FormatTable[SOPP] = &Format{SOPP, "sopp", 0xBF800000, 0xFF800000, 4, 16, 22}       //Done
-	FormatTable[VOP1] = &Format{VOP1, "vop1", 0x7E000000, 0xFE000000, 4, 9, 16}        //M.S. Edits Finished
-	FormatTable[VOPC] = &Format{VOPC, "vopc", 0x7C000000, 0xFE000000, 4, 17, 24}       //Structure is fine, instructions have not been changed yet
-	FormatTable[SMEM] = &Format{SMEM, "smem", 0xF4000000, 0xFC000000, 8, 18, 25}       //Changed encoding from GCN3 (done)
-	FormatTable[VOP3a] = &Format{VOP3a, "vop3a", 0xD4000000, 0xFC000000, 8, 16, 25}    //Structure encoding changed from 0xD0000000 --> 0xD4000000, Instructions not changed yet
-	FormatTable[VOP3b] = &Format{VOP3b, "vop3b", 0xD4000000, 0xFC000000, 8, 16, 25}    //Structure encoding changed like with VOP3A instructions, Instructions not changed yet
+	FormatTable[VOP1] = &Format{VOP1, "vop1", 0x7E000000, 0xFE000000, 4, 9, 16}        //Done
+	FormatTable[VOPC] = &Format{VOPC, "vopc", 0x7C000000, 0xFE000000, 4, 17, 24}       //Done
+	FormatTable[SMEM] = &Format{SMEM, "smem", 0xF4000000, 0xFC000000, 8, 18, 25}       //Done
+	FormatTable[VOP3a] = &Format{VOP3a, "vop3a", 0xD4000000, 0xFC000000, 8, 16, 25}    //Done
+	FormatTable[VOP3b] = &Format{VOP3b, "vop3b", 0xD4000000, 0xFC000000, 8, 16, 25}    //Done
 	FormatTable[VINTRP] = &Format{VINTRP, "vintrp", 0xC8000000, 0xFC000000, 4, 16, 17} //Done (VINTRP does not have any instructions)
-	FormatTable[DS] = &Format{DS, "ds", 0xD8000000, 0xFC000000, 8, 17, 24}             //Working On
-	FormatTable[MUBUF] = &Format{MUBUF, "mubuf", 0xE0000000, 0xFC000000, 8, 18, 24}    //
+	FormatTable[DS] = &Format{DS, "ds", 0xD8000000, 0xFC000000, 8, 18, 25}             //Done
+	FormatTable[MUBUF] = &Format{MUBUF, "mubuf", 0xE0000000, 0xFC000000, 8, 18, 24}    //Working On
 	FormatTable[MTBUF] = &Format{MTBUF, "mtbuf", 0xE8000000, 0xFC000000, 8, 15, 18}    //
 	FormatTable[MIMG] = &Format{MIMG, "mimg", 0xF0000000, 0xFC000000, 8, 18, 24}       //
 	FormatTable[EXP] = &Format{EXP, "exp", 0xC4000000, 0xFC000000, 8, 0, 0}            //
 	FormatTable[FLAT] = &Format{FLAT, "flat", 0xDC000000, 0xFC000000, 8, 18, 24}       //
 	FormatTable[SOPK] = &Format{SOPK, "sopk", 0xB0000000, 0xF0000000, 4, 23, 27}       //Done
-	FormatTable[SOP2] = &Format{SOP2, "sop2", 0x80000000, 0xA0000000, 4, 23, 29}       //Think mask should be 0xC0000000 (done)
-	FormatTable[VOP2] = &Format{VOP2, "vop2", 0x00000000, 0x80000000, 4, 25, 30}       //M.S. Edits Finished, had to rewrite whole instruction set
-	//Added instructions format table
+	FormatTable[SOP2] = &Format{SOP2, "sop2", 0x80000000, 0xC0000000, 4, 23, 29}       //Done
+	FormatTable[VOP2] = &Format{VOP2, "vop2", 0x00000000, 0x80000000, 4, 25, 30}       //Done
+	//New formats
 	FormatTable[VOP3P] = &Format{VOP3P, "vop3p", 0xCC000000, 0xFC000000, 8, 17, 23}
+	FormatTable[GLOBAL] = &Format{GLOBAL, "global", 0xDC000000, 0xFC000000, 8, 18, 24}
+	FormatTable[SCRATCH] = &Format{SCRATCH, "scratch", 0xDC000000, 0xFC000000, 8, 18, 24}
 }
