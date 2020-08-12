@@ -65,13 +65,13 @@ func initFormatTable() {
 	FormatTable[DS] = &Format{DS, "ds", 0xD8000000, 0xFC000000, 8, 18, 25}                //Done
 	FormatTable[MUBUF] = &Format{MUBUF, "mubuf", 0xE0000000, 0xFC000000, 8, 18, 24}       //Done
 	FormatTable[MTBUF] = &Format{MTBUF, "mtbuf", 0xE8000000, 0xFC000000, 8, 15, 18}       //Done
-	FormatTable[MIMG] = &Format{MIMG, "mimg", 0xF0000000, 0xFC000000, 8, 18, 24}          //
+	FormatTable[MIMG] = &Format{MIMG, "mimg", 0xF0000000, 0xFC000000, 8, 18, 24}          //Done
 	FormatTable[EXP] = &Format{EXP, "exp", 0xF8000000, 0xFC000000, 8, 0, 0}               //Done
 	FormatTable[FLAT] = &Format{FLAT, "flat", 0xDC000000, 0xFC000000, 8, 18, 24}          //Done
 	FormatTable[SOPK] = &Format{SOPK, "sopk", 0xB0000000, 0xF0000000, 4, 23, 27}          //Done
 	FormatTable[SOP2] = &Format{SOP2, "sop2", 0x80000000, 0xC0000000, 4, 23, 29}          //Done
 	FormatTable[VOP2] = &Format{VOP2, "vop2", 0x00000000, 0x80000000, 4, 25, 30}          //Done
-	FormatTable[VOP3P] = &Format{VOP3P, "vop3p", 0xCC000000, 0xFC000000, 8, 16, 22}       //
-	FormatTable[GLOBAL] = &Format{GLOBAL, "global", 0xDC000000, 0xFC000000, 8, 18, 24}    //
-	FormatTable[SCRATCH] = &Format{SCRATCH, "scratch", 0xDC000000, 0xFC000000, 8, 18, 24} //Working on
+	FormatTable[VOP3P] = &Format{VOP3P, "vop3p", 0xCC000000, 0xFC000000, 8, 16, 22}       //Done
+	FormatTable[GLOBAL] = &Format{GLOBAL, "global", 0xDC000000, 0xFC000000, 8, 18, 24}    //Done
+	FormatTable[SCRATCH] = &Format{SCRATCH, "scratch", 0xDC000000, 0xFC000000, 8, 18, 24} //Dpme
 }
