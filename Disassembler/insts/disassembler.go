@@ -671,6 +671,15 @@ func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 	return nil
 }
 
+func (d *Disassembler) decodeVOP3P(inst *Inst, buf []byte) error {
+}
+
+func (d *Disassembler) decodeSCRATCH(inst *Inst, buf []byte) error {
+}
+
+func (d *Disassembler) decodeGLOBAL(inst *Inst, buf []byte) error {
+}
+
 func (d *Disassembler) combineDSOffsets(inst *Inst) {
 	switch inst.Opcode {
 	default:
@@ -730,6 +739,12 @@ func (d *Disassembler) Decode(buf []byte) (*Inst, error) {
 		err = d.decodeSOPK(inst, buf)
 	case DS:
 		err = d.decodeDS(inst, buf)
+	case VOP3P:
+		err = d.decodeVOP3P(inst, buf)
+	case SCRATCH:
+		err = d.decodeSCRATCH(inst, buf)
+	case GLOBAL:
+		err = d.decodeGLOBAL(inst, buf)
 	default:
 		log.Panicf("unabkle to decode instruction type %s", inst.FormatName)
 		break

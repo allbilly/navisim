@@ -331,6 +331,18 @@ func (i Inst) dsString() string {
 	return s
 }
 
+func (i Inst) vop3pString() string {
+
+}
+
+func (i Inst) scratchString() string {
+
+}
+
+func (i Inst) globalString() string {
+
+}
+
 //nolint:gocyclo
 // String returns the disassembly of an instruction
 func (i Inst) String(file *elf.File) string {
@@ -361,6 +373,12 @@ func (i Inst) String(file *elf.File) string {
 		return i.sopkString()
 	case DS:
 		return i.dsString()
+	case VOP3P:
+		return i.vop3pString()
+	case SCRATCH:
+		return i.scratchString()
+	case GLOBAL:
+		return i.globalString()
 	default:
 		log.Panic("Unknown instruction format type.")
 		return i.InstName
