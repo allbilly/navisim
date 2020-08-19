@@ -163,11 +163,23 @@ func (d *Disassembler) decodeVOP1(inst *Inst, buf []byte) error {
 		inst.Dst, _ = getOperand(uint16(dstValue + 256))
 	}
 
-	switch inst.Opcode {
-	case 4: // v_cvt_f64_i32_e32
-		inst.Dst.RegCount = 2
-	case 15: // v_cvt_f32_f64_e32
+	switch {
+	case inst.Opcode == 3, inst.Opcode == 15, inst.Opcode == 21, inst.Opcode == 60:
 		inst.Src0.RegCount = 2
+	case inst.Opcode == 4, inst.Opcode == 16, inst.Opcode == 22:
+		inst.Dst.RegCount = 2
+	case inst.Opcode == 10:
+		inst.Dst.RegCount = 0.5
+	case inst.Opcode == 11:
+		inst.Src0.RegCount = 0.5
+	case inst.Opcode == 14:
+		inst.Src0.RegCount = 0.25
+	case inst.Opcode >= 23 && inst.Opcode <= 26, inst.Opcode == 52, inst.Opcode == 61, inst.Opcode == 62:
+		inst.Dst.RegCount = 2
+		inst.Src0.RegCount = 2
+	case inst.Opcode >= 80 && inst.Opcode <= 97, inst.Opcode == 99, inst.Opcode == 100:
+		inst.Dst.RegCount = 0.5
+		inst.Src0.RegCount = 0.5
 	}
 
 	return nil
