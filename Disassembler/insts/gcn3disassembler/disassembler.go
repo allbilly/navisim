@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"gitlab.com/akita/mgpusim/insts"
+	"gitlab.com/akita/navisim/Disassembler/insts"
 )
 
 func main() {
