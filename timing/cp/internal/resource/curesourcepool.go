@@ -21,7 +21,7 @@ type DispatchableCU interface {
 	VRegCounts() []int
 
 	// SRegCount returns the number of scalar registers. -1 means unlimited.
-	SRegCounts() []int
+	SRegCount() int
 
 	// LDSBytes returns the number of bytes in the LDS storage. -1 is unlimited.
 	LDSBytes() int
@@ -82,18 +82,16 @@ func (p *CUResourcePoolImpl) createSRegMask(
 	r *CUResourceImpl,
 	u DispatchableCU,
 ) {
-	r.sregCounts = u.SRegCounts()
+	r.sregCount = u.SRegCount()
 	r.sregGranularity = 16
 
-	for i := 0; i < len(r.sregCounts); i++ {
-		if r.sregCounts[i] < 0 {
-			r.sregMasks = append(r.sregMasks, &unlimitedResourceMask{})
-			continue
-		}
-		p.countMustBeAMultipleOfGranularity(r.sregCounts[i], r.sregGranularity)
-		r.sregMasks = append(r.sregMasks, newResourceMask(r.sregCounts[i]/r.sregGranularity))
+	if r.sregCount < 0 {
+		r.sregMask = &unlimitedResourceMask{}
+		return
 	}
 
+	p.countMustBeAMultipleOfGranularity(r.sregCount, r.sregGranularity)
+	r.sregMask = newResourceMask(r.sregCount / r.sregGranularity)
 }
 
 func (p *CUResourcePoolImpl) createVRegMasks(
@@ -110,9 +108,9 @@ func (p *CUResourcePoolImpl) createVRegMasks(
 		}
 
 		p.countMustBeAMultipleOfGranularity(
-			r.vregCounts[i], r.vregGranularity*32)
+			r.vregCounts[i], r.vregGranularity*64)
 		r.vregMasks = append(r.vregMasks,
-			newResourceMask(r.vregCounts[i]/r.vregGranularity/32))
+			newResourceMask(r.vregCounts[i]/r.vregGranularity/64))
 	}
 }
 

@@ -8,19 +8,16 @@ import (
 )
 
 func assertAllResourcesFree(r *CUResourceImpl) {
-	Expect(r.wfPoolFreeCount[0]).To(Equal(20))
-	Expect(r.wfPoolFreeCount[1]).To(Equal(20))
-	Expect(r.wfPoolFreeCount[2]).To(Equal(20))
-	Expect(r.wfPoolFreeCount[3]).To(Equal(20))
-	Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(512))
-	Expect(r.sregMasks[0].statusCount(allocStatusFree)).To(Equal(160))
-	Expect(r.sregMasks[1].statusCount(allocStatusFree)).To(Equal(160))
-	Expect(r.sregMasks[2].statusCount(allocStatusFree)).To(Equal(160))
-	Expect(r.sregMasks[3].statusCount(allocStatusFree)).To(Equal(160))
-	Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(256))
-	Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(256))
-	Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(256))
-	Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(256))
+	Expect(r.wfPoolFreeCount[0]).To(Equal(10))
+	Expect(r.wfPoolFreeCount[1]).To(Equal(10))
+	Expect(r.wfPoolFreeCount[2]).To(Equal(10))
+	Expect(r.wfPoolFreeCount[3]).To(Equal(10))
+	Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(256))
+	Expect(r.sregMask.statusCount(allocStatusFree)).To(Equal(200))
+	Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(64))
+	Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(64))
+	Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(64))
+	Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(64))
 }
 
 var _ = Describe("cuResource", func() {
@@ -32,31 +29,26 @@ var _ = Describe("cuResource", func() {
 
 	BeforeEach(func() {
 		r = &CUResourceImpl{
-			wfPoolFreeCount: []int{20, 20, 20, 20},
-			sregCounts:      []int{2560, 2560, 2560, 2560},
+			wfPoolFreeCount: []int{10, 10, 10, 10},
+			sregCount:       3200,
 			sregGranularity: 16,
-			sregMasks: []resourceMask{
-				newResourceMask(2560 / 16),
-				newResourceMask(2560 / 16),
-				newResourceMask(2560 / 16),
-				newResourceMask(2560 / 16),
-			},
-			vregCounts:      []int{1024, 1024, 1024, 1024},
+			sregMask:        newResourceMask(3200 / 16),
+			vregCounts:      []int{256, 256, 256, 256},
 			vregGranularity: 4,
 			vregMasks: []resourceMask{
-				newResourceMask(1024 / 4),
-				newResourceMask(1024 / 4),
-				newResourceMask(1024 / 4),
-				newResourceMask(1024 / 4),
+				newResourceMask(256 / 4),
+				newResourceMask(256 / 4),
+				newResourceMask(256 / 4),
+				newResourceMask(256 / 4),
 			},
-			ldsByteSize:    128 * 1024,
+			ldsByteSize:    64 * 1024,
 			ldsGranularity: 256,
-			ldsMask:        newResourceMask(128 * 1024 / 256),
+			ldsMask:        newResourceMask(64 * 1024 / 256),
 			reservedWGs:    make(map[*kernels.WorkGroup][]WfLocation),
 		}
 
 		wg = kernels.NewWorkGroup()
-		for i := 0; i < 20; i++ {
+		for i := 0; i < 10; i++ {
 			wf := kernels.NewWavefront()
 			wg.Wavefronts = append(wg.Wavefronts, wf)
 		}
@@ -66,7 +58,7 @@ var _ = Describe("cuResource", func() {
 	})
 
 	It("should send NACK if too many Wavefronts", func() {
-		// Each SIMD is running 18 wf in each SIMD. 2 more wfs can handle.
+		// Each SIMD is running 8 wf in each SIMD. 8 more wfs can handle.
 		for i := 0; i < 4; i++ {
 			r.wfPoolFreeCount[i] = 2
 		}
@@ -79,77 +71,65 @@ var _ = Describe("cuResource", func() {
 		Expect(r.wfPoolFreeCount[1]).To(Equal(2))
 		Expect(r.wfPoolFreeCount[2]).To(Equal(2))
 		Expect(r.wfPoolFreeCount[3]).To(Equal(2))
-		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(512))
-		Expect(r.sregMasks[0].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[1].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[2].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[3].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(256))
-		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(256))
-		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(256))
-		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(256))
+		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(256))
+		Expect(r.sregMask.statusCount(allocStatusFree)).To(Equal(200))
+		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(64))
+		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(64))
+		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(64))
+		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(64))
 	})
 
 	It("should send NACK to the dispatcher if too many SReg", func() {
-		// 160 groups in total, 150 groups occupied.
-		// 10 groups are free -> 160 registers available
-		r.sregMasks[0].setStatus(0, 150, allocStatusReserved)
-		r.sregMasks[1].setStatus(0, 150, allocStatusReserved)
-		r.sregMasks[2].setStatus(0, 150, allocStatusReserved)
-		r.sregMasks[3].setStatus(0, 150, allocStatusReserved)
+		// 200 groups in total, 197 groups occupied.
+		// 3 groups are free -> 48 registers available
+		r.sregMask.setStatus(0, 197, allocStatusReserved)
 
-		// 20 Wfs, 64 SGPRs per wf. That is 1280 in total
+		// 10 Wfs, 64 SGPRs per wf. That is 640 in total
 		co.WFSgprCount = 64
 
 		_, ok := r.ReserveResourceForWG(wg)
 
 		Expect(ok).To(BeFalse())
-		Expect(r.wfPoolFreeCount[0]).To(Equal(20))
-		Expect(r.wfPoolFreeCount[1]).To(Equal(20))
-		Expect(r.wfPoolFreeCount[2]).To(Equal(20))
-		Expect(r.wfPoolFreeCount[3]).To(Equal(20))
-		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(512))
-		Expect(r.sregMasks[0].statusCount(allocStatusFree)).To(Equal(10))
-		Expect(r.sregMasks[1].statusCount(allocStatusFree)).To(Equal(10))
-		Expect(r.sregMasks[2].statusCount(allocStatusFree)).To(Equal(10))
-		Expect(r.sregMasks[3].statusCount(allocStatusFree)).To(Equal(10))
-		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(256))
-		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(256))
-		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(256))
-		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(256))
+		Expect(r.wfPoolFreeCount[0]).To(Equal(10))
+		Expect(r.wfPoolFreeCount[1]).To(Equal(10))
+		Expect(r.wfPoolFreeCount[2]).To(Equal(10))
+		Expect(r.wfPoolFreeCount[3]).To(Equal(10))
+		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(256))
+		Expect(r.sregMask.statusCount(allocStatusFree)).To(Equal(3))
+		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(64))
+		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(64))
+		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(64))
+		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(64))
 
 	})
 
 	It("should send NACK to the dispatcher if too large LDS", func() {
-		// 496 units occupied, 16 units left -> 4096 Bytes available
-		r.ldsMask.setStatus(0, 496, allocStatusReserved)
+		// 240 units occupied, 16 units left -> 4096 Bytes available
+		r.ldsMask.setStatus(0, 240, allocStatusReserved)
 
 		co.WGGroupSegmentByteSize = 8192
 
 		_, ok := r.ReserveResourceForWG(wg)
 
 		Expect(ok).To(BeFalse())
-		Expect(r.wfPoolFreeCount[0]).To(Equal(20))
-		Expect(r.wfPoolFreeCount[1]).To(Equal(20))
-		Expect(r.wfPoolFreeCount[2]).To(Equal(20))
-		Expect(r.wfPoolFreeCount[3]).To(Equal(20))
+		Expect(r.wfPoolFreeCount[0]).To(Equal(10))
+		Expect(r.wfPoolFreeCount[1]).To(Equal(10))
+		Expect(r.wfPoolFreeCount[2]).To(Equal(10))
+		Expect(r.wfPoolFreeCount[3]).To(Equal(10))
 		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(16))
-		Expect(r.sregMasks[0].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[1].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[2].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[3].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(256))
-		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(256))
-		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(256))
-		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(256))
+		Expect(r.sregMask.statusCount(allocStatusFree)).To(Equal(200))
+		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(64))
+		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(64))
+		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(64))
+		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(64))
 	})
 
 	It("should send NACK if too many VGPRs", func() {
 		// 64 units occupied, 4 units available, 4 * 4 = 16 units
-		r.vregMasks[0].setStatus(0, 252, allocStatusReserved)
-		r.vregMasks[1].setStatus(0, 252, allocStatusReserved)
-		r.vregMasks[2].setStatus(0, 252, allocStatusReserved)
-		r.vregMasks[3].setStatus(0, 252, allocStatusReserved)
+		r.vregMasks[0].setStatus(0, 60, allocStatusReserved)
+		r.vregMasks[1].setStatus(0, 60, allocStatusReserved)
+		r.vregMasks[2].setStatus(0, 60, allocStatusReserved)
+		r.vregMasks[3].setStatus(0, 60, allocStatusReserved)
 
 		co.WFSgprCount = 20
 		co.WGGroupSegmentByteSize = 256
@@ -158,15 +138,12 @@ var _ = Describe("cuResource", func() {
 		_, ok := r.ReserveResourceForWG(wg)
 
 		Expect(ok).To(BeFalse())
-		Expect(r.wfPoolFreeCount[0]).To(Equal(20))
-		Expect(r.wfPoolFreeCount[1]).To(Equal(20))
-		Expect(r.wfPoolFreeCount[2]).To(Equal(20))
-		Expect(r.wfPoolFreeCount[3]).To(Equal(20))
-		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(512))
-		Expect(r.sregMasks[0].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[1].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[2].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[3].statusCount(allocStatusFree)).To(Equal(160))
+		Expect(r.wfPoolFreeCount[0]).To(Equal(10))
+		Expect(r.wfPoolFreeCount[1]).To(Equal(10))
+		Expect(r.wfPoolFreeCount[2]).To(Equal(10))
+		Expect(r.wfPoolFreeCount[3]).To(Equal(10))
+		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(256))
+		Expect(r.sregMask.statusCount(allocStatusFree)).To(Equal(200))
 		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(4))
 		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(4))
 		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(4))
@@ -175,8 +152,8 @@ var _ = Describe("cuResource", func() {
 
 	It("should send NACK if not all Wavefront can fit the VGPRs requirement", func() {
 		// SIMD 0 and 1 do not have enouth VGPRs
-		r.vregMasks[0].setStatus(0, 252, allocStatusReserved)
-		r.vregMasks[1].setStatus(0, 252, allocStatusReserved)
+		r.vregMasks[0].setStatus(0, 60, allocStatusReserved)
+		r.vregMasks[1].setStatus(0, 60, allocStatusReserved)
 		r.wfPoolFreeCount[2] = 2
 		r.wfPoolFreeCount[3] = 2
 
@@ -185,19 +162,16 @@ var _ = Describe("cuResource", func() {
 		_, ok := r.ReserveResourceForWG(wg)
 
 		Expect(ok).To(BeFalse())
-		Expect(r.wfPoolFreeCount[0]).To(Equal(20))
-		Expect(r.wfPoolFreeCount[1]).To(Equal(20))
+		Expect(r.wfPoolFreeCount[0]).To(Equal(10))
+		Expect(r.wfPoolFreeCount[1]).To(Equal(10))
 		Expect(r.wfPoolFreeCount[2]).To(Equal(2))
 		Expect(r.wfPoolFreeCount[3]).To(Equal(2))
-		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(512))
-		Expect(r.sregMasks[0].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[1].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[2].statusCount(allocStatusFree)).To(Equal(160))
-		Expect(r.sregMasks[3].statusCount(allocStatusFree)).To(Equal(160))
+		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(256))
+		Expect(r.sregMask.statusCount(allocStatusFree)).To(Equal(200))
 		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(4))
 		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(4))
-		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(256))
-		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(256))
+		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(64))
+		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(64))
 	})
 
 	It("should reserve resources and send ACK back if all requirement satisfy", func() {
@@ -208,32 +182,26 @@ var _ = Describe("cuResource", func() {
 		locations, ok := r.ReserveResourceForWG(wg)
 
 		Expect(ok).To(BeTrue())
-		Expect(r.sregMasks[0].statusCount(allocStatusFree)).To(Equal(155))
-		Expect(r.sregMasks[0].statusCount(allocStatusReserved)).To(Equal(5))
-		Expect(r.sregMasks[1].statusCount(allocStatusFree)).To(Equal(155))
-		Expect(r.sregMasks[1].statusCount(allocStatusReserved)).To(Equal(5))
-		Expect(r.sregMasks[2].statusCount(allocStatusFree)).To(Equal(155))
-		Expect(r.sregMasks[2].statusCount(allocStatusReserved)).To(Equal(5))
-		Expect(r.sregMasks[3].statusCount(allocStatusFree)).To(Equal(155))
-		Expect(r.sregMasks[3].statusCount(allocStatusReserved)).To(Equal(5))
-		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(508))
+		Expect(r.sregMask.statusCount(allocStatusFree)).To(Equal(190))
+		Expect(r.sregMask.statusCount(allocStatusReserved)).To(Equal(10))
+		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(252))
 		Expect(r.ldsMask.statusCount(allocStatusReserved)).To(Equal(4))
-		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(231))
-		Expect(r.vregMasks[0].statusCount(allocStatusReserved)).To(Equal(25))
-		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(231))
-		Expect(r.vregMasks[1].statusCount(allocStatusReserved)).To(Equal(25))
-		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(231))
-		Expect(r.vregMasks[2].statusCount(allocStatusReserved)).To(Equal(25))
-		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(231))
-		Expect(r.vregMasks[3].statusCount(allocStatusReserved)).To(Equal(25))
-		Expect(r.wfPoolFreeCount[0]).To(Equal(15))
-		Expect(r.wfPoolFreeCount[1]).To(Equal(15))
-		Expect(r.wfPoolFreeCount[2]).To(Equal(15))
-		Expect(r.wfPoolFreeCount[3]).To(Equal(15))
+		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(49))
+		Expect(r.vregMasks[0].statusCount(allocStatusReserved)).To(Equal(15))
+		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(49))
+		Expect(r.vregMasks[1].statusCount(allocStatusReserved)).To(Equal(15))
+		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(54))
+		Expect(r.vregMasks[2].statusCount(allocStatusReserved)).To(Equal(10))
+		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(54))
+		Expect(r.vregMasks[3].statusCount(allocStatusReserved)).To(Equal(10))
+		Expect(r.wfPoolFreeCount[0]).To(Equal(7))
+		Expect(r.wfPoolFreeCount[1]).To(Equal(7))
+		Expect(r.wfPoolFreeCount[2]).To(Equal(8))
+		Expect(r.wfPoolFreeCount[3]).To(Equal(8))
 
 		for i := 0; i < len(wg.Wavefronts); i++ {
 			Expect(locations[i].SIMDID).To(Equal(i % 4))
-			Expect(locations[i].SGPROffset).To(Equal((i / 4) * 64))
+			Expect(locations[i].SGPROffset).To(Equal(i * 64))
 			Expect(locations[i].LDSOffset).To(Equal(0))
 			Expect(locations[i].VGPROffset).To(Equal((i / 4) * 20 * 4))
 		}
@@ -247,32 +215,26 @@ var _ = Describe("cuResource", func() {
 		locations, ok := r.ReserveResourceForWG(wg)
 
 		Expect(ok).To(BeTrue())
-		Expect(r.sregMasks[0].statusCount(allocStatusFree)).To(Equal(155))
-		Expect(r.sregMasks[0].statusCount(allocStatusReserved)).To(Equal(5))
-		Expect(r.sregMasks[1].statusCount(allocStatusFree)).To(Equal(155))
-		Expect(r.sregMasks[1].statusCount(allocStatusReserved)).To(Equal(5))
-		Expect(r.sregMasks[2].statusCount(allocStatusFree)).To(Equal(155))
-		Expect(r.sregMasks[2].statusCount(allocStatusReserved)).To(Equal(5))
-		Expect(r.sregMasks[3].statusCount(allocStatusFree)).To(Equal(155))
-		Expect(r.sregMasks[3].statusCount(allocStatusReserved)).To(Equal(5))
-		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(508))
+		Expect(r.sregMask.statusCount(allocStatusFree)).To(Equal(190))
+		Expect(r.sregMask.statusCount(allocStatusReserved)).To(Equal(10))
+		Expect(r.ldsMask.statusCount(allocStatusFree)).To(Equal(252))
 		Expect(r.ldsMask.statusCount(allocStatusReserved)).To(Equal(4))
-		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(231))
-		Expect(r.vregMasks[0].statusCount(allocStatusReserved)).To(Equal(25))
-		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(231))
-		Expect(r.vregMasks[1].statusCount(allocStatusReserved)).To(Equal(25))
-		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(231))
-		Expect(r.vregMasks[2].statusCount(allocStatusReserved)).To(Equal(25))
-		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(231))
-		Expect(r.vregMasks[3].statusCount(allocStatusReserved)).To(Equal(25))
-		Expect(r.wfPoolFreeCount[0]).To(Equal(15))
-		Expect(r.wfPoolFreeCount[1]).To(Equal(15))
-		Expect(r.wfPoolFreeCount[2]).To(Equal(15))
-		Expect(r.wfPoolFreeCount[3]).To(Equal(15))
+		Expect(r.vregMasks[0].statusCount(allocStatusFree)).To(Equal(49))
+		Expect(r.vregMasks[0].statusCount(allocStatusReserved)).To(Equal(15))
+		Expect(r.vregMasks[1].statusCount(allocStatusFree)).To(Equal(49))
+		Expect(r.vregMasks[1].statusCount(allocStatusReserved)).To(Equal(15))
+		Expect(r.vregMasks[2].statusCount(allocStatusFree)).To(Equal(54))
+		Expect(r.vregMasks[2].statusCount(allocStatusReserved)).To(Equal(10))
+		Expect(r.vregMasks[3].statusCount(allocStatusFree)).To(Equal(54))
+		Expect(r.vregMasks[3].statusCount(allocStatusReserved)).To(Equal(10))
+		Expect(r.wfPoolFreeCount[0]).To(Equal(7))
+		Expect(r.wfPoolFreeCount[1]).To(Equal(7))
+		Expect(r.wfPoolFreeCount[2]).To(Equal(8))
+		Expect(r.wfPoolFreeCount[3]).To(Equal(8))
 
 		for i := 0; i < len(wg.Wavefronts); i++ {
 			Expect(locations[i].SIMDID).To(Equal(i % 4))
-			Expect(locations[i].SGPROffset).To(Equal((i / 4) * 64))
+			Expect(locations[i].SGPROffset).To(Equal(i * 64))
 			Expect(locations[i].LDSOffset).To(Equal(0))
 			Expect(locations[i].VGPROffset).To(Equal((i / 4) * 20 * 4))
 		}
@@ -283,11 +245,11 @@ var _ = Describe("cuResource", func() {
 		r.vregCounts = []int{1024, 1024, 1024, 1024, 1024}
 		r.sregCounts = []int{1024, 1024, 1024, 1024, 1024}
 		r.vregMasks = []resourceMask{
-			newResourceMask(1024 / 4),
-			newResourceMask(1024 / 4),
-			newResourceMask(1024 / 4),
-			newResourceMask(1024 / 4),
-			newResourceMask(1024 / 4),
+			newResourceMask(256 / 4),
+			newResourceMask(256 / 4),
+			newResourceMask(256 / 4),
+			newResourceMask(256 / 4),
+			newResourceMask(256 / 4),
 		}
 		r.sregMasks = []resourceMask{
 			newResourceMask(1024 / 4),
