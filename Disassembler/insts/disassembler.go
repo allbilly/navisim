@@ -168,18 +168,9 @@ func (d *Disassembler) decodeVOP1(inst *Inst, buf []byte) error {
 		inst.Src0.RegCount = 2
 	case inst.Opcode == 4, inst.Opcode == 16, inst.Opcode == 22:
 		inst.Dst.RegCount = 2
-	case inst.Opcode == 10:
-		inst.Dst.RegCount = 0.5
-	case inst.Opcode == 11:
-		inst.Src0.RegCount = 0.5
-	case inst.Opcode == 14:
-		inst.Src0.RegCount = 0.25
 	case inst.Opcode >= 23 && inst.Opcode <= 26, inst.Opcode == 52, inst.Opcode == 61, inst.Opcode == 62:
 		inst.Dst.RegCount = 2
 		inst.Src0.RegCount = 2
-	case inst.Opcode >= 80 && inst.Opcode <= 97, inst.Opcode == 99, inst.Opcode == 100:
-		inst.Dst.RegCount = 0.5
-		inst.Src0.RegCount = 0.5
 	}
 
 	return nil
@@ -409,13 +400,13 @@ func (d *Disassembler) decodeSMEM(inst *Inst, buf []byte) error {
 	switch inst.Opcode {
 	case 0:
 		inst.Data.RegCount = 1
-	case 1, 9, 17, 25:
+	case 1, 9:
 		inst.Data.RegCount = 2
-	case 2, 10, 18, 26:
+	case 2, 10:
 		inst.Data.RegCount = 4
-	case 3, 11, 19, 27:
+	case 3, 11:
 		inst.Data.RegCount = 8
-	case 4, 12, 20, 28:
+	case 4, 12:
 		inst.Data.RegCount = 16
 	}
 
