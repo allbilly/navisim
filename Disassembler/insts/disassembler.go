@@ -323,7 +323,7 @@ func (d *Disassembler) decodeVOP2(inst *Inst, buf []byte) error {
 	inst.Dst = NewVRegOperand(bits, bits, 0)
 
 	switch inst.Opcode {
-	case 24, 37: // v_madak
+	case 33: // v_madak
 		inst.Imm = true
 		inst.ByteSize += 4
 		inst.Src2 = &Operand{0, LiteralConstant, nil, 0, 0, 0, 0}
