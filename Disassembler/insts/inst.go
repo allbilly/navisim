@@ -180,7 +180,7 @@ func (i Inst) vop2String() string {
 	switch i.Opcode {
 	case 0, 28, 29:
 		s += ", vcc"
-	case 24, 37: // madak
+	case 24: // madak
 		s += ", " + i.Src2.String()
 	}
 
@@ -278,7 +278,7 @@ func (i Inst) vop3bString() string {
 		i.Src1.String(),
 	)
 
-	if i.Opcode != 281 && i.Src2 != nil {
+	if i.Src2 != nil {
 		s += ", " + i.Src2.String()
 	}
 

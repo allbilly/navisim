@@ -319,13 +319,13 @@ func (d *Disassembler) decodeVOP2(inst *Inst, buf []byte) error {
 	bits = int(extractBits(bytes, 17, 24))
 	inst.Dst = NewVRegOperand(bits, bits, 0)
 
-	switch inst.Opcode {
-	case 24, 37: // v_madak
-		inst.Imm = true
-		inst.ByteSize += 4
-		inst.Src2 = &Operand{0, LiteralConstant, nil, 0, 0, 0, 0}
-		inst.Src2.LiteralConstant = BytesToUint32(buf[4:8])
-	}
+	// switch inst.Opcode {
+	// case 24, 37: // v_madak
+	// 	inst.Imm = true
+	// 	inst.ByteSize += 4
+	// 	inst.Src2 = &Operand{0, LiteralConstant, nil, 0, 0, 0, 0}
+	// 	inst.Src2.LiteralConstant = BytesToUint32(buf[4:8])
+	// }
 
 	return nil
 }
@@ -474,7 +474,7 @@ func (d *Disassembler) isVOP3bOpcode(opcode Opcode) bool {
 	//}
 
 	switch opcode {
-	case 281, 282, 283, 284, 285, 286, 480, 481:
+	case 365, 366, 374, 375, 783, 784, 793:
 		return true
 	}
 
@@ -485,12 +485,10 @@ func (d *Disassembler) decodeVOP3b(inst *Inst, buf []byte) error {
 	bytesLo := binary.LittleEndian.Uint32(buf)
 	bytesHi := binary.LittleEndian.Uint32(buf[4:])
 
-	if inst.Opcode > 255 {
-		dstBits := int(extractBits(bytesLo, 0, 7))
-		inst.Dst = NewVRegOperand(dstBits, dstBits, 1)
-		if inst.DSTWidth == 64 {
-			inst.Dst.RegCount = 2
-		}
+	dstBits := int(extractBits(bytesLo, 0, 7))
+	inst.Dst = NewVRegOperand(dstBits, dstBits, 1)
+	if inst.DSTWidth == 64 {
+		inst.Dst.RegCount = 2
 	}
 
 	inst.SDst, _ = getOperand(uint16(extractBits(bytesLo, 8, 14)))
@@ -512,7 +510,7 @@ func (d *Disassembler) decodeVOP3b(inst *Inst, buf []byte) error {
 		inst.Src1.RegCount = 2
 	}
 
-	if inst.Opcode > 255 && inst.SRC2Width > 0 {
+	if inst.SRC2Width > 0 {
 		inst.Src2, _ = getOperand(uint16(extractBits(bytesHi, 18, 26)))
 		if inst.SRC2Width == 64 {
 			inst.Src2.RegCount = 2

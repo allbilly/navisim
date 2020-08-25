@@ -643,11 +643,11 @@ func (d *Disassembler) initializeDecodeTable() {
 	// VOP3B Instructions
 	d.addInstType(&InstType{"v_div_scale_f32", 365, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_div_scale_f64", 366, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_mad_u64_u32", 374, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_mad_i64_i32", 375, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_add_co_u32", 783, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_sub_co_u32", 784, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_subrev_co_u32", 793, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_mad_u64_u32", 374, FormatTable[VOP3b], 0, ExeUnitVALU, 64, 32, 32, 64, 64})
+	d.addInstType(&InstType{"v_mad_i64_i32", 375, FormatTable[VOP3b], 0, ExeUnitVALU, 64, 32, 32, 64, 64})
+	d.addInstType(&InstType{"v_add_co_u32", 783, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 32})
+	d.addInstType(&InstType{"v_sub_co_u32", 784, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 32})
+	d.addInstType(&InstType{"v_subrev_co_u32", 793, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 32})
 
 	// SOP1 Instructions
 	d.addInstType(&InstType{"s_mov_b32", 3, FormatTable[SOP1], 0, ExeUnitScalar, 32, 32, 0, 0, 0})
