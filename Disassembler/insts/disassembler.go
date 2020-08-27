@@ -163,10 +163,13 @@ func (d *Disassembler) decodeVOP1(inst *Inst, buf []byte) error {
 		inst.Dst, _ = getOperand(uint16(dstValue + 256))
 	}
 
-	switch inst.Opcode {
-	case 4: // v_cvt_f64_i32_e32
+	switch {
+	case inst.Opcode == 3, inst.Opcode == 15, inst.Opcode == 21, inst.Opcode == 60:
+		inst.Src0.RegCount = 2
+	case inst.Opcode == 4, inst.Opcode == 16, inst.Opcode == 22:
 		inst.Dst.RegCount = 2
-	case 15: // v_cvt_f32_f64_e32
+	case inst.Opcode >= 23 && inst.Opcode <= 26, inst.Opcode == 52, inst.Opcode == 61, inst.Opcode == 62:
+		inst.Dst.RegCount = 2
 		inst.Src0.RegCount = 2
 	}
 
@@ -326,6 +329,13 @@ func (d *Disassembler) decodeVOP2(inst *Inst, buf []byte) error {
 	// 	inst.Src2 = &Operand{0, LiteralConstant, nil, 0, 0, 0, 0}
 	// 	inst.Src2.LiteralConstant = BytesToUint32(buf[4:8])
 	// }
+	switch inst.Opcode {
+	case 33: // v_madak
+		inst.Imm = true
+		inst.ByteSize += 4
+		inst.Src2 = &Operand{0, LiteralConstant, nil, 0, 0, 0, 0}
+		inst.Src2.LiteralConstant = BytesToUint32(buf[4:8])
+	}
 
 	return nil
 }
@@ -342,28 +352,32 @@ func (d *Disassembler) decodeFLAT(inst *Inst, buf []byte) error {
 		inst.GlobalLevelCoherent = true
 	}
 
-	if extractBits(bytesHi, 23, 23) != 0 {
-		inst.TextureFailEnable = true
-	}
-
-	bits := int(extractBits(bytesHi, 0, 7))
+	bits := int(extractBits(bytesHi, 32, 39))
 	inst.Addr = NewVRegOperand(bits, bits, 2)
-	bits = int(extractBits(bytesHi, 24, 31))
+	bits = int(extractBits(bytesHi, 56, 63))
 	inst.Dst = NewVRegOperand(bits, bits, 0)
-	bits = int(extractBits(bytesHi, 8, 15))
+	bits = int(extractBits(bytesHi, 40, 47))
 	inst.Data = NewVRegOperand(bits, bits, 0)
 
 	switch inst.Opcode {
-	case 21, 29, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93:
+	case 13, 29, 80, 81, 82, 83, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96:
 		inst.Data.RegCount = 2
 		inst.Dst.RegCount = 2
-	case 22, 30:
+	case 15, 31:
 		inst.Data.RegCount = 3
 		inst.Dst.RegCount = 3
-	case 23, 31:
+	case 14, 30:
 		inst.Data.RegCount = 4
 		inst.Dst.RegCount = 4
 	}
+	return nil
+}
+
+func (d *Disassembler) decodeGLOBAL(inst *Inst, bug []byte) error {
+	return nil
+}
+
+func (d *Disassembler) decodeSCRATCH(inst *Inst, bug []byte) error {
 	return nil
 }
 
@@ -397,13 +411,13 @@ func (d *Disassembler) decodeSMEM(inst *Inst, buf []byte) error {
 	switch inst.Opcode {
 	case 0:
 		inst.Data.RegCount = 1
-	case 1, 9, 17, 25:
+	case 1, 9:
 		inst.Data.RegCount = 2
-	case 2, 10, 18, 26:
+	case 2, 10:
 		inst.Data.RegCount = 4
-	case 3, 11, 19, 27:
+	case 3, 11:
 		inst.Data.RegCount = 8
-	case 4, 12, 20, 28:
+	case 4, 12:
 		inst.Data.RegCount = 16
 	}
 
