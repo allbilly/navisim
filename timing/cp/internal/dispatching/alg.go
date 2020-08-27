@@ -2,8 +2,8 @@ package dispatching
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/kernels"
 	"gitlab.com/akita/mgpusim/protocol"
+	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/navisim/timing/cp/internal/resource"
 )
 

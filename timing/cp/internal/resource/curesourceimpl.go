@@ -15,9 +15,9 @@ type CUResourceImpl struct {
 
 	wfPoolFreeCount []int
 
-	sregCount       int
+	sregCounts      []int
 	sregGranularity int
-	sregMask        resourceMask
+	sregMasks       []resourceMask
 
 	vregCounts      []int
 	vregGranularity int
@@ -50,10 +50,6 @@ func (r *CUResourceImpl) ReserveResourceForWG(wg *kernels.WorkGroup) (
 		locations[i].Wavefront = wf
 	}
 
-	if !r.withinSGPRLimitation(wg, locations) {
-		ok = false
-	}
-
 	if ok && !r.withinLDSLimitation(wg, locations) {
 		ok = false
 	}
@@ -69,26 +65,6 @@ func (r *CUResourceImpl) ReserveResourceForWG(wg *kernels.WorkGroup) (
 
 	r.clearTempReservation(wg)
 	return nil, ok
-}
-
-func (r *CUResourceImpl) withinSGPRLimitation(
-	wg *kernels.WorkGroup,
-	locations []WfLocation,
-) bool {
-	co := wg.CodeObject
-	required := r.unitsOccupy(int(co.WFSgprCount), r.sregGranularity)
-
-	for i := range wg.Wavefronts {
-		location := &locations[i]
-		offset, ok := r.sregMask.nextRegion(required, allocStatusFree)
-		if !ok {
-			return false
-		}
-		location.SGPROffset = offset * 16 * 4 // 16 reg, 4 byte each
-		r.sregMask.setStatus(offset, required, allocStatusToReserve)
-	}
-
-	return true
 }
 
 func (r *CUResourceImpl) withinLDSLimitation(
@@ -120,6 +96,7 @@ func (r *CUResourceImpl) matchWfWithSIMDs(
 	locations []WfLocation,
 ) bool {
 	vgprToUse := make([]int, len(r.wfPoolFreeCount))
+	sgprToUse := make([]int, len(r.wfPoolFreeCount))
 	wfPoolEntryUsed := make([]int, len(r.wfPoolFreeCount))
 	co := wg.CodeObject
 
@@ -128,21 +105,28 @@ func (r *CUResourceImpl) matchWfWithSIMDs(
 		firstSIMDTested := r.nextSIMD
 		firstTry := true
 		found := false
-		required := r.unitsOccupy(int(co.WIVgprCount), r.vregGranularity)
+		requiredVgpr := r.unitsOccupy(int(co.WIVgprCount), r.vregGranularity)
+		requiredSgpr := r.unitsOccupy(int(co.WFSgprCount), r.sregGranularity)
 
 		for firstTry || r.nextSIMD != firstSIMDTested {
 			firstTry = false
-			offset, ok := r.vregMasks[r.nextSIMD].
-				nextRegion(required, allocStatusFree)
+			vgprOffset, ok1 := r.vregMasks[r.nextSIMD].
+				nextRegion(requiredVgpr, allocStatusFree)
 
-			if ok && r.wfPoolFreeCount[r.nextSIMD]-wfPoolEntryUsed[r.nextSIMD] > 0 {
+			sgprOffset, ok2 := r.sregMasks[r.nextSIMD].nextRegion(requiredSgpr, allocStatusFree)
+
+			if ok1 && ok2 && r.wfPoolFreeCount[r.nextSIMD]-wfPoolEntryUsed[r.nextSIMD] > 0 {
 				found = true
-				vgprToUse[r.nextSIMD] += required
+				vgprToUse[r.nextSIMD] += requiredVgpr
+				sgprToUse[r.nextSIMD] += requiredSgpr
 				wfPoolEntryUsed[r.nextSIMD]++
 				location.SIMDID = r.nextSIMD
-				location.VGPROffset = offset * r.vregGranularity * 4 //  4 bytes per register
-				r.vregMasks[r.nextSIMD].setStatus(offset, required,
+				location.VGPROffset = vgprOffset * r.vregGranularity * 4 //  4 bytes per register
+				r.vregMasks[r.nextSIMD].setStatus(vgprOffset, requiredVgpr,
 					allocStatusToReserve)
+				location.SGPROffset = sgprOffset * 16 * 4 // 16 reg, 4 byte each
+				r.sregMasks[r.nextSIMD].setStatus(sgprOffset, requiredSgpr, allocStatusToReserve)
+
 			}
 
 			r.nextSIMD++
@@ -177,8 +161,9 @@ func (r *CUResourceImpl) reserveResources(
 	for _, location := range locations {
 		r.wfPoolFreeCount[location.SIMDID]--
 	}
-
-	r.sregMask.convertStatus(allocStatusToReserve, allocStatusReserved)
+	for i := 0; i < len(r.wfPoolFreeCount); i++ {
+		r.sregMasks[i].convertStatus(allocStatusToReserve, allocStatusReserved)
+	}
 	r.ldsMask.convertStatus(allocStatusToReserve, allocStatusReserved)
 	for i := 0; i < len(r.wfPoolFreeCount); i++ {
 		r.vregMasks[i].convertStatus(allocStatusToReserve, allocStatusReserved)
@@ -195,7 +180,9 @@ func (r *CUResourceImpl) neverReserveTwice(wg *kernels.WorkGroup) {
 }
 
 func (r *CUResourceImpl) clearTempReservation(wg *kernels.WorkGroup) {
-	r.sregMask.convertStatus(allocStatusToReserve, allocStatusFree)
+	for i := 0; i < len(r.wfPoolFreeCount); i++ {
+		r.sregMasks[i].convertStatus(allocStatusToReserve, allocStatusFree)
+	}
 	r.ldsMask.convertStatus(allocStatusToReserve, allocStatusFree)
 	for i := 0; i < len(r.wfPoolFreeCount); i++ {
 		r.vregMasks[i].convertStatus(allocStatusToReserve, allocStatusFree)
@@ -219,8 +206,7 @@ func (r *CUResourceImpl) FreeResourcesForWG(wg *kernels.WorkGroup) {
 			allocStatusFree)
 
 		sgprUnits := r.unitsOccupy(int(co.WFSgprCount), r.sregGranularity)
-		r.sregMask.setStatus(location.SGPROffset/4/r.sregGranularity,
-			sgprUnits, allocStatusFree)
+		r.sregMasks[location.SIMDID].setStatus(location.SGPROffset/4/r.sregGranularity, sgprUnits, allocStatusFree)
 
 		vgprUnits := r.unitsOccupy(int(co.WIVgprCount), r.vregGranularity)
 		r.vregMasks[location.SIMDID].setStatus(
