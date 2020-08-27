@@ -345,29 +345,33 @@ func (d *Disassembler) decodeFLAT(inst *Inst, buf []byte) error {
 		inst.GlobalLevelCoherent = true
 	}
 
-	if extractBits(bytesHi, 23, 23) != 0 {
-		inst.TextureFailEnable = true
-	}
-
-	bits := int(extractBits(bytesHi, 0, 7))
+	bits := int(extractBits(bytesHi, 32, 39))
 	inst.Addr = NewVRegOperand(bits, bits, 2)
-	bits = int(extractBits(bytesHi, 24, 31))
+	bits = int(extractBits(bytesHi, 56, 63))
 	inst.Dst = NewVRegOperand(bits, bits, 0)
-	bits = int(extractBits(bytesHi, 8, 15))
+	bits = int(extractBits(bytesHi, 40, 47))
 	inst.Data = NewVRegOperand(bits, bits, 0)
 
 	switch inst.Opcode {
-	case 21, 29, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93:
+	case 13, 29, 80, 81, 82, 83, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96:
 		inst.Data.RegCount = 2
 		inst.Dst.RegCount = 2
-	case 22, 30:
+	case 15, 31:
 		inst.Data.RegCount = 3
 		inst.Dst.RegCount = 3
-	case 23, 31:
+	case 14, 30:
 		inst.Data.RegCount = 4
 		inst.Dst.RegCount = 4
 	}
 	return nil
+}
+
+func (d *Disassembler) decodeGLOBAL(inst *Inst, bug []byte) error {
+
+}
+
+func (d *Disassembler) decodeSCRATCH(inst *Inst, bug []byte) error {
+
 }
 
 //nolint:gocyclo,funlen
@@ -675,12 +679,6 @@ func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 }
 
 func (d *Disassembler) decodeVOP3P(inst *Inst, buf []byte) error {
-}
-
-func (d *Disassembler) decodeSCRATCH(inst *Inst, buf []byte) error {
-}
-
-func (d *Disassembler) decodeGLOBAL(inst *Inst, buf []byte) error {
 }
 
 func (d *Disassembler) combineDSOffsets(inst *Inst) {
