@@ -59,6 +59,7 @@ type Inst struct {
 	Abs                 int
 	Omod                int
 	Neg                 int
+	Seg                 int
 	Offset0             uint32
 	Offset1             uint32
 	SystemLevelCoherent bool
@@ -109,6 +110,16 @@ func (i Inst) vop1String() string {
 
 func (i Inst) flatString() string {
 	var s string
+	switch i.Seg {
+	case 0:
+		s += "flat"
+	case 1:
+		s += "scratch"
+	case 2:
+		s += "global"
+	}
+	s += i.InstName
+
 	if i.Opcode >= 16 && i.Opcode <= 23 {
 		s = i.InstName + " " + i.Dst.String() + ", " +
 			i.Addr.String()

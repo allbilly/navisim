@@ -71,7 +71,7 @@ func initFormatTable() {
 	FormatTable[SOPK] = &Format{SOPK, "sopk", 0xB0000000, 0xF0000000, 4, 23, 27}
 	FormatTable[SOP2] = &Format{SOP2, "sop2", 0x80000000, 0xC0000000, 4, 23, 29}
 	FormatTable[VOP2] = &Format{VOP2, "vop2", 0x00000000, 0x80000000, 4, 25, 30}
-	FormatTable[VOP3P] = &Format{VOP3P, "vop3p", 0xCC000000, 0xFC000000, 8, 16, 22}       //
-	FormatTable[GLOBAL] = &Format{GLOBAL, "global", 0xDC000000, 0xFC000000, 8, 18, 24}    //
-	FormatTable[SCRATCH] = &Format{SCRATCH, "scratch", 0xDC000000, 0xFC000000, 8, 18, 24} //
+	FormatTable[VOP3P] = &Format{VOP3P, "vop3p", 0xCC000000, 0xFC000000, 8, 16, 22} //
+	// FormatTable[GLOBAL] = &Format{GLOBAL, "global", 0xDC000000, 0xFC000000, 8, 18, 24}    //
+	// FormatTable[SCRATCH] = &Format{SCRATCH, "scratch", 0xDC000000, 0xFC000000, 8, 18, 24} //
 }

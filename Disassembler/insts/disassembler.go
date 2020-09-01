@@ -352,7 +352,10 @@ func (d *Disassembler) decodeFLAT(inst *Inst, buf []byte) error {
 		inst.GlobalLevelCoherent = true
 	}
 
-	bits := int(extractBits(bytesHi, 32, 39))
+	bits := int(extractBits(bytesLo, 14, 15))
+	inst.Seg = bits
+
+	bits = int(extractBits(bytesHi, 32, 39))
 	inst.Addr = NewVRegOperand(bits, bits, 2)
 	bits = int(extractBits(bytesHi, 56, 63))
 	inst.Dst = NewVRegOperand(bits, bits, 0)
