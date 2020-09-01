@@ -4,7 +4,7 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/navisim/timing/cp/internal/resource"
 )
 

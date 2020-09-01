@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/gomega"
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
-	"gitlab.com/akita/mgpusim/protocol"
+	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/protocol"
 )
 
 var _ = Describe("Dispatcher", func() {

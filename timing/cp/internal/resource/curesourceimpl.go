@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim/kernels"
 )
 
 // CUResourceImpl implements CUResource

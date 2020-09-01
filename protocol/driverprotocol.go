@@ -3,7 +3,7 @@ package protocol
 import (
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/util/ca"
 )
 

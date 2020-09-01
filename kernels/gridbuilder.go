@@ -4,11 +4,18 @@ import (
 	"gitlab.com/akita/mgpusim/insts"
 )
 
+// WGFilterFunc is a filter
+type WGFilterFunc func(
+	*HsaKernelDispatchPacket,
+	*WorkGroup,
+) bool
+
 // KernelLaunchInfo includes the necessary information to launch a kernel.
 type KernelLaunchInfo struct {
 	CodeObject *insts.HsaCo
 	Packet     *HsaKernelDispatchPacket
 	PacketAddr uint64
+	WGFilter   WGFilterFunc
 }
 
 // A GridBuilder is the unit that can build a grid and its internal structure
