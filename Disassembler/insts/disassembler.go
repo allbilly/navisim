@@ -355,11 +355,11 @@ func (d *Disassembler) decodeFLAT(inst *Inst, buf []byte) error {
 	bits := int(extractBits(bytesLo, 14, 15))
 	inst.Seg = bits
 
-	bits = int(extractBits(bytesHi, 32, 39))
+	bits = int(extractBits(bytesHi, 0, 7))
 	inst.Addr = NewVRegOperand(bits, bits, 2)
-	bits = int(extractBits(bytesHi, 56, 63))
+	bits = int(extractBits(bytesHi, 24, 31))
 	inst.Dst = NewVRegOperand(bits, bits, 0)
-	bits = int(extractBits(bytesHi, 40, 47))
+	bits = int(extractBits(bytesHi, 8, 15))
 	inst.Data = NewVRegOperand(bits, bits, 0)
 
 	switch inst.Opcode {

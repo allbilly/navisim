@@ -120,11 +120,11 @@ func (i Inst) flatString() string {
 	}
 	s += i.InstName
 
-	if i.Opcode >= 16 && i.Opcode <= 23 {
-		s = i.InstName + " " + i.Dst.String() + ", " +
+	if i.Opcode >= 8 && i.Opcode <= 15 {
+		s += i.InstName + " " + i.Dst.String() + ", " +
 			i.Addr.String()
 	} else if i.Opcode >= 24 && i.Opcode <= 31 {
-		s = i.InstName + " " + i.Addr.String() + ", " +
+		s += i.InstName + " " + i.Addr.String() + ", " +
 			i.Data.String()
 	}
 	return s
