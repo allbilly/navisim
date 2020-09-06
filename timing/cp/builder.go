@@ -5,7 +5,7 @@ import (
 	"math"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/protocol"
+	"gitlab.com/akita/navisim/protocol"
 	"gitlab.com/akita/navisim/timing/cp/internal/dispatching"
 	"gitlab.com/akita/navisim/timing/cp/internal/resource"
 	"gitlab.com/akita/util"
