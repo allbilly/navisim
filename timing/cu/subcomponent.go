@@ -2,7 +2,7 @@ package cu
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 // A SubComponent is an element installed in the compute unit

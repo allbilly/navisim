@@ -8,11 +8,11 @@ import (
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/mem/cache"
-	"gitlab.com/akita/mgpusim/emu"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
-	"gitlab.com/akita/mgpusim/protocol"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/emu"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util"
 	"gitlab.com/akita/util/akitaext"
 	"gitlab.com/akita/util/tracing"
@@ -38,17 +38,17 @@ type ComputeUnit struct {
 
 	running bool
 
-	Scheduler        []Scheduler
+	Scheduler        Scheduler
 	BranchUnit       SubComponent
 	VectorMemDecoder SubComponent
 	VectorMemUnit    SubComponent
 	ScalarDecoder    SubComponent
 	VectorDecoder    SubComponent
 	LDSDecoder       SubComponent
-	ScalarUnit       []SubComponent
+	ScalarUnit       SubComponent
 	SIMDUnit         []SubComponent
 	LDSUnit          SubComponent
-	SRegFile         []RegisterFile
+	SRegFile         RegisterFile
 	VRegFile         []RegisterFile
 
 	InstMem          akita.Port

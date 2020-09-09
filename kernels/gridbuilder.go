@@ -1,7 +1,7 @@
 package kernels
 
 import (
-	"gitlab.com/akita/mgpusim/insts"
+	"gitlab.com/akita/navisim/insts"
 )
 
 // WGFilterFunc is a filter

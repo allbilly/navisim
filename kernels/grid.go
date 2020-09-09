@@ -2,7 +2,7 @@ package kernels
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/insts"
+	"gitlab.com/akita/navisim/insts"
 )
 
 // A Grid is a running instance of a kernel.

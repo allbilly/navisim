@@ -1,6 +1,6 @@
 package cu
 
-import "gitlab.com/akita/mgpusim/timing/wavefront"
+import "gitlab.com/akita/navisim/timing/wavefront"
 
 // An IssueArbiter decides which wavefront can issue instruction
 type IssueArbiter struct {
