@@ -11,24 +11,30 @@ import (
 	"gitlab.com/akita/mem/idealmemcontroller"
 	memtraces "gitlab.com/akita/mem/trace"
 	"gitlab.com/akita/mem/vm"
-	"gitlab.com/akita/mgpusim"
 	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/emu"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim"
+	"gitlab.com/akita/navisim/emu"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/timing/cp"
 	"gitlab.com/akita/util/tracing"
 )
 
 // EmuGPUBuilder provide services to assemble usable GPUs
 type EmuGPUBuilder struct {
-	engine       akita.Engine
-	freq         akita.Freq
-	driver       *driver.Driver
-	pageTable    vm.PageTable
-	log2PageSize uint64
-	memOffset    uint64
-	memCapacity  uint64
-	storage      *mem.Storage
+	engine           akita.Engine
+	freq             akita.Freq
+	driver           *driver.Driver
+	pageTable        vm.PageTable
+	log2PageSize     uint64
+	memOffset        uint64
+	memCapacity      uint64
+	gpuName          string
+	gpu              *navisim.GPU
+	storage          *mem.Storage
+	commandProcessor *cp.CommandProcessor
+	gpuMem           *idealmemcontroller.Comp
+	dmaEngine        *cp.DMAEngine
+	computeUnits     []*emu.ComputeUnit
 
 	enableISADebug     bool
 	enableMemTracing   bool
@@ -81,7 +87,7 @@ func (b EmuGPUBuilder) WithMemOffset(offset uint64) EmuGPUBuilder {
 	return b
 }
 
-// Storage sets the global memory storage that is shared by multiple GPUs
+// WithStorage sets the global memory storage that is shared by multiple GPUs
 func (b EmuGPUBuilder) WithStorage(s *mem.Storage) EmuGPUBuilder {
 	b.storage = s
 	return b
@@ -106,49 +112,39 @@ func (b EmuGPUBuilder) WithoutProgressBar() EmuGPUBuilder {
 	return b
 }
 
-//nolint:gocyclo,funlen
 // Build creates a very simple GPU for emulation purposes
-func (b EmuGPUBuilder) Build(name string) *mgpusim.GPU {
-	connection := akita.NewDirectConnection(
-		"InterGPUConn", b.engine, 1*akita.GHz)
+func (b EmuGPUBuilder) Build(name string) *navisim.GPU {
+	b.clear()
+	b.gpuName = name
+	b.buildMemory()
+	b.buildComputeUnits()
+	b.buildGPU()
+	b.connectInternalComponents()
+	return b.gpu
+}
 
-	dispatcher := mgpusim.NewDispatcher(
-		name+".Dispatcher",
-		b.engine,
-		kernels.NewGridBuilder())
-	dispatcher.ShowProgressBar = !b.disableProgressBar
-	dispatcher.Freq = b.freq
+func (b *EmuGPUBuilder) clear() {
+	b.commandProcessor = nil
+	b.computeUnits = nil
+	b.gpuMem = nil
+	b.dmaEngine = nil
+	b.gpu = nil
+}
 
-	commandProcessor := mgpusim.NewCommandProcessor(
-		name+".CommandProcessor", b.engine)
-	commandProcessor.Dispatcher = dispatcher.ToCommandProcessor
-
-	gpuMem := idealmemcontroller.New(
-		name+".GlobalMem", b.engine, b.memCapacity)
-	gpuMem.Freq = 1 * akita.GHz
-	gpuMem.Latency = 1
-
-	gpuMem.Storage = b.storage
-	if b.enableMemTracing {
-		file, _ := os.Create("mem.trace")
-		logger := log.New(file, "", 0)
-		memTracer := memtraces.NewTracer(logger)
-		tracing.CollectTrace(gpuMem, memTracer)
-	}
-
+func (b *EmuGPUBuilder) buildComputeUnits() {
 	disassembler := insts.NewDisassembler()
 
 	for i := 0; i < 4; i++ {
 		computeUnit := emu.BuildComputeUnit(
-			fmt.Sprintf("%s.CU%d", name, i),
+			fmt.Sprintf("%s.CU%d", b.gpuName, i),
 			b.engine, disassembler, b.pageTable,
-			b.log2PageSize, gpuMem.Storage, nil)
+			b.log2PageSize, b.gpuMem.Storage, nil)
 
-		connection.PlugIn(computeUnit.ToDispatcher, 4)
-		dispatcher.RegisterCU(computeUnit.ToDispatcher)
+		b.computeUnits = append(b.computeUnits, computeUnit)
 
 		if b.enableISADebug {
-			isaDebug, err := os.Create(fmt.Sprintf("isa_%s.debug", computeUnit.Name()))
+			isaDebug, err := os.Create(
+				fmt.Sprintf("isa_%s.debug", computeUnit.Name()))
 			if err != nil {
 				log.Fatal(err.Error())
 			}
@@ -156,27 +152,56 @@ func (b EmuGPUBuilder) Build(name string) *mgpusim.GPU {
 			computeUnit.AcceptHook(isaDebugger)
 		}
 	}
+}
 
-	gpu := mgpusim.NewGPU(name)
-	gpu.CommandProcessor = commandProcessor
-	commandProcessor.Driver = b.driver.ToGPUs
-	gpu.Storage = b.storage
+func (b *EmuGPUBuilder) buildMemory() {
+	b.gpuMem = idealmemcontroller.New(
+		b.gpuName+".GlobalMem", b.engine, b.memCapacity)
+	b.gpuMem.Freq = 1 * akita.GHz
+	b.gpuMem.Latency = 1
+	b.gpuMem.Storage = b.storage
+
+	if b.enableMemTracing {
+		file, _ := os.Create("mem.trace")
+		logger := log.New(file, "", 0)
+		memTracer := memtraces.NewTracer(logger)
+		tracing.CollectTrace(b.gpuMem, memTracer)
+	}
+}
+
+func (b *EmuGPUBuilder) buildGPU() {
+	b.commandProcessor = cp.MakeBuilder().
+		WithEngine(b.engine).
+		WithFreq(1 * akita.GHz).
+		Build(b.gpuName + ".CommandProcessor")
+
+	b.gpu = navisim.NewGPU(b.gpuName)
+	b.gpu.CommandProcessor = b.commandProcessor
+	b.commandProcessor.Driver = b.driver.ToGPUs
+	b.gpu.Storage = b.storage
 
 	localDataSource := new(cache.SingleLowModuleFinder)
-	localDataSource.LowModule = gpuMem.ToTop
-	dmaEngine := mgpusim.NewDMAEngine(
-		fmt.Sprintf("%s.DMA", name), b.engine, localDataSource)
-	commandProcessor.DMAEngine = dmaEngine.ToCP
+	localDataSource.LowModule = b.gpuMem.ToTop
+	b.dmaEngine = cp.NewDMAEngine(
+		fmt.Sprintf("%s.DMA", b.gpuName), b.engine, localDataSource)
+	b.commandProcessor.DMAEngine = b.dmaEngine.ToCP
+}
 
-	connection.PlugIn(commandProcessor.ToDriver, 1)
-	connection.PlugIn(commandProcessor.ToDispatcher, 1)
+func (b *EmuGPUBuilder) connectInternalComponents() {
+	connection := akita.NewDirectConnection(
+		"InterGPUConn", b.engine, 1*akita.GHz)
+	b.gpu.InternalConnection = connection
+
+	connection.PlugIn(b.commandProcessor.ToDriver, 1)
+	connection.PlugIn(b.commandProcessor.ToDMA, 1)
+	connection.PlugIn(b.commandProcessor.ToCUs, 1)
 	connection.PlugIn(b.driver.ToGPUs, 1)
-	connection.PlugIn(dispatcher.ToCommandProcessor, 1)
-	connection.PlugIn(dispatcher.ToCUs, 1)
-	connection.PlugIn(gpuMem.ToTop, 1)
-	connection.PlugIn(dmaEngine.ToCP, 1)
-	connection.PlugIn(dmaEngine.ToMem, 1)
-	gpu.InternalConnection = connection
+	connection.PlugIn(b.gpuMem.ToTop, 1)
+	connection.PlugIn(b.dmaEngine.ToCP, 1)
+	connection.PlugIn(b.dmaEngine.ToMem, 1)
 
-	return gpu
+	for _, cu := range b.computeUnits {
+		b.commandProcessor.RegisterCU(cu)
+		connection.PlugIn(cu.ToDispatcher, 4)
+	}
 }

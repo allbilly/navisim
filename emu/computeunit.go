@@ -68,8 +68,8 @@ func (cu *ComputeUnit) VRegCounts() []int {
 }
 
 // SRegCount returns the number of scalar register in the Compute Unit.
-func (cu *ComputeUnit) SRegCount() int {
-	return -1
+func (cu *ComputeUnit) SRegCounts() []int {
+	return []int{-1}
 }
 
 // LDSBytes returns the number of bytes in the LDS of the CU.
