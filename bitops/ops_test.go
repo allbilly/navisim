@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "gitlab.com/akita/mgpusim/bitops"
+	. "gitlab.com/akita/navisim/bitops"
 )
 
 var _ = Describe("Ops", func() {

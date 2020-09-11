@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 
-	"gitlab.com/akita/mgpusim/benchmarks/amdappsdk/nbody"
-	"gitlab.com/akita/mgpusim/samples/runner"
+	"gitlab.com/akita/navisim/benchmarks/amdappsdk/nbody"
+	"gitlab.com/akita/navisim/samples/runner"
 )
 
 var numIter = flag.Int("iter", 8, "The number of iterations to run.")

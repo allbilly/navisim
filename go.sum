@@ -146,6 +146,7 @@ github.com/xdg/stringprep v1.0.0/go.mod h1:Jhud4/sHMO4oL310DaZAKk9ZaJ08SJfe+sJh0
 gitlab.com/akita/akita v1.10.0/go.mod h1:bGwhy0YF3Is29i+gnV8zTEeRC8XoHKd2p70vnmrSBJo=
 gitlab.com/akita/akita v1.10.1 h1:lOqQkQEh6Ivv0P9i/nOcmk807Q6rXHgb7kBWzWSb/zE=
 gitlab.com/akita/akita v1.10.1/go.mod h1:bGwhy0YF3Is29i+gnV8zTEeRC8XoHKd2p70vnmrSBJo=
+gitlab.com/akita/dnn v0.3.0 h1:zb1Uup+7DF5pnNHaQ2kug35iLP5JxdmzRxSz88AAFjw=
 gitlab.com/akita/dnn v0.3.0/go.mod h1:MoBgF7tKoRwMrRYNnQj3xQ244j2r8z3tfcPxl9UMUWs=
 gitlab.com/akita/mem v1.8.3 h1:MLfS8hfxszZe9bamqVdcNANa5qt/08Ufbm2Fg/RebKo=
 gitlab.com/akita/mem v1.8.3/go.mod h1:EylZSjhP4Ee2kwPOw9U5KfEiGI1TROCRI9ACQ7/4D6c=
@@ -234,6 +235,7 @@ golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8T
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 h1:E7g+9GITq07hpfrRu66IVDexMakfv52eLZ2CXBWiKr4=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 gonum.org/v1/gonum v0.0.0-20180816165407-929014505bf4/go.mod h1:Y+Yx5eoAFn32cQvJDxZx5Dpnq+c3wtXuadVZAcxbbBo=
+gonum.org/v1/gonum v0.6.2 h1:4r+yNT0+8SWcOkXP+63H2zQbN+USnC73cjGUxnDF94Q=
 gonum.org/v1/gonum v0.6.2/go.mod h1:9mxDZsDKxgMAuccQkewq682L+0eCu4dCN2yonUJTCLU=
 gonum.org/v1/netlib v0.0.0-20190313105609-8cb42192e0e0/go.mod h1:wa6Ws7BG/ESfp6dHfk7C6KdzKA7wR7u/rKwOGE66zvw=
 gonum.org/v1/plot v0.0.0-20190515093506-e2840ee46a6b/go.mod h1:Wt8AAjI+ypCyYX3nZBvf6cAIx93T+c/OS2HFAYskSZc=

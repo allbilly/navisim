@@ -63,7 +63,6 @@ type ComputeUnit struct {
 	ToCP        akita.Port
 
 	inCPRequestProcessingStage akita.Msg
-	cpRequestHandlingComplete  bool
 
 	isFlushing                   bool
 	isPaused                     bool
@@ -130,8 +129,8 @@ func (cu *ComputeUnit) VRegCounts() []int {
 }
 
 // SRegCount returns the number of scalar register in the Compute Unit.
-func (cu *ComputeUnit) SRegCount() int {
-	return 3200
+func (cu *ComputeUnit) SRegCounts() []int {
+	return []int{3200, 3200, 3200, 3200}
 }
 
 // LDSBytes returns the number of bytes in the LDS of the CU.

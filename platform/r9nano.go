@@ -13,7 +13,7 @@ import (
 	"gitlab.com/akita/mem/cache"
 	"gitlab.com/akita/mem/vm"
 	"gitlab.com/akita/mem/vm/mmu"
-	"gitlab.com/akita/mgpusim/driver"
+	"gitlab.com/akita/navisim/driver"
 	"gitlab.com/akita/navisim/gpubuilder"
 	"gitlab.com/akita/noc/networking/pcie"
 	"gitlab.com/akita/util/tracing"

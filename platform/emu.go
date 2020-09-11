@@ -6,7 +6,7 @@ import (
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/mem/vm"
-	"gitlab.com/akita/mgpusim/driver"
+	"gitlab.com/akita/navisim/driver"
 	"gitlab.com/akita/navisim/gpubuilder"
 )
 
