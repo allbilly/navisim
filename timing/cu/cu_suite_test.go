@@ -19,7 +19,7 @@ import (
 func TestSimulator(t *testing.T) {
 	log.SetOutput(GinkgoWriter)
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "GCN3 Timing Simulator")
+	RunSpecs(t, "CU Suite")
 }
 
 func prepareGrid(co *insts.HsaCo) *kernels.Grid {

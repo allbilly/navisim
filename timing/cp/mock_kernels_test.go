@@ -4,10 +4,9 @@
 package cp
 
 import (
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
 	kernels "gitlab.com/akita/navisim/kernels"
+	reflect "reflect"
 )
 
 // MockGridBuilder is a mock of GridBuilder interface
