@@ -64,17 +64,17 @@ func (cu *ComputeUnit) WfPoolSizes() []int {
 // VRegCounts returns an array of the numbers of vector regsiters in each SIMD
 // unit.
 func (cu *ComputeUnit) VRegCounts() []int {
-	return []int{-1}
+	return []int{math.MaxInt32}
 }
 
-// SRegCount returns the number of scalar register in the Compute Unit.
+// SRegCounts returns the number of scalar register in the Compute Unit.
 func (cu *ComputeUnit) SRegCounts() []int {
-	return []int{-1}
+	return []int{math.MaxInt32}
 }
 
 // LDSBytes returns the number of bytes in the LDS of the CU.
 func (cu *ComputeUnit) LDSBytes() int {
-	return -1
+	return math.MaxInt32
 }
 
 // Handle defines the behavior on event scheduled on the ComputeUnit
@@ -83,11 +83,20 @@ func (cu *ComputeUnit) Handle(evt akita.Event) error {
 
 	switch evt := evt.(type) {
 	case akita.TickEvent:
-		cu.TickingComponent.Handle(evt)
+		err := cu.TickingComponent.Handle(evt)
+		if err != nil {
+			panic(err)
+		}
 	case *emulationEvent:
-		cu.runEmulation(evt)
+		err := cu.runEmulation(evt)
+		if err != nil {
+			panic(err)
+		}
 	case *WGCompleteEvent:
-		cu.handleWGCompleteEvent(evt)
+		err := cu.handleWGCompleteEvent(evt)
+		if err != nil {
+			panic(err)
+		}
 	default:
 		log.Panicf("cannot handle event %s", reflect.TypeOf(evt))
 	}
@@ -128,7 +137,10 @@ func (cu *ComputeUnit) runEmulation(evt *emulationEvent) error {
 	for len(cu.queueingWGs) > 0 {
 		wg := cu.queueingWGs[0]
 		cu.queueingWGs = cu.queueingWGs[1:]
-		cu.runWG(wg, evt.Time())
+		err := cu.runWG(wg, evt.Time())
+		if err != nil {
+			panic(err)
+		}
 	}
 	return nil
 }
@@ -138,12 +150,18 @@ func (cu *ComputeUnit) runWG(
 	now akita.VTimeInSec,
 ) error {
 	wg := req.WorkGroup
-	cu.initWfs(wg, req)
+	err := cu.initWfs(wg, req)
+	if err != nil {
+		panic(err)
+	}
 
 	for !cu.isAllWfCompleted(wg) {
 		for _, wf := range cu.wfs[wg] {
 			cu.alu.SetLDS(wf.LDS)
-			cu.runWfUntilBarrier(wf)
+			err := cu.runWfUntilBarrier(wf)
+			if err != nil {
+				panic(err)
+			}
 		}
 		cu.resolveBarrier(wg)
 	}
@@ -270,17 +288,17 @@ func (cu *ComputeUnit) initWfRegs(wf *Wavefront) {
 		binary.LittleEndian.PutUint32(wf.SRegFile[SGPRPtr:SGPRPtr+4],
 			uint32(wf.WG.IDZ))
 		//fmt.Printf("s%d WorkGroupIdZ\n", SGPRPtr/4)
-		SGPRPtr += 4
+		// SGPRPtr += 4
 	}
 
 	if co.EnableSgprWorkGroupInfo() {
 		log.Printf("EnableSgprPrivateSegmentSize is not supported")
-		SGPRPtr += 4
+		// SGPRPtr += 4
 	}
 
 	if co.EnableSgprPrivateSegmentWaveByteOffset() {
 		log.Printf("EnableSgprPrivateSegentWaveByteOffset is not supported")
-		SGPRPtr += 4
+		// SGPRPtr += 4
 	}
 
 	var x, y, z int

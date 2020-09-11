@@ -1,3 +1,4 @@
+// Package navisim defines navisim GPU.
 package navisim
 
 import (

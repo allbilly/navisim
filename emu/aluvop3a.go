@@ -637,7 +637,7 @@ func (u *ALUImpl) runVASHRREVI64(state InstEmuState) {
 func (u *ALUImpl) runVADDF64(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -657,7 +657,7 @@ func (u *ALUImpl) runVADDF64(state InstEmuState) {
 func (u *ALUImpl) runVFMAF64(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -678,7 +678,7 @@ func (u *ALUImpl) runVFMAF64(state InstEmuState) {
 func (u *ALUImpl) runVMIN3F32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -707,7 +707,7 @@ func (u *ALUImpl) runVMIN3F32(state InstEmuState) {
 func (u *ALUImpl) runVMIN3I32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -736,7 +736,7 @@ func (u *ALUImpl) runVMIN3I32(state InstEmuState) {
 func (u *ALUImpl) runVMIN3U32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -765,7 +765,7 @@ func (u *ALUImpl) runVMIN3U32(state InstEmuState) {
 func (u *ALUImpl) runVMAX3F32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -794,7 +794,7 @@ func (u *ALUImpl) runVMAX3F32(state InstEmuState) {
 func (u *ALUImpl) runVMAX3I32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -823,7 +823,7 @@ func (u *ALUImpl) runVMAX3I32(state InstEmuState) {
 func (u *ALUImpl) runVMAX3U32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -852,7 +852,7 @@ func (u *ALUImpl) runVMAX3U32(state InstEmuState) {
 func (u *ALUImpl) runVMED3F32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -876,7 +876,7 @@ func (u *ALUImpl) runVMED3F32(state InstEmuState) {
 func (u *ALUImpl) runVMED3I32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -901,7 +901,7 @@ func (u *ALUImpl) runVMED3I32(state InstEmuState) {
 func (u *ALUImpl) runVMED3U32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -937,7 +937,7 @@ func median3Uint32(a, b, c uint32) uint32 {
 func (u *ALUImpl) runVMULF64(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -958,7 +958,7 @@ func (u *ALUImpl) runVDIVFMASF64(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 	inst := state.Inst()
 
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {

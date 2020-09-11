@@ -76,7 +76,7 @@ linters-settings:
 
     # path to a file containing a list of functions to exclude from checking
     # see https://github.com/kisielk/errcheck#excluding-functions for details
-    exclude: /path/to/file.txt
+    # exclude: /path/to/file.txt
 
   funlen:
     lines: 60
@@ -242,6 +242,12 @@ linters:
     - scopelint
     - unconvert
     - whitespace
+    - gosimple
+    - structcheck
+    - errcheck
+    - deadcode
+    - ineffassign
+    - unused
   fast: false
 
 

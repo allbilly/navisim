@@ -112,7 +112,7 @@ func (b *Benchmark) exec() {
 	}
 
 	direction := 1
-	if b.OrderAscending == false {
+	if !b.OrderAscending {
 		direction = 0
 	}
 
