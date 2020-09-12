@@ -9,8 +9,7 @@ import (
 type bankActionType int
 
 const (
-	bankActionInvalid bankActionType = iota
-	bankActionReadHit
+	bankActionReadHit bankActionType = iota
 	bankActionWrite
 	bankActionWriteFetched
 )
@@ -18,15 +17,11 @@ const (
 type transaction struct {
 	id string
 
-	read                *mem.ReadReq
-	readToBottom        *mem.ReadReq
-	dataReadyFromBottom *mem.DataReadyRsp
-	dataReadyToTop      *mem.DataReadyRsp
+	read         *mem.ReadReq
+	readToBottom *mem.ReadReq
 
-	write          *mem.WriteReq
-	writeToBottom  *mem.WriteReq
-	doneFromBottom *mem.WriteDoneRsp
-	doneToTop      *mem.WriteDoneRsp
+	write         *mem.WriteReq
+	writeToBottom *mem.WriteReq
 
 	preCoalesceTransactions []*transaction
 
@@ -36,8 +31,6 @@ type transaction struct {
 	writeFetchedDirtyMask []bool
 
 	fetchAndWrite bool
-	bankDone      bool
-	bottomDone    bool
 	done          bool
 }
 

@@ -126,7 +126,6 @@ func (r *CUResourceImpl) matchWfWithSIMDs(
 					allocStatusToReserve)
 				location.SGPROffset = sgprOffset * 16 * 4 // 16 reg, 4 byte each
 				r.sregMasks[r.nextSIMD].setStatus(sgprOffset, requiredSgpr, allocStatusToReserve)
-
 			}
 
 			r.nextSIMD++

@@ -70,7 +70,6 @@ type Benchmark struct {
 	reference         []int32
 	inputItemSets     []int32
 	outputItemSets    []int32
-	cpuOutputItemSets []int32
 	dInputItemSets    driver.GPUPtr
 	dOutputItemSets   driver.GPUPtr
 	dReference        driver.GPUPtr
@@ -329,23 +328,3 @@ func (b *Benchmark) Verify() {
 	fmt.Print("Passed!\n")
 }
 
-func (b *Benchmark) cpuNW() {
-	for i := 1; i < b.row; i++ {
-		for j := 1; j < b.col; j++ {
-			leftPenalty := b.inputItemSets[i*b.col+(j-1)] - int32(b.penalty)
-			topPenalty := b.inputItemSets[(i-1)*b.col+j] - int32(b.penalty)
-			refValue := b.reference[i*b.col+j]
-			diagPenalty := b.inputItemSets[(i-1)*b.col+(j-1)] + refValue
-
-			max := leftPenalty
-			if topPenalty > max {
-				max = topPenalty
-			}
-			if diagPenalty > max {
-				max = diagPenalty
-			}
-
-			b.inputItemSets[i*b.col+j] = max
-		}
-	}
-}

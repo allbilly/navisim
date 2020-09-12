@@ -113,7 +113,7 @@ func (d *ISADebugger) dumpVRegs(
 			regValue := insts.BytesToUint32(data)
 			output += fmt.Sprintf("0x%08x ", regValue)
 		}
-		output += fmt.Sprintf("\n")
+		output += "\n"
 	}
 	return output
 }

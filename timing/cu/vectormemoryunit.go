@@ -27,9 +27,8 @@ type VectorMemoryUnit struct {
 	scratchpadPreparer ScratchpadPreparer
 	coalescer          coalescer
 
-	numInstInFlight         uint64
-	numTransactionInFlight  uint64
-	maxInstructionsInFlight uint64
+	numInstInFlight        uint64
+	numTransactionInFlight uint64
 
 	instructionPipeline           pipelining.Pipeline
 	postInstructionPipelineBuffer util.Buffer

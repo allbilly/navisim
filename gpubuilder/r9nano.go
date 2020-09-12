@@ -61,16 +61,13 @@ type R9NanoGPUBuilder struct {
 	l2TLBs                  []*tlb.TLB
 	drams                   []*idealmemcontroller.Comp
 	lowModuleFinderForL1    *cache.InterleavedLowModuleFinder
-	lowModuleFinderForL2    *cache.InterleavedLowModuleFinder
 	lowModuleFinderForPMC   *cache.InterleavedLowModuleFinder
 	dmaEngine               *cp.DMAEngine
 	rdmaEngine              *rdma.Engine
 	pageMigrationController *pagemigrationcontroller.PageMigrationController
 
-	internalConn           *akita.DirectConnection
-	l1TLBToL2TLBConnection *akita.DirectConnection
-	l1ToL2Connection       *akita.DirectConnection
-	l2ToDramConnection     *akita.DirectConnection
+	internalConn       *akita.DirectConnection
+	l2ToDramConnection *akita.DirectConnection
 }
 
 // MakeR9NanoGPUBuilder provides a GPU builder that can builds the R9Nano GPU.
@@ -589,20 +586,4 @@ func (b *R9NanoGPUBuilder) buildL2TLB() {
 	if b.enableVisTracing {
 		tracing.CollectTrace(l2TLB, b.visTracer)
 	}
-}
-
-func (b *R9NanoGPUBuilder) numCU() int {
-	return b.numCUPerShaderArray * b.numShaderArray
-}
-
-func (b *R9NanoGPUBuilder) connectWithDirectConnection(
-	port1, port2 akita.Port,
-	bufferSize int,
-) {
-	conn := akita.NewDirectConnection(
-		port1.Name()+"-"+port2.Name(),
-		b.engine, b.freq,
-	)
-	conn.PlugIn(port1, bufferSize)
-	conn.PlugIn(port2, bufferSize)
 }

@@ -36,7 +36,7 @@ func (a *IssueArbiter) Arbitrate(
 			continue
 		}
 
-		if typeMask[wf.InstToIssue.ExeUnit] == false {
+		if !typeMask[wf.InstToIssue.ExeUnit] {
 			list = append(list, wf)
 			typeMask[wf.InstToIssue.ExeUnit] = true
 		}

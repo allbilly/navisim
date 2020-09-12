@@ -21,7 +21,6 @@ type Builder struct {
 	sgprCount         int
 	log2CachelineSize uint64
 
-	decoder            emu.Decoder
 	scratchpadPreparer ScratchpadPreparer
 	alu                emu.ALU
 

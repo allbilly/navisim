@@ -360,11 +360,8 @@ func (r *Runner) addRDMAEngineTracer() {
 
 				isFromOutside := strings.Contains(
 					task.Detail.(akita.Msg).Meta().Src.Name(), "RDMA")
-				if !isFromOutside {
-					return false
-				}
 
-				return true
+				return isFromOutside
 			})
 		t.outgoingTracer = tracing.NewAverageTimeTracer(
 			func(task tracing.Task) bool {
@@ -374,11 +371,8 @@ func (r *Runner) addRDMAEngineTracer() {
 
 				isFromOutside := strings.Contains(
 					task.Detail.(akita.Msg).Meta().Src.Name(), "RDMA")
-				if isFromOutside {
-					return false
-				}
 
-				return true
+				return isFromOutside
 			})
 
 		tracing.CollectTrace(t.rdmaEngine, t.incomingTracer)

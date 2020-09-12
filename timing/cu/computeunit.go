@@ -128,7 +128,7 @@ func (cu *ComputeUnit) VRegCounts() []int {
 	return []int{16384, 16384, 16384, 16384}
 }
 
-// SRegCount returns the number of scalar register in the Compute Unit.
+// SRegCounts returns the number of scalar register in the Compute Unit.
 func (cu *ComputeUnit) SRegCounts() []int {
 	return []int{3200, 3200, 3200, 3200}
 }
@@ -282,7 +282,7 @@ func (cu *ComputeUnit) flushPipeline(now akita.VTimeInSec) bool {
 		return false
 	}
 
-	if cu.isHandlingWfCompletionEvent == true {
+	if cu.isHandlingWfCompletionEvent {
 		return false
 	}
 

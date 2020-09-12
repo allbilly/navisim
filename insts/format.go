@@ -23,7 +23,6 @@ const (
 	MIMG
 	EXP
 	FLAT
-	formatTypeCount
 )
 
 // Format defines the possible microcode format of instructions

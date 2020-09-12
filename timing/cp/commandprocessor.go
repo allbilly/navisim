@@ -55,7 +55,6 @@ type CommandProcessor struct {
 	currShootdownRequest *protocol.ShootDownCommand
 	currFlushRequest     *protocol.FlushCommand
 
-	numTLBs                      uint64
 	numCUAck                     uint64
 	numAddrTranslationFlushAck   uint64
 	numAddrTranslationRestartAck uint64
@@ -350,7 +349,7 @@ func (p *CommandProcessor) processShootdownCommand(
 	now akita.VTimeInSec,
 	cmd *protocol.ShootDownCommand,
 ) bool {
-	if p.shootDownInProcess == true {
+	if p.shootDownInProcess {
 		return false
 	}
 

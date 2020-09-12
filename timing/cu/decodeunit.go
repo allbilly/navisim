@@ -41,7 +41,7 @@ func (du *DecodeUnit) CanAcceptWave() bool {
 
 // IsIdle checks idleness
 func (du *DecodeUnit) IsIdle() bool {
-	du.isIdle = (du.toDecode == nil) && (du.decoded == false)
+	du.isIdle = (du.toDecode == nil) && !du.decoded
 	return du.isIdle
 }
 
