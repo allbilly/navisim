@@ -214,7 +214,10 @@ func (f *FullyConnectedLayer) verifyForwardPass(input, output *Tensor) {
 
 func (f *FullyConnectedLayer) saveInput(input *Tensor) {
 	if f.forwardInput != 0 {
-		f.GPUDriver.FreeMemory(f.GPUCtx, f.forwardInput)
+		err := f.GPUDriver.FreeMemory(f.GPUCtx, f.forwardInput)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	numElement := input.Size()[0] * input.Size()[1]

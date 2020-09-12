@@ -16,7 +16,6 @@ import (
 type Benchmark struct {
 	driver  *driver.Driver
 	context *driver.Context
-	gpus    []int
 
 	network training.Network
 	trainer training.Trainer

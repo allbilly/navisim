@@ -63,7 +63,10 @@ func NewHsaCoFromData(data []byte) *HsaCo {
 	o.Data = data
 
 	header := new(HsaCoHeader)
-	binary.Read(bytes.NewReader(data), binary.LittleEndian, header)
+	err := binary.Read(bytes.NewReader(data), binary.LittleEndian, header)
+	if err != nil {
+		panic(err)
+	}
 	o.HsaCoHeader = header
 
 	return o

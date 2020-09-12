@@ -90,9 +90,15 @@ func (cu *ComputeUnit) Handle(evt akita.Event) error {
 
 	switch evt := evt.(type) {
 	case akita.TickEvent:
-		cu.TickingComponent.Handle(evt)
+		err := cu.TickingComponent.Handle(evt)
+		if err != nil {
+			panic(err)
+		}
 	case *WfCompletionEvent:
-		cu.handleWfCompletionEvent(evt)
+		err := cu.handleWfCompletionEvent(evt)
+		if err != nil {
+			panic(err)
+		}
 	default:
 		log.Panicf("Unable to process evevt of type %s",
 			reflect.TypeOf(evt))
@@ -217,9 +223,15 @@ func (cu *ComputeUnit) processInputFromCP(now akita.VTimeInSec) bool {
 	cu.inCPRequestProcessingStage = req
 	switch req := req.(type) {
 	case *protocol.CUPipelineRestartReq:
-		cu.handlePipelineResume(now, req)
+		err := cu.handlePipelineResume(now, req)
+		if err != nil {
+			panic(err)
+		}
 	case *protocol.CUPipelineFlushReq:
-		cu.handlePipelineFlushReq(now, req)
+		err := cu.handlePipelineFlushReq(now, req)
+		if err != nil {
+			panic(err)
+		}
 	default:
 		panic("unknown msg type")
 	}

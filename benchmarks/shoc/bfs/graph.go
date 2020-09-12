@@ -111,7 +111,10 @@ func (g *graph) loadGraph(path string) {
 			g.edgeListMap[nodeFromID] = append(g.edgeListMap[nodeFromID], nodeToID)
 		}
 	}
-	graphFile.Close()
+	err = graphFile.Close()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (g graph) Dump(mode string) {

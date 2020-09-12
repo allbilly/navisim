@@ -126,7 +126,10 @@ func (l *ReluLayer) verifyForwardPass(input, output *Tensor) {
 
 func (l *ReluLayer) saveInput(input *Tensor) {
 	if l.forwardInput != 0 {
-		l.GPUDriver.FreeMemory(l.GPUCtx, l.forwardInput)
+		err := l.GPUDriver.FreeMemory(l.GPUCtx, l.forwardInput)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	numElement := input.Size()[0] * input.Size()[1]
