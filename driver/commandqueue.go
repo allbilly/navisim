@@ -25,8 +25,8 @@ type CommandQueue struct {
 // of the command queue
 func (q *CommandQueue) Subscribe() *CommandQueueStatusListener {
 	l := &CommandQueueStatusListener{
-		closeSignal: make(chan bool, 0),
-		signal:      make(chan bool, 0),
+		closeSignal: make(chan bool),
+		signal:      make(chan bool),
 	}
 
 	q.listenerMutex.Lock()

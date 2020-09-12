@@ -96,6 +96,7 @@ func (b *Benchmark) initMem() {
 }
 
 //nolint:unused
+//nolint:deadcode
 func printArray(array []float32, n uint32) {
 	for i := uint32(0); i < n; i++ {
 		fmt.Printf("%f ", array[i])

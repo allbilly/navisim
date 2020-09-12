@@ -331,8 +331,8 @@ func (i Inst) dsString() string {
 	return s
 }
 
-//nolint:gocyclo
 // String returns the disassembly of an instruction
+//nolint:gocyclo
 func (i Inst) String(file *elf.File) string {
 	switch i.FormatType {
 	case SOP2:

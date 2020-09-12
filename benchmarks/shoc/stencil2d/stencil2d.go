@@ -57,7 +57,6 @@ type Benchmark struct {
 	dData1, dData2                driver.GPUPtr
 	currData, newData             *driver.GPUPtr
 	NumRows, NumCols              int
-	dataSize                      int
 	numPaddedCols                 int
 	paddedDataSize                int
 	pad                           int
