@@ -10,7 +10,6 @@ import (
 	akita "gitlab.com/akita/akita"
 	protocol "gitlab.com/akita/navisim/protocol"
 	resource "gitlab.com/akita/navisim/timing/cp/internal/resource"
-	reflect "reflect"
 )
 
 // MockDispatcher is a mock of Dispatcher interface
