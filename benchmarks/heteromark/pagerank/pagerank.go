@@ -129,8 +129,7 @@ func (b *Benchmark) initMem() {
 	}
 }
 
-//nolint:unused
-//nolint:deadcode
+//nolint:unused,deadcode
 func printMatrix(matrix [][]float32, n uint32) {
 	for i := uint32(0); i < n; i++ {
 		for j := uint32(0); j < n; j++ {

@@ -138,8 +138,7 @@ func (b *Benchmark) initMem() {
 	b.driver.MemCopyH2D(b.context, b.dOutputPathDistanceMatrix, b.hOutputPathDistanceMatrix)
 }
 
-//nolint:deadcode
-//molint:unused
+//nolint:deadcode,unused
 func printMatrix(matrix []uint32, n uint32) {
 	for i := uint32(0); i < n; i++ {
 		for j := uint32(0); j < n; j++ {

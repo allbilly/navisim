@@ -15,11 +15,15 @@ func main() {
 	if err != nil {
 		_ = fmt.Errorf("failed to open file %v", path)
 	}
-	defer elfFile.Close()
 
 	_, filename := filepath.Split(path)
 
 	disasm := insts.NewDisassembler()
 
 	disasm.Disassemble(elfFile, filename, os.Stdout)
+
+	err = elfFile.Close()
+	if err != nil {
+		panic(err)
+	}
 }

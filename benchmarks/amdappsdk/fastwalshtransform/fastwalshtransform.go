@@ -95,8 +95,7 @@ func (b *Benchmark) initMem() {
 	b.driver.MemCopyH2D(b.context, b.dInputArray, b.hInputArray)
 }
 
-//nolint:unused
-//nolint:deadcode
+//nolint:unused,deadcode
 func printArray(array []float32, n uint32) {
 	for i := uint32(0); i < n; i++ {
 		fmt.Printf("%f ", array[i])

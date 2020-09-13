@@ -8,7 +8,7 @@ type HsaKernelDispatchPacket struct {
 	WorkgroupSizeX     uint16
 	WorkgroupSizeY     uint16
 	WorkgroupSizeZ     uint16
-	reserverd0         uint16
+	reserverd0         uint16 //nolint:structcheck,unused
 	GridSizeX          uint32
 	GridSizeY          uint32
 	GridSizeZ          uint32
@@ -16,6 +16,6 @@ type HsaKernelDispatchPacket struct {
 	GroupSegmentSize   uint32
 	KernelObject       uint64
 	KernargAddress     uint64
-	reserved2          uint64
+	reserved2          uint64 //nolint:structcheck,unused
 	CompletionSignal   uint64
 }
