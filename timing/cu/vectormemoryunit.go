@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util"
 	"gitlab.com/akita/util/pipelining"
 	"gitlab.com/akita/util/tracing"
@@ -27,9 +27,8 @@ type VectorMemoryUnit struct {
 	scratchpadPreparer ScratchpadPreparer
 	coalescer          coalescer
 
-	numInstInFlight         uint64
-	numTransactionInFlight  uint64
-	maxInstructionsInFlight uint64
+	numInstInFlight        uint64
+	numTransactionInFlight uint64
 
 	instructionPipeline           pipelining.Pipeline
 	postInstructionPipelineBuffer util.Buffer

@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 var _ = Describe("FetchArbiter", func() {

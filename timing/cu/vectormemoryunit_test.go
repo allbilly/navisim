@@ -7,9 +7,9 @@ import (
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/mem/cache"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 var _ = Describe("Vector Memory Unit", func() {

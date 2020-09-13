@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/insts"
+	"gitlab.com/akita/navisim/insts"
 )
 
 // A RegisterAccess is an incidence of reading or writing the register

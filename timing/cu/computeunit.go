@@ -8,11 +8,11 @@ import (
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/mem/cache"
-	"gitlab.com/akita/mgpusim/emu"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
-	"gitlab.com/akita/mgpusim/protocol"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/emu"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util"
 	"gitlab.com/akita/util/akitaext"
 	"gitlab.com/akita/util/tracing"
@@ -38,17 +38,17 @@ type ComputeUnit struct {
 
 	running bool
 
-	Scheduler        []Scheduler
+	Scheduler        Scheduler
 	BranchUnit       SubComponent
 	VectorMemDecoder SubComponent
 	VectorMemUnit    SubComponent
 	ScalarDecoder    SubComponent
 	VectorDecoder    SubComponent
 	LDSDecoder       SubComponent
-	ScalarUnit       []SubComponent
+	ScalarUnit       SubComponent
 	SIMDUnit         []SubComponent
 	LDSUnit          SubComponent
-	SRegFile         []RegisterFile
+	SRegFile         RegisterFile
 	VRegFile         []RegisterFile
 
 	InstMem          akita.Port
@@ -63,7 +63,6 @@ type ComputeUnit struct {
 	ToCP        akita.Port
 
 	inCPRequestProcessingStage akita.Msg
-	cpRequestHandlingComplete  bool
 
 	isFlushing                   bool
 	isPaused                     bool
@@ -91,9 +90,15 @@ func (cu *ComputeUnit) Handle(evt akita.Event) error {
 
 	switch evt := evt.(type) {
 	case akita.TickEvent:
-		cu.TickingComponent.Handle(evt)
+		err := cu.TickingComponent.Handle(evt)
+		if err != nil {
+			panic(err)
+		}
 	case *WfCompletionEvent:
-		cu.handleWfCompletionEvent(evt)
+		err := cu.handleWfCompletionEvent(evt)
+		if err != nil {
+			panic(err)
+		}
 	default:
 		log.Panicf("Unable to process evevt of type %s",
 			reflect.TypeOf(evt))
@@ -129,9 +134,9 @@ func (cu *ComputeUnit) VRegCounts() []int {
 	return []int{16384, 16384, 16384, 16384}
 }
 
-// SRegCount returns the number of scalar register in the Compute Unit.
-func (cu *ComputeUnit) SRegCount() int {
-	return 3200
+// SRegCounts returns the number of scalar register in the Compute Unit.
+func (cu *ComputeUnit) SRegCounts() []int {
+	return []int{3200, 3200, 3200, 3200}
 }
 
 // LDSBytes returns the number of bytes in the LDS of the CU.
@@ -218,9 +223,15 @@ func (cu *ComputeUnit) processInputFromCP(now akita.VTimeInSec) bool {
 	cu.inCPRequestProcessingStage = req
 	switch req := req.(type) {
 	case *protocol.CUPipelineRestartReq:
-		cu.handlePipelineResume(now, req)
+		err := cu.handlePipelineResume(now, req)
+		if err != nil {
+			panic(err)
+		}
 	case *protocol.CUPipelineFlushReq:
-		cu.handlePipelineFlushReq(now, req)
+		err := cu.handlePipelineFlushReq(now, req)
+		if err != nil {
+			panic(err)
+		}
 	default:
 		panic("unknown msg type")
 	}
@@ -283,7 +294,7 @@ func (cu *ComputeUnit) flushPipeline(now akita.VTimeInSec) bool {
 		return false
 	}
 
-	if cu.isHandlingWfCompletionEvent == true {
+	if cu.isHandlingWfCompletionEvent {
 		return false
 	}
 

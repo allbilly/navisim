@@ -8,7 +8,6 @@ const (
 	allocStatusFree      allocStatus = iota
 	allocStatusToReserve             // A value that is used for reservation caculation
 	allocStatusReserved              // Work-Group mapped, but wavefront not dispatched
-	allocStatusUsed                  // Currently in use
 )
 
 // A resourceMask marks which part of the resource is use.

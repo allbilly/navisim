@@ -149,7 +149,7 @@ func (s *controlStage) doCacheRestart(now akita.VTimeInSec, req *cache.RestartRe
 }
 
 func (s *controlStage) shouldWaitForInFlightTransactions() bool {
-	if s.currFlushReq.DiscardInflight == false {
+	if !s.currFlushReq.DiscardInflight {
 		if len(s.cache.transactions) != 0 {
 			return true
 		}

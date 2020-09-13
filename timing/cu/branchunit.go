@@ -2,8 +2,8 @@ package cu
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/emu"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/emu"
+	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 // A BranchUnit performs branch operations

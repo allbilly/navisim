@@ -2,8 +2,8 @@ package cu
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/emu"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/emu"
+	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 // A LDSUnit performs Scalar operations
@@ -38,6 +38,7 @@ func NewLDSUnit(
 func (u *LDSUnit) CanAcceptWave() bool {
 	return u.toRead == nil
 }
+
 // IsIdle checks idleness
 func (u *LDSUnit) IsIdle() bool {
 	u.isIdle = (u.toRead == nil) && (u.toWrite == nil) && (u.toExec == nil)
@@ -103,6 +104,7 @@ func (u *LDSUnit) runWriteStage(now akita.VTimeInSec) bool {
 	u.toWrite = nil
 	return true
 }
+
 // Flush clears the unit
 func (u *LDSUnit) Flush() {
 	u.toRead = nil

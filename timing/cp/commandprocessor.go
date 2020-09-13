@@ -7,8 +7,8 @@ import (
 	"gitlab.com/akita/mem/idealmemcontroller"
 	"gitlab.com/akita/mem/vm/tlb"
 	"gitlab.com/akita/mgpusim/pagemigrationcontroller"
-	"gitlab.com/akita/mgpusim/protocol"
 	"gitlab.com/akita/mgpusim/rdma"
+	"gitlab.com/akita/navisim/protocol"
 	"gitlab.com/akita/navisim/timing/cp/internal/dispatching"
 	"gitlab.com/akita/navisim/timing/cp/internal/resource"
 	"gitlab.com/akita/util/akitaext"
@@ -55,7 +55,6 @@ type CommandProcessor struct {
 	currShootdownRequest *protocol.ShootDownCommand
 	currFlushRequest     *protocol.FlushCommand
 
-	numTLBs                      uint64
 	numCUAck                     uint64
 	numAddrTranslationFlushAck   uint64
 	numAddrTranslationRestartAck uint64
@@ -350,7 +349,7 @@ func (p *CommandProcessor) processShootdownCommand(
 	now akita.VTimeInSec,
 	cmd *protocol.ShootDownCommand,
 ) bool {
-	if p.shootDownInProcess == true {
+	if p.shootDownInProcess {
 		return false
 	}
 

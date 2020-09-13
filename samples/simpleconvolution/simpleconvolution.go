@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 
-	"gitlab.com/akita/mgpusim/benchmarks/amdappsdk/simpleconvolution"
-	"gitlab.com/akita/mgpusim/samples/runner"
+	"gitlab.com/akita/navisim/benchmarks/amdappsdk/simpleconvolution"
+	"gitlab.com/akita/navisim/samples/runner"
 )
 
 var widthFlag = flag.Uint("width", 254, "The width of the input matrix.")

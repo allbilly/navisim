@@ -1,6 +1,6 @@
 package cu
 
-import "gitlab.com/akita/mgpusim/timing/wavefront"
+import "gitlab.com/akita/navisim/timing/wavefront"
 
 // An IssueArbiter decides which wavefront can issue instruction
 type IssueArbiter struct {
@@ -36,7 +36,7 @@ func (a *IssueArbiter) Arbitrate(
 			continue
 		}
 
-		if typeMask[wf.InstToIssue.ExeUnit] == false {
+		if !typeMask[wf.InstToIssue.ExeUnit] {
 			list = append(list, wf)
 			typeMask[wf.InstToIssue.ExeUnit] = true
 		}

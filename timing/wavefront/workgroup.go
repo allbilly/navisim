@@ -1,8 +1,8 @@
 package wavefront
 
 import (
-	"gitlab.com/akita/mgpusim/kernels"
-	"gitlab.com/akita/mgpusim/protocol"
+	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/protocol"
 )
 
 // A WorkGroup is a wrapper for the kernels.WorkGroup

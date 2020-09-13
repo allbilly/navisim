@@ -3,10 +3,10 @@ package cu
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
-	"gitlab.com/akita/mgpusim/protocol"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 var _ = Describe("WfDispatcher", func() {
@@ -55,7 +55,7 @@ var _ = Describe("WfDispatcher", func() {
 		wf.WG = wg
 		wf.CodeObject = co
 		wf.Packet = packet
-		//req := mgpusim.NewDispatchWfReq(nil, cu.ToACE, 10, nil)
+		//req := navisim.NewDispatchWfReq(nil, cu.ToACE, 10, nil)
 		wfDispatcher.DispatchWf(10, wf, wfDispatchInfo)
 
 		//Expect(len(engine.ScheduledEvent)).To(Equal(1))

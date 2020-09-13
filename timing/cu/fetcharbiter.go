@@ -4,7 +4,7 @@ import (
 	"math"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 // A FetchArbiter can decide which wavefront in a scheduler can fetch

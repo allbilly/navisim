@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 // A DecodeUnit is any type of decode unit that takes one cycle to decode
@@ -41,7 +41,7 @@ func (du *DecodeUnit) CanAcceptWave() bool {
 
 // IsIdle checks idleness
 func (du *DecodeUnit) IsIdle() bool {
-	du.isIdle = (du.toDecode == nil) && (du.decoded == false)
+	du.isIdle = (du.toDecode == nil) && !du.decoded
 	return du.isIdle
 }
 

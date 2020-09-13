@@ -5,9 +5,9 @@ import (
 
 	_ "net/http/pprof"
 
-	"gitlab.com/akita/mgpusim/benchmarks/amdappsdk/bitonicsort"
-	"gitlab.com/akita/mgpusim/benchmarks/heteromark/fir"
-	"gitlab.com/akita/mgpusim/samples/runner"
+	"gitlab.com/akita/navisim/benchmarks/amdappsdk/bitonicsort"
+	"gitlab.com/akita/navisim/benchmarks/heteromark/fir"
+	"gitlab.com/akita/navisim/samples/runner"
 )
 
 func main() {
@@ -16,11 +16,11 @@ func main() {
 	runner := new(runner.Runner).ParseFlag().Init()
 
 	firBenchmark := fir.NewBenchmark(runner.GPUDriver)
-	firBenchmark.Length = 16384
+	firBenchmark.Length = 10240
 	firBenchmark.SelectGPU([]int{1, 2})
 
 	bsBenchmark := bitonicsort.NewBenchmark(runner.GPUDriver)
-	bsBenchmark.Length = 1024
+	bsBenchmark.Length = 64
 	bsBenchmark.SelectGPU([]int{3})
 
 	runner.AddBenchmarkWithoutSettingGPUsToUse(firBenchmark)

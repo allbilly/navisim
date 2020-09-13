@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 
-	"gitlab.com/akita/mgpusim/benchmarks/heteromark/fir"
-	"gitlab.com/akita/mgpusim/samples/runner"
+	"gitlab.com/akita/navisim/benchmarks/heteromark/fir"
+	"gitlab.com/akita/navisim/samples/runner"
 )
 
 var numData = flag.Int("length", 4096, "The number of samples to filter.")

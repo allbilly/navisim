@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/emu"
-	"gitlab.com/akita/mgpusim/insts"
+	"gitlab.com/akita/navisim/emu"
+	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/util"
 	"gitlab.com/akita/util/pipelining"
 	"gitlab.com/akita/util/tracing"
@@ -18,10 +18,9 @@ type Builder struct {
 	name              string
 	simdCount         int
 	vgprCount         []int
-	sgprCount         []int
+	sgprCount         int
 	log2CachelineSize uint64
 
-	decoder            emu.Decoder
 	scratchpadPreparer ScratchpadPreparer
 	alu                emu.ALU
 
@@ -34,8 +33,8 @@ func MakeBuilder() Builder {
 	var b Builder
 	b.freq = 1000 * akita.MHz
 	b.simdCount = 4
-	b.sgprCount = []int{2560, 2560, 2560, 2560}
-	b.vgprCount = []int{32768, 32768, 32768, 32768}
+	b.sgprCount = 3200
+	b.vgprCount = []int{16384, 16384, 16384, 16384}
 	b.log2CachelineSize = 6
 
 	return b
@@ -70,8 +69,8 @@ func (b Builder) WithVGPRCount(counts []int) Builder {
 }
 
 // WithSGPRCount equals the number of SGPRs in the Compute Unit.
-func (b Builder) WithSGPRCount(counts []int) Builder {
-	b.sgprCount = counts
+func (b Builder) WithSGPRCount(count int) Builder {
+	b.sgprCount = count
 	return b
 }
 
@@ -190,13 +189,11 @@ func (b *Builder) equipVectorMemoryUnit(cu *ComputeUnit) {
 }
 
 func (b *Builder) equipRegisterFiles(cu *ComputeUnit) {
-	
-	
+	sRegFile := NewSimpleRegisterFile(uint64(b.sgprCount*4), 0)
+	cu.SRegFile = sRegFile
+
 	for i := 0; i < b.simdCount; i++ {
 		vRegFile := NewSimpleRegisterFile(uint64(b.vgprCount[i]*4), 1024)
 		cu.VRegFile = append(cu.VRegFile, vRegFile)
-		sRegFile := NewSimpleRegisterFile(uint64(b.sgprCount[i]*4), 0)
-		cu.SRegFile = append(cu.SRegFile, sRegFile)
-
 	}
 }
