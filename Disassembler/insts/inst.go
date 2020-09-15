@@ -133,7 +133,7 @@ func (i Inst) flatString() string {
 func (i Inst) smemString() string {
 	// TODO: Consider store instructions, and the case if imm = 0
 	s := fmt.Sprintf("%s %s, %s, %#x",
-		i.InstName, i.Data.String(), i.Base.String(), uint16(i.Offset.IntValue))
+		i.InstName, i.Data.String(), i.Base.String(), uint16(i.Offset.Code))
 	return s
 }
 
@@ -191,8 +191,8 @@ func (i Inst) vop2String() string {
 	switch i.Opcode {
 	case 0, 28, 29:
 		s += ", vcc"
-	case 24: // madak
-		s += ", " + i.Src2.String()
+		//case 24: // madak
+		//s += ", " + i.Src2.String()
 	}
 
 	if i.IsSdwa {

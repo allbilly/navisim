@@ -75,7 +75,6 @@ func (d *Disassembler) matchFormat(firstFourBytes uint32) (*Format, error) {
 		if f.FormatType == VOP3b { // Skip VOP3b this time.
 			continue
 		}
-
 		if (firstFourBytes^f.Encoding)&f.Mask == 0 {
 			// Consider VOP3b
 			if f.FormatType == VOP3a {
@@ -84,7 +83,6 @@ func (d *Disassembler) matchFormat(firstFourBytes uint32) (*Format, error) {
 					return FormatTable[VOP3b], nil
 				}
 			}
-
 			return f, nil
 		}
 	}
@@ -322,14 +320,12 @@ func (d *Disassembler) decodeVOP2(inst *Inst, buf []byte) error {
 	bits = int(extractBits(bytes, 17, 24))
 	inst.Dst = NewVRegOperand(bits, bits, 0)
 
-	// switch inst.Opcode {
-	// case 24, 37: // v_madak
-	// 	inst.Imm = true
-	// 	inst.ByteSize += 4
-	// 	inst.Src2 = &Operand{0, LiteralConstant, nil, 0, 0, 0, 0}
-	// 	inst.Src2.LiteralConstant = BytesToUint32(buf[4:8])
-	// }
 	switch inst.Opcode {
+	case 24: // v_madak
+		inst.Imm = true
+		inst.ByteSize += 0
+		inst.Src2 = &Operand{0, LiteralConstant, nil, 0, 0, 0, 0}
+		inst.Src2.LiteralConstant = BytesToUint32(buf[4:8])
 	case 33: // v_madak
 		inst.Imm = true
 		inst.ByteSize += 4
@@ -717,7 +713,6 @@ func (d *Disassembler) Decode(buf []byte) (*Inst, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	inst := new(Inst)
 	inst.Format = format
 	inst.InstType = instType
@@ -787,6 +782,7 @@ func (d *Disassembler) Disassemble(
 	co := NewHsaCoFromData(data)
 
 	buf := co.InstructionData()
+
 	pc := uint64(0x100)
 	d.tryPrintSymbol(file, sec.Offset, w)
 	for len(buf) > 0 {
@@ -831,9 +827,9 @@ func (d *Disassembler) tryPrintSymbol(
 	for _, symbol := range symbols {
 		if symbol.Value == offset {
 			if d.isKernelSymbol(symbol) {
-				fmt.Fprintf(w, "\n%016x %s:\n", offset+0x100, symbol.Name)
+				fmt.Fprintf(w, "\n%016x <%s>:\n", offset+0x100, symbol.Name)
 			} else {
-				fmt.Fprintf(w, "\n%016x %s:\n", offset, symbol.Name)
+				fmt.Fprintf(w, "\n%016x <%s>:\n", offset, symbol.Name)
 			}
 		}
 	}
