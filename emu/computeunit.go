@@ -64,17 +64,17 @@ func (cu *ComputeUnit) WfPoolSizes() []int {
 // VRegCounts returns an array of the numbers of vector regsiters in each SIMD
 // unit.
 func (cu *ComputeUnit) VRegCounts() []int {
-	return []int{math.MaxInt32}
+	return []int{-1}
 }
 
-// SRegCounts returns the number of scalar register in the Compute Unit.
+// SRegCounts returns an array of the numbers of scalar register in each SIMD
 func (cu *ComputeUnit) SRegCounts() []int {
-	return []int{math.MaxInt32}
+	return []int{-1}
 }
 
-// LDSBytes returns the number of bytes in the LDS of the CU.
+// LDSBytes returns the number of bytes in the LDS of the DCU.
 func (cu *ComputeUnit) LDSBytes() int {
-	return math.MaxInt32
+	return -1
 }
 
 // Handle defines the behavior on event scheduled on the ComputeUnit
