@@ -21,7 +21,7 @@ func newMockWfArbitor() *mockWfArbitor {
 	return a
 }
 
-func (m *mockWfArbitor) Arbitrate([]*WavefrontPool) []*wavefront.Wavefront {
+func (m *mockWfArbitor) Arbitrate() []*wavefront.Wavefront {
 	if len(m.wfsToReturn) == 0 {
 		return nil
 	}
@@ -80,6 +80,8 @@ var _ = Describe("Scheduler", func() {
 		cu = NewComputeUnit("cu", engine)
 		cu.Freq = 1
 
+		wfPool := NewWavefrontPool(20)
+
 		vectorDecoder = new(mockCUComponent)
 		cu.VectorDecoder = vectorDecoder
 		scalarDecoder = new(mockCUComponent)
@@ -90,11 +92,14 @@ var _ = Describe("Scheduler", func() {
 		cu.VectorMemDecoder = vectorMemDecoder
 		ldsDecoder = new(mockCUComponent)
 		cu.LDSDecoder = ldsDecoder
-		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(16384, 1024))
-		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(16384, 1024))
-		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(16384, 1024))
-		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(16384, 1024))
-		cu.SRegFile = NewSimpleRegisterFile(16384, 0)
+		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(32768, 1024))
+		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(32768, 1024))
+		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(32768, 1024))
+		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(32768, 1024))
+		cu.SRegFile = append(cu.SRegFile, NewSimpleRegisterFile(10240, 0))
+		cu.SRegFile = append(cu.SRegFile, NewSimpleRegisterFile(10240, 0))
+		cu.SRegFile = append(cu.SRegFile, NewSimpleRegisterFile(10240, 0))
+		cu.SRegFile = append(cu.SRegFile, NewSimpleRegisterFile(10240, 0))
 
 		instMem = NewMockPort(mockCtrl)
 		cu.InstMem = instMem
@@ -104,10 +109,10 @@ var _ = Describe("Scheduler", func() {
 
 		fetchArbitor = newMockWfArbitor()
 		issueArbitor = newMockWfArbitor()
-		scheduler = NewScheduler(cu, fetchArbitor, issueArbitor)
+		scheduler = NewScheduler(cu, fetchArbitor, issueArbitor, wfPool)
 	})
 
-	It("should always fetch 64 bytes", func() {
+	It("should always fetch 128 bytes", func() {
 		wf := new(wavefront.Wavefront)
 		wf.Wavefront = new(kernels.Wavefront)
 		wf.InstBufferStartPC = 0x100
@@ -121,7 +126,7 @@ var _ = Describe("Scheduler", func() {
 			Expect(req.Src).To(BeIdenticalTo(cu.ToInstMem))
 			Expect(req.Dst).To(BeIdenticalTo(instMem))
 			Expect(req.Address).To(Equal(uint64(0x180)))
-			Expect(req.AccessByteSize).To(Equal(uint64(64)))
+			Expect(req.AccessByteSize).To(Equal(uint64(128)))
 		})
 
 		scheduler.DoFetch(10)
@@ -142,7 +147,7 @@ var _ = Describe("Scheduler", func() {
 			Expect(req.Src).To(BeIdenticalTo(cu.ToInstMem))
 			Expect(req.Dst).To(BeIdenticalTo(instMem))
 			Expect(req.Address).To(Equal(uint64(0x180)))
-			Expect(req.AccessByteSize).To(Equal(uint64(64)))
+			Expect(req.AccessByteSize).To(Equal(uint64(128)))
 		}).Return(&akita.SendError{})
 
 		scheduler.DoFetch(10)

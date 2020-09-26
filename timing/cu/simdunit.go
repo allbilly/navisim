@@ -26,7 +26,7 @@ type SIMDUnit struct {
 	isIdle bool
 }
 
-// NewSIMDUnit creates a new branch unit, injecting the dependency of
+// NewSIMDUnit creates a new simd unit, injecting the dependency of
 // the compute unit.
 func NewSIMDUnit(
 	cu *ComputeUnit,

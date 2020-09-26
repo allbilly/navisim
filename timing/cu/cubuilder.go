@@ -127,12 +127,13 @@ func (b *Builder) equipScalarUnits(cu *ComputeUnit) {
 
 	scalarDecoder := NewDecodeUnit(cu)
 	cu.ScalarDecoder = scalarDecoder
-	scalarUnit := NewScalarUnit(cu, b.scratchpadPreparer, b.alu)
-	scalarUnit.log2CachelineSize = b.log2CachelineSize
-	cu.ScalarUnit = scalarUnit
 	for i := 0; i < b.simdCount; i++ {
+		scalarUnit := NewScalarUnit(cu, b.scratchpadPreparer, b.alu)
+		scalarUnit.log2CachelineSize = b.log2CachelineSize
 		scalarDecoder.AddExecutionUnit(scalarUnit)
+		cu.ScalarUnit = append(cu.ScalarUnit, scalarUnit)
 	}
+
 }
 
 func (b *Builder) equipSIMDUnits(cu *ComputeUnit) {

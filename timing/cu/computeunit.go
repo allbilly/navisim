@@ -45,10 +45,10 @@ type ComputeUnit struct {
 	ScalarDecoder    SubComponent
 	VectorDecoder    SubComponent
 	LDSDecoder       SubComponent
-	ScalarUnit       SubComponent
+	ScalarUnit       []SubComponent
 	SIMDUnit         []SubComponent
 	LDSUnit          SubComponent
-	SRegFile         RegisterFile
+	SRegFile         []RegisterFile
 	VRegFile         []RegisterFile
 
 	InstMem          akita.Port
@@ -166,7 +166,10 @@ func (cu *ComputeUnit) runPipeline(now akita.VTimeInSec) bool {
 
 	if !cu.isPaused {
 		madeProgress = cu.BranchUnit.Run(now) || madeProgress
-		madeProgress = cu.ScalarUnit.Run(now) || madeProgress
+		for _, scalarUnit := range cu.ScalarUnit {
+			madeProgress = scalarUnit.Run(now) || madeProgress
+		}
+
 		madeProgress = cu.ScalarDecoder.Run(now) || madeProgress
 		for _, simdUnit := range cu.SIMDUnit {
 			madeProgress = simdUnit.Run(now) || madeProgress
@@ -323,8 +326,10 @@ func (cu *ComputeUnit) flushPipeline(now akita.VTimeInSec) bool {
 
 func (cu *ComputeUnit) flushInternalComponents() {
 	cu.BranchUnit.Flush()
+	for _, scalarUnit := range cu.ScalarUnit {
+		scalarUnit.Flush()
+	}
 
-	cu.ScalarUnit.Flush()
 	cu.ScalarDecoder.Flush()
 
 	for _, simdUnit := range cu.SIMDUnit {

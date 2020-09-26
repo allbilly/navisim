@@ -10,15 +10,14 @@ import (
 var _ = Describe("IssueArbiter", func() {
 	var (
 		arbiter *IssueArbiter
-		wfPools []*WavefrontPool
+		wfPool  *WavefrontPool
 	)
 
 	BeforeEach(func() {
-		arbiter = NewIssueArbiter()
-		wfPools = make([]*WavefrontPool, 0, 4)
-		for i := 0; i < 4; i++ {
-			wfPools = append(wfPools, NewWavefrontPool(10))
-		}
+
+		wfPool = NewWavefrontPool(10)
+		arbiter = NewIssueArbiter(wfPool)
+
 	})
 
 	It("should decide which wf to issue", func() {
@@ -40,14 +39,14 @@ var _ = Describe("IssueArbiter", func() {
 			wf.InstToIssue = wavefront.NewInst(insts.NewInst())
 			wf.InstToIssue.ExeUnit = exeUnits[i]
 			wfs = append(wfs, wf)
-			wfPools[0].AddWf(wf)
+			wfPool.AddWf(wf)
 
 			if i == 3 || i == 6 {
 				wf.InstToIssue = nil
 			}
 		}
 
-		issueCandidate := arbiter.Arbitrate(wfPools)
+		issueCandidate := arbiter.Arbitrate()
 
 		Expect(len(issueCandidate)).To(Equal(6))
 		Expect(issueCandidate).NotTo(ContainElement(BeIdenticalTo(wfs[0])))
