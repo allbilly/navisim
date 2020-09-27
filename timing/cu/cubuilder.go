@@ -129,7 +129,6 @@ func (b *Builder) equipSchedulers(cu *ComputeUnit) {
 		scheduler := NewScheduler(cu, fetchArbitor, issueArbitor, cu.WfPools[i])
 		cu.Scheduler = append(cu.Scheduler, scheduler)
 	}
-
 }
 
 func (b *Builder) equipScalarUnits(cu *ComputeUnit) {
@@ -143,7 +142,6 @@ func (b *Builder) equipScalarUnits(cu *ComputeUnit) {
 		scalarDecoder.AddExecutionUnit(scalarUnit)
 		cu.ScalarUnit = append(cu.ScalarUnit, scalarUnit)
 	}
-
 }
 
 func (b *Builder) equipSIMDUnits(cu *ComputeUnit) {

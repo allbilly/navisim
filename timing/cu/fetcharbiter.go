@@ -14,6 +14,7 @@ type FetchArbiter struct {
 	InstBufByteSize int
 }
 
+// NewFetchArbiter creates a fetch arbiter
 func NewFetchArbiter(wfPool *WavefrontPool) *FetchArbiter {
 	a := new(FetchArbiter)
 	a.wfPool = wfPool

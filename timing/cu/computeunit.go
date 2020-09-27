@@ -127,7 +127,7 @@ func (cu *ComputeUnit) DispatchingPort() akita.Port {
 // WfPoolSizes returns an array of the numbers of wavefronts that each SIMD unit
 // can execute.
 func (cu *ComputeUnit) WfPoolSizes() []int {
-	return []int{10, 10, 10, 10}
+	return []int{20, 20, 20, 20}
 }
 
 // VRegCounts returns an array of the numbers of vector regsiters in each SIMD
@@ -184,7 +184,6 @@ func (cu *ComputeUnit) runPipeline(now akita.VTimeInSec) bool {
 		for _, scheduler := range cu.Scheduler {
 			madeProgress = scheduler.Run(now) || madeProgress
 		}
-
 	}
 
 	return madeProgress
