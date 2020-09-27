@@ -63,7 +63,7 @@ type Wavefront struct {
 func NewWavefront() *Wavefront {
 	wf := new(Wavefront)
 	wf.UID = akita.GetIDGenerator().Generate()
-	wf.WorkItems = make([]*WorkItem, 0, 32)
+	wf.WorkItems = make([]*WorkItem, 0, 64)
 	return wf
 }
 
