@@ -106,9 +106,9 @@ var _ = Describe("ComputeUnit", func() {
 		cu.WfDispatcher = wfDispatcher
 		cu.Decoder = decoder
 		cu.Freq = 1
-		cu.SRegFile = NewSimpleRegisterFile(1024, 0)
+		cu.SRegFile = append(cu.SRegFile, NewSimpleRegisterFile(1024, 0))
 		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(4096, 64))
-		cu.Scheduler = scheduler
+		cu.Scheduler = append(cu.Scheduler, scheduler)
 
 		cu.BranchUnit = branchUnit
 		cu.VectorMemDecoder = vectorMemDecoder
@@ -116,7 +116,7 @@ var _ = Describe("ComputeUnit", func() {
 		cu.ScalarDecoder = scalarDecoder
 		cu.VectorDecoder = vectorDecoder
 		cu.LDSDecoder = ldsDecoder
-		cu.ScalarUnit = scalarUnit
+		cu.ScalarUnit = append(cu.ScalarUnit, scalarUnit)
 		cu.SIMDUnit = append(cu.SIMDUnit, simdUnit)
 
 		cu.LDSUnit = ldsUnit
@@ -303,7 +303,7 @@ var _ = Describe("ComputeUnit", func() {
 				WaveOffset: 0,
 				Data:       make([]byte, 4),
 			}
-			cu.SRegFile.Read(access)
+			cu.SRegFile[wf.SIMDID].Read(access)
 			Expect(insts.BytesToUint32(access.Data)).To(Equal(uint32(32)))
 			Expect(wf.OutstandingScalarMemAccess).To(Equal(0))
 			Expect(cu.InFlightScalarMemAccess).To(HaveLen(0))

@@ -38,7 +38,7 @@ type ComputeUnit struct {
 
 	running bool
 
-	Scheduler        Scheduler
+	Scheduler        []Scheduler
 	BranchUnit       SubComponent
 	VectorMemDecoder SubComponent
 	VectorMemUnit    SubComponent
@@ -131,17 +131,17 @@ func (cu *ComputeUnit) WfPoolSizes() []int {
 // VRegCounts returns an array of the numbers of vector regsiters in each SIMD
 // unit.
 func (cu *ComputeUnit) VRegCounts() []int {
-	return []int{16384, 16384, 16384, 16384}
+	return []int{32768, 32768, 32768, 32768}
 }
 
 // SRegCounts returns the number of scalar register in the Compute Unit.
 func (cu *ComputeUnit) SRegCounts() []int {
-	return []int{3200, 3200, 3200, 3200}
+	return []int{2560, 2560, 2560, 2560}
 }
 
 // LDSBytes returns the number of bytes in the LDS of the CU.
 func (cu *ComputeUnit) LDSBytes() int {
-	return 64 * 1024
+	return 128 * 1024
 }
 
 // Tick ticks
@@ -179,7 +179,10 @@ func (cu *ComputeUnit) runPipeline(now akita.VTimeInSec) bool {
 		madeProgress = cu.LDSDecoder.Run(now) || madeProgress
 		madeProgress = cu.VectorMemUnit.Run(now) || madeProgress
 		madeProgress = cu.VectorMemDecoder.Run(now) || madeProgress
-		madeProgress = cu.Scheduler.Run(now) || madeProgress
+		for _, scheduler := range cu.Scheduler {
+			madeProgress = scheduler.Run(now) || madeProgress
+		}
+
 	}
 
 	return madeProgress
@@ -307,9 +310,14 @@ func (cu *ComputeUnit) flushPipeline(now akita.VTimeInSec) bool {
 
 	cu.populateShadowBuffers()
 	cu.setWavesToReady()
-	cu.Scheduler.Flush()
+	for i := 0; i < 4; i++ {
+		cu.Scheduler[i].Flush()
+	}
+
 	cu.flushInternalComponents()
-	cu.Scheduler.Pause()
+	for i := 0; i < 4; i++ {
+		cu.Scheduler[i].Pause()
+	}
 	cu.isPaused = true
 
 	respondToCP := protocol.CUPipelineFlushRspBuilder{}.
@@ -569,7 +577,7 @@ func (cu *ComputeUnit) handleScalarDataLoadReturn(
 		RegCount:   len(rsp.Data) / 4,
 		Data:       rsp.Data,
 	}
-	cu.SRegFile.Write(access)
+	cu.SRegFile[wf.SIMDID].Write(access)
 
 	cu.InFlightScalarMemAccess = cu.InFlightScalarMemAccess[1:]
 
@@ -784,7 +792,9 @@ func (cu *ComputeUnit) checkShadowBuffers(now akita.VTimeInSec) bool {
 
 	if numReqsPendingToSend == 0 {
 		cu.isSendingOutShadowBufferReqs = false
-		cu.Scheduler.Resume()
+		for i := 0; i < 4; i++ {
+			cu.Scheduler[i].Resume()
+		}
 		cu.isPaused = false
 		return true
 	}

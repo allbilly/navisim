@@ -19,13 +19,13 @@ var _ = Describe("WfDispatcher", func() {
 		cu = NewComputeUnit("cu", nil)
 		cu.Freq = 1
 
-		sRegFile := NewSimpleRegisterFile(uint64(3200*4), 0)
-		cu.SRegFile = sRegFile
+		// sRegFile := NewSimpleRegisterFile(uint64(3200*4), 0)
+		// cu.SRegFile = sRegFile
 
-		for i := 0; i < 4; i++ {
-			vRegFile := NewSimpleRegisterFile(uint64(16384*4), 1024)
-			cu.VRegFile = append(cu.VRegFile, vRegFile)
-		}
+		// for i := 0; i < 4; i++ {
+		// 	vRegFile := NewSimpleRegisterFile(uint64(16384*4), 1024)
+		// 	cu.VRegFile = append(cu.VRegFile, vRegFile)
+		// }
 
 		wfDispatcher = NewWfDispatcher(cu)
 	})

@@ -86,7 +86,7 @@ func (d *ISADebugger) dumpSRegs(
 	output := "\tSGPRs:\n"
 	for i := 0; i < int(wf.CodeObject.WFSgprCount); i++ {
 		access.Reg = insts.SReg(i)
-		cu.SRegFile.Read(access)
+		cu.SRegFile[wf.SIMDID].Read(access)
 		regValue := insts.BytesToUint32(data)
 		output += fmt.Sprintf("\t\ts%d: 0x%08x\n", i, regValue)
 	}

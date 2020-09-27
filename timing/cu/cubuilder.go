@@ -17,8 +17,9 @@ type Builder struct {
 	freq              akita.Freq
 	name              string
 	simdCount         int
+	schedulerCount    int
 	vgprCount         []int
-	sgprCount         int
+	sgprCount         []int
 	log2CachelineSize uint64
 
 	scratchpadPreparer ScratchpadPreparer
@@ -33,8 +34,9 @@ func MakeBuilder() Builder {
 	var b Builder
 	b.freq = 1000 * akita.MHz
 	b.simdCount = 4
-	b.sgprCount = 3200
-	b.vgprCount = []int{16384, 16384, 16384, 16384}
+	b.schedulerCount = 4
+	b.sgprCount = []int{2560, 2560, 2560, 2560}
+	b.vgprCount = []int{32768, 32768, 32768, 32768}
 	b.log2CachelineSize = 6
 
 	return b
@@ -55,6 +57,7 @@ func (b Builder) WithFreq(f akita.Freq) Builder {
 // WithSIMDCount sets the number of SIMD unit in the ComputeUnit.
 func (b Builder) WithSIMDCount(n int) Builder {
 	b.simdCount = n
+	b.schedulerCount = n
 	return b
 }
 
@@ -69,8 +72,11 @@ func (b Builder) WithVGPRCount(counts []int) Builder {
 }
 
 // WithSGPRCount equals the number of SGPRs in the Compute Unit.
-func (b Builder) WithSGPRCount(count int) Builder {
-	b.sgprCount = count
+func (b Builder) WithSGPRCount(counts []int) Builder {
+	if len(counts) != b.simdCount {
+		panic("counts must have a length that equals to the SIMD count")
+	}
+	b.sgprCount = counts
 	return b
 }
 
@@ -101,10 +107,10 @@ func (b *Builder) Build(name string) *ComputeUnit {
 	b.scratchpadPreparer = NewScratchpadPreparerImpl(cu)
 
 	for i := 0; i < 4; i++ {
-		cu.WfPools = append(cu.WfPools, NewWavefrontPool(10))
+		cu.WfPools = append(cu.WfPools, NewWavefrontPool(20))
 	}
 
-	b.equipScheduler(cu)
+	b.equipSchedulers(cu)
 	b.equipScalarUnits(cu)
 	b.equipSIMDUnits(cu)
 	b.equipLDSUnit(cu)
@@ -114,12 +120,15 @@ func (b *Builder) Build(name string) *ComputeUnit {
 	return cu
 }
 
-func (b *Builder) equipScheduler(cu *ComputeUnit) {
-	fetchArbitor := new(FetchArbiter)
-	fetchArbitor.InstBufByteSize = 256
-	issueArbitor := new(IssueArbiter)
-	scheduler := NewScheduler(cu, fetchArbitor, issueArbitor)
-	cu.Scheduler = scheduler
+func (b *Builder) equipSchedulers(cu *ComputeUnit) {
+	for i := 0; i < b.schedulerCount; i++ {
+		fetchArbitor := new(FetchArbiter)
+		fetchArbitor.InstBufByteSize = 256
+		issueArbitor := new(IssueArbiter)
+		scheduler := NewScheduler(cu, fetchArbitor, issueArbitor, cu.WfPools[i])
+		cu.Scheduler = append(cu.Scheduler, scheduler)
+	}
+
 }
 
 func (b *Builder) equipScalarUnits(cu *ComputeUnit) {
@@ -190,8 +199,10 @@ func (b *Builder) equipVectorMemoryUnit(cu *ComputeUnit) {
 }
 
 func (b *Builder) equipRegisterFiles(cu *ComputeUnit) {
-	sRegFile := NewSimpleRegisterFile(uint64(b.sgprCount*4), 0)
-	cu.SRegFile = sRegFile
+	for i := 0; i < b.simdCount; i++ {
+		sRegFile := NewSimpleRegisterFile(uint64(b.sgprCount[i]*4), 0)
+		cu.SRegFile = append(cu.SRegFile, sRegFile)
+	}
 
 	for i := 0; i < b.simdCount; i++ {
 		vRegFile := NewSimpleRegisterFile(uint64(b.vgprCount[i]*4), 1024)

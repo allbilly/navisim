@@ -14,7 +14,7 @@ import (
 
 var _ = Describe("ScratchpadPreparer", func() {
 	var (
-		sRegFile  *SimpleRegisterFile
+		sRegFile0 *SimpleRegisterFile
 		vRegFile0 *SimpleRegisterFile
 		cu        *ComputeUnit
 		sp        *ScratchpadPreparerImpl
@@ -22,11 +22,11 @@ var _ = Describe("ScratchpadPreparer", func() {
 	)
 
 	BeforeEach(func() {
-		sRegFile = NewSimpleRegisterFile(3200*4, 0)
-		vRegFile0 = NewSimpleRegisterFile(256*64*4, 1024)
+		sRegFile0 = NewSimpleRegisterFile(2560*4, 0)
+		vRegFile0 = NewSimpleRegisterFile(1024*32*4, 1024)
 
 		cu = NewComputeUnit("cu", nil)
-		cu.SRegFile = sRegFile
+		cu.SRegFile = append(cu.SRegFile, sRegFile0)
 		cu.VRegFile = append(cu.VRegFile, vRegFile0)
 
 		sp = NewScratchpadPreparerImpl(cu)
