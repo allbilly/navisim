@@ -13,14 +13,15 @@ import (
 
 // A Builder can construct a fully functional Compute Unit.
 type Builder struct {
-	engine            akita.Engine
-	freq              akita.Freq
-	name              string
-	simdCount         int
-	schedulerCount    int
-	vgprCount         []int
-	sgprCount         []int
-	log2CachelineSize uint64
+	engine                 akita.Engine
+	freq                   akita.Freq
+	name                   string
+	simdCount              int
+	schedulerCount         int
+	vgprCount              []int
+	sgprCount              []int
+	log2CachelineSize      uint64
+	numSinglePrecisionUnit int
 
 	scratchpadPreparer ScratchpadPreparer
 	alu                emu.ALU
@@ -38,6 +39,7 @@ func MakeBuilder() Builder {
 	b.sgprCount = []int{2560, 2560, 2560, 2560}
 	b.vgprCount = []int{32768, 32768, 32768, 32768}
 	b.log2CachelineSize = 6
+	b.numSinglePrecisionUnit = 32
 
 	return b
 }
@@ -83,6 +85,12 @@ func (b Builder) WithSGPRCount(counts []int) Builder {
 // WithLog2CachelineSize sets the cacheline size as a power of 2.
 func (b Builder) WithLog2CachelineSize(n uint64) Builder {
 	b.log2CachelineSize = n
+	return b
+}
+
+// WithNumSinglePrecisionUnit sets the number of lanes per SIMD.
+func (b Builder) WithNumSinglePrecisionUnit(n int) Builder {
+	b.numSinglePrecisionUnit = n
 	return b
 }
 

@@ -16,12 +16,14 @@ type Builder struct {
 	showProgressBar bool
 	respondingPort  akita.Port
 	dispatchingPort akita.Port
+	wavefrontSize   int
 }
 
 // MakeBuilder creates a builder with default dispatching configureations.
 func MakeBuilder() Builder {
 	b := Builder{
-		alg: "round-robin",
+		alg:           "round-robin",
+		wavefrontSize: 32,
 	}
 	return b
 }
@@ -55,6 +57,12 @@ func (b Builder) WithDispatchingPort(p akita.Port) Builder {
 // WithProgressBar enables progress bar.
 func (b Builder) WithProgressBar() Builder {
 	b.showProgressBar = true
+	return b
+}
+
+// WithWfSize enables progress bar.
+func (b Builder) WithWfSize(n int) Builder {
+	b.wavefrontSize = n
 	return b
 }
 
@@ -94,7 +102,7 @@ func (b Builder) Build(name string) Dispatcher {
 	switch b.alg {
 	case "round-robin":
 		d.alg = &roundRobinAlgorithm{
-			gridBuilder: kernels.NewGridBuilder(),
+			gridBuilder: kernels.NewGridBuilder(b.wavefrontSize),
 			cuPool:      b.cuResourcePool,
 		}
 	default:

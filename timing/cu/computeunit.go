@@ -27,7 +27,8 @@ type ComputeUnit struct {
 	Decoder      emu.Decoder
 	WfPools      []*WavefrontPool
 
-	log2CacheLineSize uint64
+	log2CacheLineSize      uint64
+	numSinglePrecisionUnit int
 
 	InFlightInstFetch            []*InstFetchReqInfo
 	InFlightScalarMemAccess      []*ScalarMemAccessInfo
