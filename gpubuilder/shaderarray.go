@@ -52,7 +52,7 @@ func makeShaderArrayBuilder() shaderArrayBuilder {
 		name:              "SA",
 		numCU:             4,
 		freq:              1 * akita.GHz,
-		log2CacheLineSize: 6,
+		log2CacheLineSize: 7,
 		log2PageSize:      12,
 	}
 	return b

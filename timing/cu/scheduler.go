@@ -137,7 +137,7 @@ func (s *SchedulerImpl) DoFetch(now akita.VTimeInSec) bool {
 			WithDst(s.cu.InstMem).
 			WithAddress(addr).
 			WithPID(wf.PID()).
-			WithByteSize(128).
+			WithByteSize(1 << s.cu.log2CacheLineSize).
 			Build()
 
 		err := s.cu.ToInstMem.Send(req)

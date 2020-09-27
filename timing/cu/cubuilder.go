@@ -102,6 +102,7 @@ func (b *Builder) Build(name string) *ComputeUnit {
 	cu.Decoder = insts.NewDisassembler()
 	cu.WfDispatcher = NewWfDispatcher(cu)
 	cu.InFlightVectorMemAccessLimit = 512
+	cu.log2CacheLineSize = b.log2CachelineSize
 
 	b.alu = emu.NewALU(nil)
 	b.scratchpadPreparer = NewScratchpadPreparerImpl(cu)
