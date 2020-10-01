@@ -58,7 +58,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"s_mul_hi_i32", 54, FormatTable[SOP2], 0, ExeUnitScalar, 32, 32, 32, 0, 0})
 
 	// VOP2 instructions
-	d.addInstType(&InstType{"v_cndmask_b32", 1, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cndmask_b32_e32", 1, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_add_f32", 3, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_sub_f32", 4, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_subrev_f32", 5, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
@@ -75,12 +75,12 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_max_i32", 18, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_min_u32", 19, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_max_u32", 20, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_lshrrev_b32", 22, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_ashrrev_i32", 24, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_lshrrev_b32_e32", 22, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_ashrrev_i32_e32", 24, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_lshlrev_b32", 26, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_and_b32", 27, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_or_b32", 28, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_xor_b32", 29, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_xor_b32_e32", 29, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_xnor_b32", 30, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_mac_f32", 31, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_madmk_f32", 32, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
@@ -88,7 +88,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_add_nc_u32", 37, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_sub_nc_u32", 38, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_subrev_nc_u32", 39, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_add_co_ci_u32", 40, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_add_co_ci_u32_e32", 40, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_sub_co_ci_u32", 41, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_subrev_co_ci_u32", 42, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_fmac_f32", 43, FormatTable[VOP2], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
@@ -109,7 +109,7 @@ func (d *Disassembler) initializeDecodeTable() {
 
 	// VOP1 instructions
 	d.addInstType(&InstType{"v_nop", 0, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 0, 0, 0})
-	d.addInstType(&InstType{"v_mov_b32", 1, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 0, 0, 0})
+	d.addInstType(&InstType{"v_mov_b32_e32", 1, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 0, 0, 0})
 	d.addInstType(&InstType{"v_readfirstlane_b32", 2, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 0, 0, 0})
 	d.addInstType(&InstType{"v_cvt_i32_f64", 3, FormatTable[VOP1], 0, ExeUnitVALU, 32, 64, 0, 0, 0})
 	d.addInstType(&InstType{"v_cvt_f64_i32", 4, FormatTable[VOP1], 0, ExeUnitVALU, 64, 32, 0, 0, 0})
@@ -425,7 +425,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_cmp_lt_i16", 137, FormatTable[VOPC], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cmp_eq_i16", 138, FormatTable[VOPC], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cmp_le_i16", 139, FormatTable[VOPC], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_cmp_gt_i16", 140, FormatTable[VOPC], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cmp_gt_i16_e32", 140, FormatTable[VOPC], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cmp_ne_i16", 141, FormatTable[VOPC], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cmp_ge_i16", 142, FormatTable[VOPC], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cmp_class_f16", 143, FormatTable[VOPC], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
@@ -541,7 +541,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_cmpx_tru_f16", 255, FormatTable[VOPC], 0, ExeUnitVALU, 32, 64, 64, 0, 0})
 
 	// VOP3A Instructions
-	d.addInstType(&InstType{"v_cmp_f_f32", 0, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	/*d.addInstType(&InstType{"v_cmp_f_f32", 0, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cmp_lt_f32", 1, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cmp_eq_f32", 2, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cmp_le_f32", 4, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
@@ -730,7 +730,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_cmpx_neq_f16", 253, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 64, 64, 0, 0})
 	d.addInstType(&InstType{"v_cmpx_nlt_f16", 254, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 64, 64, 0, 0})
 	d.addInstType(&InstType{"v_cmpx_tru_f16", 255, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 64, 64, 0, 0})
-	d.addInstType(&InstType{"v_cndmask_b32", 256 + 1, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
+	d.addInstType(&InstType{"v_cndmask_b32", 256 + 1, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})*/
 	d.addInstType(&InstType{"v_mad_legacy_f32", 320, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
 	d.addInstType(&InstType{"v_mad_f32", 321, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
 	d.addInstType(&InstType{"v_mad_i32_i24", 322, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})

@@ -180,26 +180,29 @@ func (i Inst) waitcntOperandString() string {
 
 func (i Inst) vop2String() string {
 	s := fmt.Sprintf("%s %s", i.InstName, i.Dst.String())
-
-	switch i.Opcode {
+	/*switch i.Opcode {
 	case 25, 26, 27, 28, 29, 30:
 		s += ", vcc"
-	}
+	}*/
 
 	s += fmt.Sprintf(", %s, %s", i.Src0.String(), i.Src1.String())
 
-	switch i.Opcode {
+	/*switch i.Opcode {
 	case 0, 28, 29:
-		s += ", vcc"
+		//s += ", vcc"
 		//case 24: // madak
 		//s += ", " + i.Src2.String()
-	}
+	}*/
 
 	if i.IsSdwa {
 		s = strings.ReplaceAll(s, "_e32", "_sdwa")
 		s += i.sdwaVOP2String()
 	}
 
+	switch i.Opcode {
+	case 1:
+		s += ", vcc_lo"
+	}
 	return s
 }
 
