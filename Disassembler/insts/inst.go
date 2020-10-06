@@ -157,11 +157,12 @@ func (i Inst) soppString(file *elf.File) string {
 		if !symbolFound {
 			operandStr = " " + i.SImm16.String()
 		}
-	} else if i.Opcode == 1 || i.Opcode == 10 {
+	} else if i.Opcode == 1 || i.Opcode == 10 || i.Opcode == 31 {
 		// Does not print anything
 	} else {
 		operandStr = " " + i.SImm16.String()
 	}
+
 	s := i.InstName + operandStr
 	return s
 }

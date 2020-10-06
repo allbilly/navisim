@@ -541,7 +541,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_cmpx_tru_f16", 255, FormatTable[VOPC], 0, ExeUnitVALU, 32, 64, 64, 0, 0})
 
 	// VOP3A Instructions
-	/*d.addInstType(&InstType{"v_cmp_f_f32", 0, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cmp_f_f32", 0, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cmp_lt_f32", 1, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cmp_eq_f32", 2, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cmp_le_f32", 4, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
@@ -730,7 +730,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_cmpx_neq_f16", 253, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 64, 64, 0, 0})
 	d.addInstType(&InstType{"v_cmpx_nlt_f16", 254, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 64, 64, 0, 0})
 	d.addInstType(&InstType{"v_cmpx_tru_f16", 255, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 64, 64, 0, 0})
-	d.addInstType(&InstType{"v_cndmask_b32", 256 + 1, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})*/
+	d.addInstType(&InstType{"v_cndmask_b32", 256 + 1, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
 	d.addInstType(&InstType{"v_mad_legacy_f32", 320, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
 	d.addInstType(&InstType{"v_mad_f32", 321, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
 	d.addInstType(&InstType{"v_mad_i32_i24", 322, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
