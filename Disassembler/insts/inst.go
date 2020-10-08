@@ -129,7 +129,7 @@ func (i Inst) flatString() string {
 
 	if i.Seg == 2 {
 		switch i.Opcode {
-		case 14, 9, 30:
+		case 9, 12, 14, 28, 30:
 			s += ", off" //+ fmt.Sprintf(" offset:%d", i.Offset)
 		}
 	}
