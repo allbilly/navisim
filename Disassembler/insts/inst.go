@@ -118,7 +118,6 @@ func (i Inst) flatString() string {
 	case 2:
 		s += "global"
 	}
-	s += i.InstName
 
 	if i.Opcode >= 8 && i.Opcode <= 15 {
 		s += i.InstName + " " + i.Dst.String() + ", " +
@@ -127,6 +126,14 @@ func (i Inst) flatString() string {
 		s += i.InstName + " " + i.Addr.String() + ", " +
 			i.Data.String()
 	}
+
+	if i.Seg == 2 {
+		switch i.Opcode {
+		case 14, 9, 30:
+			s += ", off" //+ fmt.Sprintf(" offset:%d", i.Offset)
+		}
+	}
+
 	return s
 }
 
@@ -173,7 +180,7 @@ func (i Inst) waitcntOperandString() string {
 		operandStr += fmt.Sprintf(" vmcnt(%d)", i.VMCNT)
 	}
 
-	if i.LKGMCNT != 15 {
+	if i.LKGMCNT != 15 && i.LKGMCNT != 31 {
 		operandStr += fmt.Sprintf(" lgkmcnt(%d)", i.LKGMCNT)
 	}
 	return operandStr
@@ -201,7 +208,7 @@ func (i Inst) vop2String() string {
 	}
 
 	switch i.Opcode {
-	case 1:
+	case 1, 40:
 		s += ", vcc_lo"
 	}
 	return s
@@ -223,7 +230,7 @@ func (i Inst) sdwaVOP2String() string {
 }
 
 func (i Inst) vopcString() string {
-	dst := "vcc"
+	dst := "vcc_lo"
 	if strings.Contains(i.InstName, "cmpx") {
 		dst = "exec"
 	}
