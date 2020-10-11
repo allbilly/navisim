@@ -56,12 +56,13 @@ type Inst struct {
 	Offset *Operand
 	SImm16 *Operand
 
-	Abs                 int
-	Omod                int
-	Neg                 int
-	Seg                 int
-	Offset0             uint32
-	Offset1             uint32
+	Abs     int
+	Omod    int
+	Neg     int
+	Seg     int
+	Offset0 uint32
+	Offset1 uint32
+	//FlatOffset          uint32
 	SystemLevelCoherent bool
 	GlobalLevelCoherent bool
 	TextureFailEnable   bool
@@ -130,7 +131,7 @@ func (i Inst) flatString() string {
 	if i.Seg == 2 {
 		switch i.Opcode {
 		case 9, 12, 14, 28, 30:
-			s += ", off" //+ fmt.Sprintf(" offset:%d", i.Offset)
+			s += ", off" //+ fmt.Sprintf(" offset:%d", i.FlatOffset)
 		}
 	}
 
