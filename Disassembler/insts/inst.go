@@ -189,10 +189,10 @@ func (i Inst) waitcntOperandString() string {
 
 func (i Inst) vop2String() string {
 	s := fmt.Sprintf("%s %s", i.InstName, i.Dst.String())
-	/*switch i.Opcode {
-	case 25, 26, 27, 28, 29, 30:
-		s += ", vcc"
-	}*/
+	switch i.Opcode {
+	case 40:
+		s += ", vcc_lo"
+	}
 
 	s += fmt.Sprintf(", %s, %s", i.Src0.String(), i.Src1.String())
 
