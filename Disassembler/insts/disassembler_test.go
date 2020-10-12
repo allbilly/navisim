@@ -29,4 +29,13 @@ var _ = Describe("Disassembler", func() {
 		Expect(err).To(BeNil())
 		Expect(inst.String(nil)).To(Equal("global_load_dword v3, v[5:6], off"))
 	})
+
+	FIt("should disassemble D7010000 0002029E", func() {
+		buf := []byte{0x00, 0x00, 0x01, 0xD7, 0x9E, 0x02, 0x02, 0x00}
+
+		inst, err := disassembler.Decode(buf)
+
+		Expect(err).To(BeNil())
+		Expect(inst.String(nil)).To(Equal("v_ashrrev_i64 v[0:1], 30, v[1:2]"))
+	})
 })

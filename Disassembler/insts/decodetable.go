@@ -782,7 +782,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_xor3_b32", 376, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
 	d.addInstType(&InstType{"v_lshlrev_b64", 767, FormatTable[VOP3a], 0, ExeUnitVALU, 64, 32, 64, 0, 0})
 	d.addInstType(&InstType{"v_lshrrev_b64", 768, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
-	d.addInstType(&InstType{"v_ashrrev_i64", 769, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
+	d.addInstType(&InstType{"v_ashrrev_i64", 769, FormatTable[VOP3a], 0, ExeUnitVALU, 64, 32, 64, 0, 0})
 	d.addInstType(&InstType{"v_add_nc_u16", 771, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
 	d.addInstType(&InstType{"v_sub_nc_u16", 772, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
 	d.addInstType(&InstType{"v_mul_lo_u16", 773, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
