@@ -2,8 +2,8 @@ package driver
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 // A Command is a task to execute later
@@ -68,7 +68,7 @@ func (c *MemCopyD2HCommand) RemoveReq(req akita.Msg) {
 // processed.
 type LaunchKernelCommand struct {
 	ID         string
-	CodeObject *insts.HsaCo
+	CodeObject *rdnainsts.HsaCo
 	GridSize   [3]uint32
 	WGSize     [3]uint16
 	KernelArgs interface{}

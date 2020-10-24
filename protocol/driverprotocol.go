@@ -2,8 +2,8 @@ package protocol
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/util/ca"
 )
 
@@ -36,7 +36,7 @@ type LaunchKernelReq struct {
 
 	Packet        *kernels.HsaKernelDispatchPacket
 	PacketAddress uint64
-	HsaCo         *insts.HsaCo
+	HsaCo         *rdnainsts.HsaCo
 	WGFilter      kernels.WGFilterFunc
 }
 

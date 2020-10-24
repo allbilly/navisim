@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 var _ = Describe("GridBuilder", func() {
@@ -18,7 +19,7 @@ var _ = Describe("GridBuilder", func() {
 	})
 
 	It("should build partial wavefront", func() {
-		codeObject := new(insts.HsaCo)
+		codeObject := new(rdnainsts.HsaCo)
 		packet := new(HsaKernelDispatchPacket)
 		packet.WorkgroupSizeX = 64
 		packet.WorkgroupSizeY = 1

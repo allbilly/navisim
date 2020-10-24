@@ -5,14 +5,14 @@ import (
 	"reflect"
 
 	"github.com/rs/xid"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 // EnqueueLaunchKernel schedules kernel to be launched later
 func (d *Driver) EnqueueLaunchKernel(
 	queue *CommandQueue,
-	co *insts.HsaCo,
+	co *rdnainsts.HsaCo,
 	gridSize [3]uint32,
 	wgSize [3]uint16,
 	kernelArgs interface{},
@@ -31,7 +31,7 @@ func (d *Driver) EnqueueLaunchKernel(
 
 func (d *Driver) allocateGPUMemory(
 	ctx *Context,
-	co *insts.HsaCo,
+	co *rdnainsts.HsaCo,
 ) (dCoData, dKernArgData, dPacket GPUPtr) {
 	dCoData = d.AllocateMemory(ctx, uint64(len(co.Data)))
 	dKernArgData = d.AllocateMemory(ctx, co.KernargSegmentByteSize)
@@ -43,7 +43,7 @@ func (d *Driver) allocateGPUMemory(
 }
 
 func (d *Driver) prepareLocalMemory(
-	co *insts.HsaCo,
+	co *rdnainsts.HsaCo,
 	kernelArgs interface{},
 	packet *kernels.HsaKernelDispatchPacket,
 ) {
@@ -67,7 +67,7 @@ func (d *Driver) prepareLocalMemory(
 // launches the kernel immediately.
 func (d *Driver) LaunchKernel(
 	ctx *Context,
-	co *insts.HsaCo,
+	co *rdnainsts.HsaCo,
 	gridSize [3]uint32,
 	wgSize [3]uint16,
 	kernelArgs interface{},
@@ -97,7 +97,7 @@ func (d *Driver) createAQLPacket(
 
 func (d *Driver) enqueueLaunchKernelCommand(
 	queue *CommandQueue,
-	co *insts.HsaCo,
+	co *rdnainsts.HsaCo,
 	packet *kernels.HsaKernelDispatchPacket,
 	dPacket GPUPtr,
 ) {
