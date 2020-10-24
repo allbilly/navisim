@@ -1,4 +1,4 @@
-package rndainsts_test
+package rdnainsts_test
 
 import (
 	. "github.com/onsi/ginkgo"
