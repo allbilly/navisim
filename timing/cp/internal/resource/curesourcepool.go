@@ -2,7 +2,7 @@ package resource
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim/kernels"
 )
 
 // DispatchableCU handles dispatch resource
@@ -93,7 +93,6 @@ func (p *CUResourcePoolImpl) createSRegMask(
 		p.countMustBeAMultipleOfGranularity(r.sregCounts[i], r.sregGranularity)
 		r.sregMasks = append(r.sregMasks, newResourceMask(r.sregCounts[i]/r.sregGranularity))
 	}
-
 }
 
 func (p *CUResourcePoolImpl) createVRegMasks(

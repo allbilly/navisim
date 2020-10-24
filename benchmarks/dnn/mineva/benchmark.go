@@ -8,15 +8,14 @@ import (
 	"gitlab.com/akita/dnn/layers"
 	"gitlab.com/akita/dnn/training"
 	"gitlab.com/akita/dnn/training/optimization"
-	simLayers "gitlab.com/akita/mgpusim/benchmarks/dnn/layers"
-	"gitlab.com/akita/mgpusim/driver"
+	simLayers "gitlab.com/akita/navisim/benchmarks/dnn/layers"
+	"gitlab.com/akita/navisim/driver"
 )
 
 // Benchmark defines the Mineva network training benchmark.
 type Benchmark struct {
 	driver  *driver.Driver
 	context *driver.Context
-	gpus    []int
 
 	network training.Network
 	trainer training.Trainer

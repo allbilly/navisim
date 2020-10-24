@@ -7,7 +7,7 @@ import (
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/mem/cache"
-	"gitlab.com/akita/mgpusim/protocol"
+	"gitlab.com/akita/navisim/protocol"
 	"gitlab.com/akita/util/tracing"
 )
 

@@ -4,10 +4,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"gitlab.com/akita/mgpusim/benchmarks/dnn/layers"
+	"gitlab.com/akita/navisim/benchmarks/dnn/layers"
 
-	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/platform"
+	"gitlab.com/akita/navisim/driver"
+	"gitlab.com/akita/navisim/platform"
 )
 
 var _ = Describe("Max Pooling Layer", func() {

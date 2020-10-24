@@ -6,9 +6,9 @@ import (
 	"log"
 	"math/rand"
 
-	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim/driver"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
 )
 
 // KernelArgs defines kernel arguments
@@ -138,6 +138,7 @@ func (b *Benchmark) initMem() {
 	b.driver.MemCopyH2D(b.context, b.dOutputPathDistanceMatrix, b.hOutputPathDistanceMatrix)
 }
 
+//nolint:deadcode,unused
 func printMatrix(matrix []uint32, n uint32) {
 	for i := uint32(0); i < n; i++ {
 		for j := uint32(0); j < n; j++ {

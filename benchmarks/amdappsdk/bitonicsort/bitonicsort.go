@@ -5,9 +5,9 @@ package bitonicsort
 import (
 	"log"
 
-	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim/driver"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
 )
 
 var doPerPassVerify = false
@@ -112,7 +112,7 @@ func (b *Benchmark) exec() {
 	}
 
 	direction := 1
-	if b.OrderAscending == false {
+	if !b.OrderAscending {
 		direction = 0
 	}
 

@@ -1,6 +1,6 @@
 package layers
 
-import "gitlab.com/akita/mgpusim/driver"
+import "gitlab.com/akita/navisim/driver"
 
 // Tensor defines multi-dimension matrices.
 type Tensor struct {

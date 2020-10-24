@@ -5,8 +5,8 @@ import (
 	"math"
 	"math/rand"
 
-	"gitlab.com/akita/mgpusim/benchmarks/dnn/layers"
-	"gitlab.com/akita/mgpusim/driver"
+	"gitlab.com/akita/navisim/benchmarks/dnn/layers"
+	"gitlab.com/akita/navisim/driver"
 )
 
 // Parameters defines the parameters of the maxpooling benchmark.

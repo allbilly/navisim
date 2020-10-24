@@ -3,9 +3,9 @@ package matrixmultiplication
 import (
 	"log"
 
-	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim/driver"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
 )
 
 // A MatrixMultiplier is a service type that can calculate the result of matrix

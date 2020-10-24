@@ -1,4 +1,4 @@
-package navisim_test
+package bitops_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestNavisim(t *testing.T) {
+func TestBitops(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Navisim Suite")
+	RunSpecs(t, "Bitops Suite")
 }

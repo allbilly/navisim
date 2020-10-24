@@ -81,10 +81,10 @@ func (g *graph) loadGraph(path string) {
 	reader := bufio.NewReader(graphFile)
 
 	for {
-		line, err := reader.ReadString('\n')
-		if err != nil {
-			if err != io.EOF {
-				log.Panic(err)
+		line, err1 := reader.ReadString('\n')
+		if err1 != nil {
+			if err1 != io.EOF {
+				log.Panic(err1)
 			}
 			break
 		}
@@ -111,7 +111,10 @@ func (g *graph) loadGraph(path string) {
 			g.edgeListMap[nodeFromID] = append(g.edgeListMap[nodeFromID], nodeToID)
 		}
 	}
-	graphFile.Close()
+	err = graphFile.Close()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (g graph) Dump(mode string) {

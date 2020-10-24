@@ -5,9 +5,9 @@ import (
 	"math"
 
 	"gitlab.com/akita/dnn/tensor"
-	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim/driver"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
 )
 
 // MaxPoolingLayer Represent a MaxPooling Layer.
@@ -117,7 +117,10 @@ func (m *MaxPoolingLayer) EnableVerification() {
 
 func (m *MaxPoolingLayer) saveMask(input *Tensor) {
 	if m.forwardMask != 0 {
-		m.GPUDriver.FreeMemory(m.GPUCtx, m.forwardMask)
+		err := m.GPUDriver.FreeMemory(m.GPUCtx, m.forwardMask)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	numElement := input.Size()[0] * input.Size()[1] * input.Size()[2] * input.Size()[3]

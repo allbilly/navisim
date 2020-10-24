@@ -2,8 +2,8 @@ package cu
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/protocol"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 // WfDispatchEvent is the event that the dispatcher dispatches a wavefront

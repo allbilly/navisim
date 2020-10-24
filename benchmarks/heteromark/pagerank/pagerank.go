@@ -6,10 +6,10 @@ import (
 	"log"
 	"math"
 
-	"gitlab.com/akita/mgpusim/benchmarks/matrix/csr"
-	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim/benchmarks/matrix/csr"
+	"gitlab.com/akita/navisim/driver"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
 )
 
 // KernelArgs defines kernel arguments
@@ -129,6 +129,7 @@ func (b *Benchmark) initMem() {
 	}
 }
 
+//nolint:unused,deadcode
 func printMatrix(matrix [][]float32, n uint32) {
 	for i := uint32(0); i < n; i++ {
 		for j := uint32(0); j < n; j++ {

@@ -4,9 +4,9 @@ import (
 	"log"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/protocol"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 // A WfDispatcher initialize wavefronts
@@ -189,17 +189,17 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 		})
 
 		// fmt.Printf("s%d WorkGroupIdZ\n", SGPRPtr/4)
-		SGPRPtr += 4
+		//SGPRPtr += 4
 	}
 
 	if co.EnableSgprWorkGroupInfo() {
 		log.Printf("EnableSgprPrivateSegmentSize is not supported")
-		SGPRPtr += 4
+		//SGPRPtr += 4
 	}
 
 	if co.EnableSgprPrivateSegmentWaveByteOffset() {
 		log.Printf("EnableSgprPrivateSegentWaveByteOffset is not supported")
-		SGPRPtr += 4
+		//SGPRPtr += 4
 	}
 
 	var x, y, z int

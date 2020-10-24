@@ -7,8 +7,8 @@ package cu
 import (
 	gomock "github.com/golang/mock/gomock"
 	akita "gitlab.com/akita/akita"
-	protocol "gitlab.com/akita/mgpusim/protocol"
-	wavefront "gitlab.com/akita/mgpusim/timing/wavefront"
+	protocol "gitlab.com/akita/navisim/protocol"
+	wavefront "gitlab.com/akita/navisim/timing/wavefront"
 	reflect "reflect"
 )
 

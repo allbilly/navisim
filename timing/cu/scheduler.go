@@ -5,8 +5,8 @@ import (
 
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/timing/wavefront"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util/tracing"
 )
 
@@ -59,7 +59,7 @@ func NewScheduler(
 // Run runs scheduler
 func (s *SchedulerImpl) Run(now akita.VTimeInSec) bool {
 	madeProgress := false
-	if s.isPaused == false {
+	if !s.isPaused {
 		madeProgress = s.EvaluateInternalInst(now) || madeProgress
 		madeProgress = s.DecodeNextInst(now) || madeProgress
 		madeProgress = s.DoIssue(now) || madeProgress
@@ -163,7 +163,7 @@ func (s *SchedulerImpl) DoFetch(now akita.VTimeInSec) bool {
 func (s *SchedulerImpl) DoIssue(now akita.VTimeInSec) bool {
 	madeProgress := false
 
-	if s.isPaused == false {
+	if !s.isPaused {
 		wfs := s.issueArbiter.Arbitrate(s.cu.WfPools)
 		for _, wf := range wfs {
 			if wf.InstToIssue.ExeUnit == insts.ExeUnitSpecial {

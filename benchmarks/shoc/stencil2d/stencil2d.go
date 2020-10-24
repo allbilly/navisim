@@ -5,9 +5,9 @@ import (
 	"log"
 	"math/rand"
 
-	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim/driver"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
 )
 
 // CopyRectKernelArgs defines kernel arguments
@@ -57,7 +57,6 @@ type Benchmark struct {
 	dData1, dData2                driver.GPUPtr
 	currData, newData             *driver.GPUPtr
 	NumRows, NumCols              int
-	dataSize                      int
 	numPaddedCols                 int
 	paddedDataSize                int
 	pad                           int

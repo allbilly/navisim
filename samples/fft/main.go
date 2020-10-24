@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 
-	"gitlab.com/akita/mgpusim/benchmarks/shoc/fft"
-	"gitlab.com/akita/mgpusim/samples/runner"
+	"gitlab.com/akita/navisim/benchmarks/shoc/fft"
+	"gitlab.com/akita/navisim/samples/runner"
 )
 
 var mb = flag.Int("MB", 8, "data size (in megabytes)")

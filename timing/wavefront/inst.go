@@ -3,7 +3,7 @@ package wavefront
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/insts"
+	"gitlab.com/akita/navisim/insts"
 )
 
 // Inst in the timing package is a wrapper of the insts.Inst.

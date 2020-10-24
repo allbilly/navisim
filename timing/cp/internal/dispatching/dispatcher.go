@@ -6,8 +6,8 @@ import (
 	"github.com/vbauerster/mpb/v4"
 	"github.com/vbauerster/mpb/v4/decor"
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/kernels"
-	"gitlab.com/akita/mgpusim/protocol"
+	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/protocol"
 	"gitlab.com/akita/navisim/timing/cp/internal/resource"
 	"gitlab.com/akita/util/tracing"
 )

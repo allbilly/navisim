@@ -6,14 +6,14 @@ import (
 	"os"
 
 	memtraces "gitlab.com/akita/mem/trace"
-	"gitlab.com/akita/mgpusim"
+	"gitlab.com/akita/navisim"
 
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/mem/cache"
 	"gitlab.com/akita/mem/vm"
 	"gitlab.com/akita/mem/vm/mmu"
-	"gitlab.com/akita/mgpusim/driver"
+	"gitlab.com/akita/navisim/driver"
 	"gitlab.com/akita/navisim/gpubuilder"
 	"gitlab.com/akita/noc/networking/pcie"
 	"gitlab.com/akita/util/tracing"
@@ -30,7 +30,7 @@ type R9NanoPlatformBuilder struct {
 	disableProgressBar bool
 }
 
-// MakeEmuBuilder creates a EmuBuilder with default parameters.
+// MakeR9NanoBuilder creates a EmuBuilder with default parameters.
 func MakeR9NanoBuilder() R9NanoPlatformBuilder {
 	b := R9NanoPlatformBuilder{
 		numGPU:       4,
@@ -175,6 +175,7 @@ func (b R9NanoPlatformBuilder) createEngine() akita.Engine {
 		engine = akita.NewSerialEngine()
 	}
 	// engine.AcceptHook(akita.NewEventLogger(log.New(os.Stdout, "", 0)))
+
 	return engine
 }
 
@@ -267,7 +268,7 @@ func (b *R9NanoPlatformBuilder) createGPU(
 	pmcAddressTable *cache.BankedLowModuleFinder,
 	pcieConnector *pcie.Connector,
 	pcieSwitchID int,
-) *mgpusim.GPU {
+) *navisim.GPU {
 	name := fmt.Sprintf("GPU%d", index)
 	memAddrOffset := uint64(index) * 4 * mem.GB
 	gpu := gpuBuilder.
@@ -285,7 +286,7 @@ func (b *R9NanoPlatformBuilder) createGPU(
 }
 
 func (b *R9NanoPlatformBuilder) configRDMAEngine(
-	gpu *mgpusim.GPU,
+	gpu *navisim.GPU,
 	addrTable *cache.BankedLowModuleFinder,
 ) {
 	gpu.RDMAEngine.RemoteRDMAAddressTable = addrTable
@@ -295,7 +296,7 @@ func (b *R9NanoPlatformBuilder) configRDMAEngine(
 }
 
 func (b *R9NanoPlatformBuilder) configPMC(
-	gpu *mgpusim.GPU,
+	gpu *navisim.GPU,
 	gpuDriver *driver.Driver,
 	addrTable *cache.BankedLowModuleFinder,
 ) {

@@ -5,9 +5,9 @@ import (
 
 	"gitlab.com/akita/dnn/layers"
 	"gitlab.com/akita/dnn/tensor"
-	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
+	"gitlab.com/akita/navisim/driver"
+	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
 )
 
 // ReluLayer implements the ReLU algorithm
@@ -126,7 +126,10 @@ func (l *ReluLayer) verifyForwardPass(input, output *Tensor) {
 
 func (l *ReluLayer) saveInput(input *Tensor) {
 	if l.forwardInput != 0 {
-		l.GPUDriver.FreeMemory(l.GPUCtx, l.forwardInput)
+		err := l.GPUDriver.FreeMemory(l.GPUCtx, l.forwardInput)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	numElement := input.Size()[0] * input.Size()[1]

@@ -4,7 +4,7 @@ import (
 	"math"
 
 	"gitlab.com/akita/dnn/tensor"
-	"gitlab.com/akita/mgpusim/driver"
+	"gitlab.com/akita/navisim/driver"
 )
 
 // Vector represents a 1D array stored in the GPU memory.

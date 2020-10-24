@@ -2,7 +2,7 @@ package layers
 
 import (
 	"gitlab.com/akita/dnn/tensor"
-	"gitlab.com/akita/mgpusim/driver"
+	"gitlab.com/akita/navisim/driver"
 )
 
 // CPUToGPULayer is a special layer that receives CPU tensor as input and
