@@ -1,4 +1,4 @@
-package insts
+package rdnainsts
 
 //nolint:gocyclo,funlen
 func (d *Disassembler) initializeDecodeTable() {

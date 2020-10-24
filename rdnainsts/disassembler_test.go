@@ -1,4 +1,4 @@
-package insts
+package rdnainsts
 
 import (
 	"testing"

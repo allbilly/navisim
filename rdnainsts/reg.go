@@ -1,4 +1,4 @@
-package insts
+package rdnainsts
 
 // Reg is the representation of a register
 type Reg struct {

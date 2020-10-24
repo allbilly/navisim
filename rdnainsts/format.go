@@ -1,4 +1,4 @@
-package insts
+package rdnainsts
 
 // FormatType is a enumeration of all the instruction formats defined by GCN3
 type FormatType int
