@@ -23,7 +23,6 @@ const (
 	MIMG
 	EXP
 	FLAT
-	formatTypeCount
 	//Added Instructions from RDNA structure
 	VOP3P
 	GLOBAL

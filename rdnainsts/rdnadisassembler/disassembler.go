@@ -15,7 +15,12 @@ func main() {
 	if err != nil {
 		_ = fmt.Errorf("failed to open file %v", path)
 	}
-	defer elfFile.Close()
+	defer func() {
+		err := elfFile.Close()
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	_, filename := filepath.Split(path)
 

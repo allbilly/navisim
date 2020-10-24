@@ -145,6 +145,7 @@ func (i Inst) smemString() string {
 	return s
 }
 
+//nolint:gocyclo
 func (i Inst) soppString(file *elf.File) string {
 	operandStr := ""
 	if i.Opcode == 12 { // S_WAITCNT

@@ -63,7 +63,11 @@ func NewHsaCoFromData(data []byte) *HsaCo {
 	o.Data = data
 
 	header := new(HsaCoHeader)
-	binary.Read(bytes.NewReader(data), binary.LittleEndian, header)
+	err := binary.Read(bytes.NewReader(data), binary.LittleEndian, header)
+	if err != nil {
+		panic(err)
+	}
+
 	o.HsaCoHeader = header
 
 	return o
@@ -197,7 +201,7 @@ func (h *HsaCoHeader) Info() string {
 	s += fmt.Sprintf("\tGranulated Wf SGPR Count:%d\n", h.WFSgprCount)
 	s += fmt.Sprintf("\tWork-Group Group Segment Byte Size: %d\n", h.WGGroupSegmentByteSize)
 	s += fmt.Sprintf("\tKernarg Segment Byte Size:%d\n", h.KernargSegmentByteSize)
-	s += fmt.Sprintf("\tRegisters:\n")
+	s += fmt.Sprintf("\tRegisters:\n") //nolint:gosimple
 	s += fmt.Sprintf("\t\tEnable SGPR Private SegmentBuffer: %t\n", h.EnableSgprPrivateSegmentBuffer())
 	s += fmt.Sprintf("\t\tEnable SGPR Dispatch Ptr: %t\n", h.EnableSgprDispatchPtr())
 	s += fmt.Sprintf("\t\tEnable SGPR Queue Ptr: %t\n", h.EnableSgprQueuePtr())

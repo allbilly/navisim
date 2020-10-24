@@ -24,8 +24,7 @@ func extractBit(number uint32, bitPosition uint8) uint32 {
 }
 
 func (f *Format) retrieveOpcode(firstFourBytes uint32) Opcode {
-	var opcode uint32
-	opcode = extractBits(firstFourBytes, f.OpcodeLow, f.OpcodeHigh)
+	opcode := extractBits(firstFourBytes, f.OpcodeLow, f.OpcodeHigh)
 	return Opcode(opcode)
 }
 
@@ -369,14 +368,6 @@ func (d *Disassembler) decodeFLAT(inst *Inst, buf []byte) error {
 		inst.Data.RegCount = 4
 		inst.Dst.RegCount = 4
 	}
-	return nil
-}
-
-func (d *Disassembler) decodeGLOBAL(inst *Inst, bug []byte) error {
-	return nil
-}
-
-func (d *Disassembler) decodeSCRATCH(inst *Inst, bug []byte) error {
 	return nil
 }
 
@@ -757,7 +748,6 @@ func (d *Disassembler) Decode(buf []byte) (*Inst, error) {
 	// 	err = d.decodeGLOBAL(inst, buf)
 	default:
 		log.Panicf("unabkle to decode instruction type %s", inst.FormatName)
-		break
 	}
 
 	if err != nil {
