@@ -50,7 +50,7 @@ func exampleGrid() *kernels.Grid {
 	wg.CodeObject = grid.CodeObject
 	grid.WorkGroups = append(grid.WorkGroups, wg)
 
-	wf := kernels.NewWavefront()
+	wf := kernels.NewWavefront(32)
 	wf.WG = wg
 	wg.Wavefronts = append(wg.Wavefronts, wf)
 
@@ -69,21 +69,20 @@ var _ = Describe("ComputeUnit", func() {
 		toVectorMem      *MockPort
 		toACE            *MockPort
 		toCP             *MockPort
-		branchUnit       *MockSubComponent
-		vectorMemDecoder *MockSubComponent
-		vectorMemUnit    *MockSubComponent
-		scalarDecoder    *MockSubComponent
-		vectorDecoder    *MockSubComponent
-		ldsDecoder       *MockSubComponent
-		scalarUnit       *MockSubComponent
-		simdUnit         *MockSubComponent
-		ldsUnit          *MockSubComponent
-
+		ldsDecoder *MockSubComponent
+		ldsUnit *MockSubComponent
 		instMem *MockPort
-
+		branchUnits []*MockSubComponent
+		vectorMemDecoders []*MockSubComponent
+		vectorMemUnits []*MockSubComponent
+		scalarDecoders []*MockSubComponent
+		vectorDecoders []*MockSubComponent
+		scalarUnits []*MockSubComponent
+		simdUnits []*MockSubComponent
+		schedulers []*mockScheduler
 		grid *kernels.Grid
 
-		scheduler *mockScheduler
+	
 	)
 
 	BeforeEach(func() {
@@ -91,35 +90,39 @@ var _ = Describe("ComputeUnit", func() {
 		engine = NewMockEngine(mockCtrl)
 		wfDispatcher = NewMockWfDispatcher(mockCtrl)
 		decoder = new(mockDecoder)
-		scheduler = new(mockScheduler)
-		branchUnit = NewMockSubComponent(mockCtrl)
-		vectorMemDecoder = NewMockSubComponent(mockCtrl)
-		vectorMemUnit = NewMockSubComponent(mockCtrl)
-		scalarDecoder = NewMockSubComponent(mockCtrl)
-		vectorDecoder = NewMockSubComponent(mockCtrl)
+		
 		ldsDecoder = NewMockSubComponent(mockCtrl)
-		scalarUnit = NewMockSubComponent(mockCtrl)
-		simdUnit = NewMockSubComponent(mockCtrl)
 		ldsUnit = NewMockSubComponent(mockCtrl)
 
 		cu = NewComputeUnit("cu", engine)
 		cu.WfDispatcher = wfDispatcher
 		cu.Decoder = decoder
 		cu.Freq = 1
-		cu.SRegFile = append(cu.SRegFile, NewSimpleRegisterFile(1024, 0))
-		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(4096, 64))
-		cu.Scheduler = append(cu.Scheduler, scheduler)
-
-		cu.BranchUnit = branchUnit
-		cu.VectorMemDecoder = vectorMemDecoder
-		cu.VectorMemUnit = vectorMemUnit
-		cu.ScalarDecoder = scalarDecoder
-		cu.VectorDecoder = vectorDecoder
+		for i := 0; i < 4; i++ {
+			cu.SRegFiles = append(cu.SRegFiles, NewSimpleRegisterFile(1024, 0))
+			cu.VRegFiles = append(cu.VRegFiles, NewSimpleRegisterFile(4096, 64))	
+			schedulers = append(schedulers, new(mockScheduler))
+			branchUnits = append(branchUnits,NewMockSubComponent(mockCtrl))
+			vectorMemDecoders = append(vectorMemDecoders,NewMockSubComponent(mockCtrl))
+			vectorMemUnits = append(vectorMemUnits,NewMockSubComponent(mockCtrl))
+			scalarDecoders = append(scalarDecoders,NewMockSubComponent(mockCtrl))
+			vectorDecoders = append(vectorDecoders,NewMockSubComponent(mockCtrl))
+			scalarUnits = append(scalarUnits,NewMockSubComponent(mockCtrl))
+			simdUnits = append(simdUnits,NewMockSubComponent(mockCtrl))
+		}
+		
 		cu.LDSDecoder = ldsDecoder
-		cu.ScalarUnit = append(cu.ScalarUnit, scalarUnit)
-		cu.SIMDUnit = append(cu.SIMDUnit, simdUnit)
-
 		cu.LDSUnit = ldsUnit
+		for i := 0; i < 4; i++ {
+			cu.BranchUnits = append(cu.BranchUnits,branchUnits[i])
+			cu.VectorMemDecoders = append(cu.VectorMemDecoders, vectorMemDecoders[i])
+			cu.VectorMemUnits = append(cu.VectorMemUnits, vectorMemUnits[i])
+			cu.ScalarDecoders = append(cu.ScalarDecoders, scalarDecoders[i])
+			cu.VectorDecoders = append(cu.VectorDecoders, vectorDecoders[i])
+			cu.ScalarUnits = append(cu.ScalarUnits, scalarUnits[i])
+			cu.SIMDUnits = append(cu.SIMDUnits, simdUnits[i])
+			cu.Schedulers = append(cu.Schedulers, schedulers[i])
+		}
 
 		for i := 0; i < 4; i++ {
 			cu.WfPools = append(cu.WfPools, NewWavefrontPool(10))
@@ -156,8 +159,8 @@ var _ = Describe("ComputeUnit", func() {
 		BeforeEach(func() {
 			wg := grid.WorkGroups[0]
 			wg.Wavefronts = make([]*kernels.Wavefront, 2)
-			wg.Wavefronts[0] = kernels.NewWavefront()
-			wg.Wavefronts[1] = kernels.NewWavefront()
+			wg.Wavefronts[0] = kernels.NewWavefront(32)
+			wg.Wavefronts[1] = kernels.NewWavefront(32)
 			location1 := protocol.WfDispatchLocation{
 				Wavefront:  wg.Wavefronts[0],
 				SIMDID:     1,
@@ -303,7 +306,7 @@ var _ = Describe("ComputeUnit", func() {
 				WaveOffset: 0,
 				Data:       make([]byte, 4),
 			}
-			cu.SRegFile[wf.SIMDID].Read(access)
+			cu.SRegFiles[wf.SIMDID].Read(access)
 			Expect(insts.BytesToUint32(access.Data)).To(Equal(uint32(32)))
 			Expect(wf.OutstandingScalarMemAccess).To(Equal(0))
 			Expect(cu.InFlightScalarMemAccess).To(HaveLen(0))
@@ -371,7 +374,7 @@ var _ = Describe("ComputeUnit", func() {
 				access.LaneID = i
 				access.Reg = insts.VReg(0)
 				access.Data = make([]byte, access.RegCount*4)
-				cu.VRegFile[0].Read(access)
+				cu.VRegFiles[0].Read(access)
 				Expect(insts.BytesToUint32(access.Data)).To(Equal(uint32(i)))
 			}
 
@@ -394,7 +397,7 @@ var _ = Describe("ComputeUnit", func() {
 				access.LaneID = i
 				access.Reg = insts.VReg(0)
 				access.Data = make([]byte, access.RegCount*4)
-				cu.VRegFile[0].Read(access)
+				cu.VRegFiles[0].Read(access)
 				Expect(insts.BytesToUint32(access.Data)).To(Equal(uint32(i)))
 			}
 		})
@@ -527,15 +530,19 @@ var _ = Describe("ComputeUnit", func() {
 			vectorMemInfo := VectorMemAccessInfo{}
 			cu.InFlightVectorMemAccess = append(cu.InFlightVectorMemAccess, vectorMemInfo)
 
-			branchUnit.EXPECT().Flush()
-			scalarUnit.EXPECT().Flush()
-			scalarDecoder.EXPECT().Flush()
-			simdUnit.EXPECT().Flush()
-			vectorDecoder.EXPECT().Flush()
+			for i := 0; i < 4; i++{
+            branchUnits[i].EXPECT().Flush()
+			scalarUnits[i].EXPECT().Flush()
+			scalarDecoders[i].EXPECT().Flush()
+			simdUnits[i].EXPECT().Flush()
+			vectorDecoders[i].EXPECT().Flush()
+			vectorMemDecoders[i].EXPECT().Flush()
+			vectorMemUnits[i].EXPECT().Flush()
+			}
+			
 			ldsUnit.EXPECT().Flush()
 			ldsDecoder.EXPECT().Flush()
-			vectorMemDecoder.EXPECT().Flush()
-			vectorMemUnit.EXPECT().Flush()
+			
 
 			cu.flushPipeline(10)
 

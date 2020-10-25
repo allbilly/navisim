@@ -60,7 +60,7 @@ func (u *SIMDUnit) IsIdle() bool {
 func (u *SIMDUnit) AcceptWave(wave *wavefront.Wavefront, now akita.VTimeInSec) {
 	u.toExec = wave
 
-	u.cycleLeft = 64 / u.NumSinglePrecisionUnit
+	u.cycleLeft = 32 / u.NumSinglePrecisionUnit
 	u.logPipelineTask(now, u.toExec.DynamicInst(), false)
 }
 

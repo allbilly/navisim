@@ -27,13 +27,13 @@ type GridBuilder interface {
 }
 
 // NewGridBuilder creates a default grid builder
-func NewGridBuilder(wavefrontSize int) GridBuilder {
-	b := &gridBuilderImpl{}
+func NewGridBuilder(wavefrontSize int) *GridBuilderImpl {
+	b := &GridBuilderImpl{}
 	b.wavefrontSize = wavefrontSize
 	return b
 }
 
-type gridBuilderImpl struct {
+type GridBuilderImpl struct {
 	hsaco         *insts.HsaCo
 	packet        *HsaKernelDispatchPacket
 	filter        WGFilterFunc
@@ -44,7 +44,7 @@ type gridBuilderImpl struct {
 	xid, yid, zid int
 }
 
-func (b *gridBuilderImpl) SetKernel(
+func (b *GridBuilderImpl) SetKernel(
 	info KernelLaunchInfo,
 ) {
 	b.hsaco = info.CodeObject
@@ -58,7 +58,7 @@ func (b *gridBuilderImpl) SetKernel(
 	b.countWG()
 }
 
-func (b *gridBuilderImpl) countWG() {
+func (b *GridBuilderImpl) countWG() {
 	x := int(b.packet.GridSizeX-1)/int(b.packet.WorkgroupSizeX) + 1
 	y := int(b.packet.GridSizeY-1)/int(b.packet.WorkgroupSizeY) + 1
 	z := int(b.packet.GridSizeZ-1)/int(b.packet.WorkgroupSizeZ) + 1
@@ -86,11 +86,11 @@ func (b *gridBuilderImpl) countWG() {
 	}
 }
 
-func (b *gridBuilderImpl) NumWG() int {
+func (b *GridBuilderImpl) NumWG() int {
 	return b.numWG
 }
 
-func (b *gridBuilderImpl) NextWG() *WorkGroup {
+func (b *GridBuilderImpl) NextWG() *WorkGroup {
 	wg := NewWorkGroup()
 
 	for {
@@ -145,7 +145,7 @@ func (b *gridBuilderImpl) NextWG() *WorkGroup {
 	return wg
 }
 
-func (b *gridBuilderImpl) spawnWorkItems(wg *WorkGroup) {
+func (b *GridBuilderImpl) spawnWorkItems(wg *WorkGroup) {
 	for z := 0; z < wg.CurrSizeZ; z++ {
 		for y := 0; y < wg.CurrSizeY; y++ {
 			for x := 0; x < wg.CurrSizeX; x++ {
@@ -160,7 +160,7 @@ func (b *gridBuilderImpl) spawnWorkItems(wg *WorkGroup) {
 	}
 }
 
-func (b *gridBuilderImpl) formWavefronts(wg *WorkGroup) {
+func (b *GridBuilderImpl) formWavefronts(wg *WorkGroup) {
 	var wf *Wavefront
 
 	for i, wi := range wg.WorkItems {

@@ -53,14 +53,14 @@ func (d *WfDispatcherImpl) setWfInfo(
 	wf.VRegOffset = location.VGPROffset
 	wf.LDSOffset = location.LDSOffset
 	wf.PC = wf.Packet.KernelObject + wf.CodeObject.KernelCodeEntryByteOffset
-	wf.EXEC = 0xffffffffffffffff
+	wf.EXEC = 0xffffffff
 }
 
 //nolint:gocyclo,funlen
 func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 	co := wf.CodeObject
 	pkt := wf.Packet
-	SRegFile := d.cu.SRegFile[wf.SIMDID]
+	SRegFile := d.cu.SRegFiles[wf.SIMDID]
 
 	SGPRPtr := 0
 	if co.EnableSgprPrivateSegmentBuffer() {
@@ -210,14 +210,14 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 		x = i % (wf.WG.SizeX * wf.WG.SizeY) % wf.WG.SizeX
 		laneID := i - wf.FirstWiFlatID
 
-		d.cu.VRegFile[wf.SIMDID].Write(RegisterAccess{
+		d.cu.VRegFiles[wf.SIMDID].Write(RegisterAccess{
 			0, insts.VReg(0), 1, laneID, wf.VRegOffset,
 			insts.Uint32ToBytes(uint32(x)),
 			false,
 		})
 
 		if co.EnableVgprWorkItemID() > 0 {
-			d.cu.VRegFile[wf.SIMDID].Write(RegisterAccess{
+			d.cu.VRegFiles[wf.SIMDID].Write(RegisterAccess{
 				0, insts.VReg(1), 1, laneID, wf.VRegOffset,
 				insts.Uint32ToBytes(uint32(y)),
 				false,
@@ -225,7 +225,7 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 		}
 
 		if co.EnableVgprWorkItemID() > 1 {
-			d.cu.VRegFile[wf.SIMDID].Write(RegisterAccess{
+			d.cu.VRegFiles[wf.SIMDID].Write(RegisterAccess{
 				0, insts.VReg(2), 1, laneID, wf.VRegOffset,
 				insts.Uint32ToBytes(uint32(z)),
 				false,

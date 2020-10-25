@@ -86,7 +86,7 @@ func (d *ISADebugger) dumpSRegs(
 	output := "\tSGPRs:\n"
 	for i := 0; i < int(wf.CodeObject.WFSgprCount); i++ {
 		access.Reg = insts.SReg(i)
-		cu.SRegFile[wf.SIMDID].Read(access)
+		cu.SRegFiles[wf.SIMDID].Read(access)
 		regValue := insts.BytesToUint32(data)
 		output += fmt.Sprintf("\t\ts%d: 0x%08x\n", i, regValue)
 	}
@@ -109,7 +109,7 @@ func (d *ISADebugger) dumpVRegs(
 		access.Reg = insts.VReg(i)
 		for laneID := 0; laneID < 64; laneID++ {
 			access.LaneID = laneID
-			cu.VRegFile[simdID].Read(access)
+			cu.VRegFiles[simdID].Read(access)
 			regValue := insts.BytesToUint32(data)
 			output += fmt.Sprintf("0x%08x ", regValue)
 		}

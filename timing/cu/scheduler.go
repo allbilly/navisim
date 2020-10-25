@@ -174,7 +174,7 @@ func (s *SchedulerImpl) DoIssue(now akita.VTimeInSec) bool {
 				continue
 			}
 
-			unit := s.getUnitToIssueTo(wf.InstToIssue.ExeUnit)
+			unit := s.getUnitToIssueTo(wf.InstToIssue.ExeUnit, wf.SIMDID)
 			if unit.CanAcceptWave() {
 				wf.SetDynamicInst(wf.InstToIssue)
 				wf.InstToIssue = nil
@@ -204,18 +204,18 @@ func (s *SchedulerImpl) issueToInternal(wf *wavefront.Wavefront, now akita.VTime
 	return true
 }
 
-func (s *SchedulerImpl) getUnitToIssueTo(u insts.ExeUnit) SubComponent {
+func (s *SchedulerImpl) getUnitToIssueTo(u insts.ExeUnit, i int) SubComponent {
 	switch u {
 	case insts.ExeUnitBranch:
-		return s.cu.BranchUnit
+		return s.cu.BranchUnits[i]
 	case insts.ExeUnitLDS:
 		return s.cu.LDSDecoder
 	case insts.ExeUnitVALU:
-		return s.cu.VectorDecoder
+		return s.cu.VectorDecoders[i]
 	case insts.ExeUnitVMem:
-		return s.cu.VectorMemDecoder
+		return s.cu.VectorMemDecoders[i]
 	case insts.ExeUnitScalar:
-		return s.cu.ScalarDecoder
+		return s.cu.ScalarDecoders[i]
 	default:
 		log.Panic("not sure where to dispatch the instruction")
 	}
@@ -281,7 +281,7 @@ func (s *SchedulerImpl) evalSEndPgm(
 
 func (s *SchedulerImpl) resetRegisterValue(wf *wavefront.Wavefront) {
 	if wf.CodeObject.WIVgprCount > 0 {
-		vRegFile := s.cu.VRegFile[wf.SIMDID].(*SimpleRegisterFile)
+		vRegFile := s.cu.VRegFiles[wf.SIMDID].(*SimpleRegisterFile)
 		vRegStorage := vRegFile.storage
 		data := make([]byte, wf.CodeObject.WIVgprCount*4)
 		for i := 0; i < 64; i++ {
@@ -291,7 +291,7 @@ func (s *SchedulerImpl) resetRegisterValue(wf *wavefront.Wavefront) {
 	}
 
 	if wf.CodeObject.WFSgprCount > 0 {
-		sRegFile := s.cu.SRegFile[wf.SIMDID].(*SimpleRegisterFile)
+		sRegFile := s.cu.SRegFiles[wf.SIMDID].(*SimpleRegisterFile)
 		sRegStorage := sRegFile.storage
 		data := make([]byte, wf.CodeObject.WFSgprCount*4)
 		offset := uint64(wf.SRegOffset)

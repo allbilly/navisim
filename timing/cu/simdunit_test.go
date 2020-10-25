@@ -23,6 +23,7 @@ var _ = Describe("SIMD Unit", func() {
 		alu = new(mockALU)
 		name = "simd"
 		bu = NewSIMDUnit(cu, name, sp, alu)
+		bu.NumSinglePrecisionUnit = 32
 
 	})
 
@@ -43,7 +44,7 @@ var _ = Describe("SIMD Unit", func() {
 		wave.SetDynamicInst(inst)
 		bu.AcceptWave(wave, 10)
 		Expect(bu.toExec).To(BeIdenticalTo(wave))
-		Expect(bu.cycleLeft).To(Equal(4))
+		Expect(bu.cycleLeft).To(Equal(1))
 	})
 
 	It("should run", func() {

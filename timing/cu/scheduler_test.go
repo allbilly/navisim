@@ -83,23 +83,16 @@ var _ = Describe("Scheduler", func() {
 		wfPool := NewWavefrontPool(20)
 
 		vectorDecoder = new(mockCUComponent)
-		cu.VectorDecoder = vectorDecoder
+		cu.VectorDecoders = append(cu.VectorDecoders,vectorDecoder)
 		scalarDecoder = new(mockCUComponent)
-		cu.ScalarDecoder = scalarDecoder
+		cu.ScalarDecoders = append(cu.ScalarDecoders,scalarDecoder)
 		branchUnit = new(mockCUComponent)
-		cu.BranchUnit = branchUnit
+		cu.BranchUnits = append(cu.BranchUnits,branchUnit)
 		vectorMemDecoder = new(mockCUComponent)
-		cu.VectorMemDecoder = vectorMemDecoder
+		cu.VectorMemDecoders = append(cu.VectorMemDecoders,vectorMemDecoder)
 		ldsDecoder = new(mockCUComponent)
 		cu.LDSDecoder = ldsDecoder
-		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(32768, 1024))
-		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(32768, 1024))
-		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(32768, 1024))
-		cu.VRegFile = append(cu.VRegFile, NewSimpleRegisterFile(32768, 1024))
-		cu.SRegFile = append(cu.SRegFile, NewSimpleRegisterFile(10240, 0))
-		cu.SRegFile = append(cu.SRegFile, NewSimpleRegisterFile(10240, 0))
-		cu.SRegFile = append(cu.SRegFile, NewSimpleRegisterFile(10240, 0))
-		cu.SRegFile = append(cu.SRegFile, NewSimpleRegisterFile(10240, 0))
+		
 
 		instMem = NewMockPort(mockCtrl)
 		cu.InstMem = instMem
@@ -173,7 +166,7 @@ var _ = Describe("Scheduler", func() {
 
 		for i := 0; i < 5; i++ {
 			wf := new(wavefront.Wavefront)
-			wf.Wavefront = kernels.NewWavefront()
+			wf.Wavefront = kernels.NewWavefront(32)
 			wf.PC = 0x120
 			wf.InstBuffer = make([]byte, 256)
 			wf.InstBufferStartPC = 0x100
@@ -211,7 +204,7 @@ var _ = Describe("Scheduler", func() {
 	It("should issue internal instruction", func() {
 		wfs := make([]*wavefront.Wavefront, 0)
 		wf := new(wavefront.Wavefront)
-		wf.Wavefront = kernels.NewWavefront()
+		wf.Wavefront = kernels.NewWavefront(32)
 		wf.InstToIssue = wavefront.NewInst(insts.NewInst())
 		wf.InstToIssue.ExeUnit = insts.ExeUnitSpecial
 		wf.InstToIssue.ByteSize = 4
@@ -314,7 +307,7 @@ var _ = Describe("Scheduler", func() {
 	It("should put wavefront in barrier buffer", func() {
 		wg := new(wavefront.WorkGroup)
 		for i := 0; i < 4; i++ {
-			wf := wavefront.NewWavefront(kernels.NewWavefront())
+			wf := wavefront.NewWavefront(kernels.NewWavefront(32))
 			wf.State = wavefront.WfRunning
 			wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
 			wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
@@ -336,7 +329,7 @@ var _ = Describe("Scheduler", func() {
 	It("should wait if barrier buffer is full", func() {
 		wg := new(wavefront.WorkGroup)
 		for i := 0; i < 4; i++ {
-			wf := wavefront.NewWavefront(kernels.NewWavefront())
+			wf := wavefront.NewWavefront(kernels.NewWavefront(32))
 			wf.State = wavefront.WfRunning
 			wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
 			wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
@@ -348,7 +341,7 @@ var _ = Describe("Scheduler", func() {
 
 		scheduler.barrierBuffer = make([]*wavefront.Wavefront, 0, scheduler.barrierBufferSize)
 		for i := 0; i < 16; i++ {
-			wave := wavefront.NewWavefront(kernels.NewWavefront())
+			wave := wavefront.NewWavefront(kernels.NewWavefront(32))
 			wave.State = wavefront.WfAtBarrier
 			scheduler.barrierBuffer = append(scheduler.barrierBuffer, wave)
 		}
@@ -364,7 +357,7 @@ var _ = Describe("Scheduler", func() {
 	It("should continue execution if all wavefronts from a workgroup hits barrier", func() {
 		wg := new(wavefront.WorkGroup)
 		for i := 0; i < 3; i++ {
-			wf := wavefront.NewWavefront(kernels.NewWavefront())
+			wf := wavefront.NewWavefront(kernels.NewWavefront(32))
 			wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
 			wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
 			wf.DynamicInst().Opcode = 10
@@ -396,7 +389,7 @@ var _ = Describe("Scheduler", func() {
 	It("should flush", func() {
 		wg := new(wavefront.WorkGroup)
 		for i := 0; i < 4; i++ {
-			wf := wavefront.NewWavefront(kernels.NewWavefront())
+			wf := wavefront.NewWavefront(kernels.NewWavefront(32))
 			wf.State = wavefront.WfRunning
 			wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
 			wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]

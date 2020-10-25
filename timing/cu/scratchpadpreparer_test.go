@@ -26,8 +26,8 @@ var _ = Describe("ScratchpadPreparer", func() {
 		vRegFile0 = NewSimpleRegisterFile(1024*32*4, 1024)
 
 		cu = NewComputeUnit("cu", nil)
-		cu.SRegFile = append(cu.SRegFile, sRegFile0)
-		cu.VRegFile = append(cu.VRegFile, vRegFile0)
+		cu.SRegFiles = append(cu.SRegFiles, sRegFile0)
+		cu.VRegFiles = append(cu.VRegFiles, vRegFile0)
 
 		sp = NewScratchpadPreparerImpl(cu)
 		wf = wavefront.NewWavefront(nil)

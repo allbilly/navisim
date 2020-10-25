@@ -590,7 +590,7 @@ func (p *ScratchpadPreparerImpl) readReg(
 	buf []byte,
 ) {
 	if reg.IsSReg() {
-		regFile := p.cu.SRegFile[wf.SIMDID]
+		regFile := p.cu.SRegFiles[wf.SIMDID]
 		regRead := RegisterAccess{}
 		regRead.Reg = reg
 		regRead.RegCount = regCount
@@ -599,7 +599,7 @@ func (p *ScratchpadPreparerImpl) readReg(
 		regRead.Data = buf
 		regFile.Read(regRead)
 	} else if reg.IsVReg() {
-		regFile := p.cu.VRegFile[wf.SIMDID]
+		regFile := p.cu.VRegFiles[wf.SIMDID]
 		regRead := RegisterAccess{}
 		regRead.Reg = reg
 		regRead.RegCount = regCount
@@ -650,7 +650,7 @@ func (p *ScratchpadPreparerImpl) writeReg(
 	buf []byte,
 ) {
 	if reg.IsSReg() {
-		regFile := p.cu.SRegFile[wf.SIMDID]
+		regFile := p.cu.SRegFiles[wf.SIMDID]
 		regWrite := RegisterAccess{}
 		regWrite.Reg = reg
 		regWrite.RegCount = regCount
@@ -659,7 +659,7 @@ func (p *ScratchpadPreparerImpl) writeReg(
 		regWrite.Data = buf
 		regFile.Write(regWrite)
 	} else if reg.IsVReg() {
-		regFile := p.cu.VRegFile[wf.SIMDID]
+		regFile := p.cu.VRegFiles[wf.SIMDID]
 		regWrite := RegisterAccess{}
 		regWrite.Reg = reg
 		regWrite.RegCount = regCount

@@ -41,18 +41,18 @@ type ComputeUnit struct {
 
 	running bool
 
-	Scheduler        []Scheduler
-	BranchUnit       SubComponent
-	VectorMemDecoder SubComponent
-	VectorMemUnit    SubComponent
-	ScalarDecoder    SubComponent
-	VectorDecoder    SubComponent
-	LDSDecoder       SubComponent
-	ScalarUnit       []SubComponent
-	SIMDUnit         []SubComponent
-	LDSUnit          SubComponent
-	SRegFile         []RegisterFile
-	VRegFile         []RegisterFile
+	Schedulers        []Scheduler
+	BranchUnits       []SubComponent
+	VectorMemDecoders []SubComponent
+	VectorMemUnits    []SubComponent
+	ScalarDecoders    []SubComponent
+	VectorDecoders    []SubComponent
+	LDSDecoder        SubComponent
+	ScalarUnits       []SubComponent
+	SIMDUnits         []SubComponent
+	LDSUnit           SubComponent
+	SRegFiles         []RegisterFile
+	VRegFiles         []RegisterFile
 
 	InstMem          akita.Port
 	ScalarMem        akita.Port
@@ -168,21 +168,33 @@ func (cu *ComputeUnit) runPipeline(now akita.VTimeInSec) bool {
 	madeProgress := false
 
 	if !cu.isPaused {
-		madeProgress = cu.BranchUnit.Run(now) || madeProgress
-		for _, scalarUnit := range cu.ScalarUnit {
-			madeProgress = scalarUnit.Run(now) || madeProgress
+		for _, branchUnit := range cu.BranchUnits {
+			madeProgress = branchUnit.Run(now) || madeProgress
 		}
 
-		madeProgress = cu.ScalarDecoder.Run(now) || madeProgress
-		for _, simdUnit := range cu.SIMDUnit {
+		for _, scalarUnit := range cu.ScalarUnits {
+			madeProgress = scalarUnit.Run(now) || madeProgress
+		}
+		for _, scalarDecoder := range cu.ScalarDecoders {
+			madeProgress = scalarDecoder.Run(now) || madeProgress
+		}
+
+		for _, simdUnit := range cu.SIMDUnits {
 			madeProgress = simdUnit.Run(now) || madeProgress
 		}
-		madeProgress = cu.VectorDecoder.Run(now) || madeProgress
+		for _, vectorDecoder := range cu.VectorDecoders {
+			madeProgress = vectorDecoder.Run(now) || madeProgress
+		}
 		madeProgress = cu.LDSUnit.Run(now) || madeProgress
 		madeProgress = cu.LDSDecoder.Run(now) || madeProgress
-		madeProgress = cu.VectorMemUnit.Run(now) || madeProgress
-		madeProgress = cu.VectorMemDecoder.Run(now) || madeProgress
-		for _, scheduler := range cu.Scheduler {
+		for _, vectorMemUnit := range cu.VectorMemUnits {
+			madeProgress = vectorMemUnit.Run(now) || madeProgress
+		}
+		for _, vectorMemDecoder := range cu.VectorMemDecoders {
+			madeProgress = vectorMemDecoder.Run(now) || madeProgress
+		}
+
+		for _, scheduler := range cu.Schedulers {
 			madeProgress = scheduler.Run(now) || madeProgress
 		}
 	}
@@ -313,12 +325,12 @@ func (cu *ComputeUnit) flushPipeline(now akita.VTimeInSec) bool {
 	cu.populateShadowBuffers()
 	cu.setWavesToReady()
 	for i := 0; i < 4; i++ {
-		cu.Scheduler[i].Flush()
+		cu.Schedulers[i].Flush()
 	}
 
 	cu.flushInternalComponents()
 	for i := 0; i < 4; i++ {
-		cu.Scheduler[i].Pause()
+		cu.Schedulers[i].Pause()
 	}
 	cu.isPaused = true
 
@@ -335,22 +347,33 @@ func (cu *ComputeUnit) flushPipeline(now akita.VTimeInSec) bool {
 }
 
 func (cu *ComputeUnit) flushInternalComponents() {
-	cu.BranchUnit.Flush()
-	for _, scalarUnit := range cu.ScalarUnit {
+	for _, branchUnit := range cu.BranchUnits {
+		branchUnit.Flush()
+	}
+
+	for _, scalarUnit := range cu.ScalarUnits {
 		scalarUnit.Flush()
 	}
-
-	cu.ScalarDecoder.Flush()
-
-	for _, simdUnit := range cu.SIMDUnit {
-		simdUnit.Flush()
+	for _, scalarDecoder := range cu.ScalarDecoders {
+		scalarDecoder.Flush()
 	}
 
-	cu.VectorDecoder.Flush()
+	for _, simdUnit := range cu.SIMDUnits {
+		simdUnit.Flush()
+	}
+	for _, vectorDecoder := range cu.VectorDecoders {
+		vectorDecoder.Flush()
+	}
+
 	cu.LDSUnit.Flush()
 	cu.LDSDecoder.Flush()
-	cu.VectorMemDecoder.Flush()
-	cu.VectorMemUnit.Flush()
+
+	for _, vectorMemDecoder := range cu.VectorMemDecoders {
+		vectorMemDecoder.Flush()
+	}
+	for _, vectorMemUnit := range cu.VectorMemUnits {
+		vectorMemUnit.Flush()
+	}
 }
 
 func (cu *ComputeUnit) processInputFromACE(now akita.VTimeInSec) bool {
@@ -579,7 +602,7 @@ func (cu *ComputeUnit) handleScalarDataLoadReturn(
 		RegCount:   len(rsp.Data) / 4,
 		Data:       rsp.Data,
 	}
-	cu.SRegFile[wf.SIMDID].Write(access)
+	cu.SRegFiles[wf.SIMDID].Write(access)
 
 	cu.InFlightScalarMemAccess = cu.InFlightScalarMemAccess[1:]
 
@@ -653,7 +676,7 @@ func (cu *ComputeUnit) handleVectorDataLoadReturn(
 		} else {
 			access.Data = rsp.Data[offset : offset+uint64(4*laneInfo.regCount)]
 		}
-		cu.VRegFile[wf.SIMDID].Write(access)
+		cu.VRegFiles[wf.SIMDID].Write(access)
 	}
 
 	if !info.Read.CanWaitForCoalesce {
@@ -795,7 +818,7 @@ func (cu *ComputeUnit) checkShadowBuffers(now akita.VTimeInSec) bool {
 	if numReqsPendingToSend == 0 {
 		cu.isSendingOutShadowBufferReqs = false
 		for i := 0; i < 4; i++ {
-			cu.Scheduler[i].Resume()
+			cu.Schedulers[i].Resume()
 		}
 		cu.isPaused = false
 		return true
@@ -929,6 +952,7 @@ func NewComputeUnit(
 	cu.ToScalarMem = akita.NewLimitNumMsgPort(cu, 4, name+".ToScalarMem")
 	cu.ToVectorMem = akita.NewLimitNumMsgPort(cu, 4, name+".ToVectorMem")
 	cu.ToCP = akita.NewLimitNumMsgPort(cu, 4, name+".ToCP")
+	cu.log2CacheLineSize = 7
 
 	return cu
 }

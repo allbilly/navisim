@@ -25,9 +25,10 @@ func assertAllResourcesFree(r *CUResourceImpl) {
 
 var _ = Describe("cuResource", func() {
 	var (
-		r  *CUResourceImpl
-		wg *kernels.WorkGroup
-		co *insts.HsaCo
+		r      *CUResourceImpl
+		wg     *kernels.WorkGroup
+		co     *insts.HsaCo
+		wfSize int
 	)
 
 	BeforeEach(func() {
@@ -56,8 +57,9 @@ var _ = Describe("cuResource", func() {
 		}
 
 		wg = kernels.NewWorkGroup()
+		wfSize = 32
 		for i := 0; i < 20; i++ {
-			wf := kernels.NewWavefront()
+			wf := kernels.NewWavefront(wfSize)
 			wg.Wavefronts = append(wg.Wavefronts, wf)
 		}
 
@@ -313,7 +315,7 @@ var _ = Describe("cuResource", func() {
 	It("should clear reservation when unmap wg", func() {
 		wg := kernels.NewWorkGroup()
 		for i := 0; i < 10; i++ {
-			wf := kernels.NewWavefront()
+			wf := kernels.NewWavefront(wfSize)
 			wg.Wavefronts = append(wg.Wavefronts, wf)
 		}
 		co.WIVgprCount = 16

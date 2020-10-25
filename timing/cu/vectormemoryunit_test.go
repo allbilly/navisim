@@ -75,7 +75,7 @@ var _ = Describe("Vector Memory Unit", func() {
 	})
 
 	It("should run flat_load_dword", func() {
-		kWave := kernels.NewWavefront()
+		kWave := kernels.NewWavefront(32)
 		wave := wavefront.NewWavefront(kWave)
 		inst := wavefront.NewInst(insts.NewInst())
 		inst.Format = insts.FormatTable[insts.FLAT]
@@ -107,7 +107,7 @@ var _ = Describe("Vector Memory Unit", func() {
 	})
 
 	It("should run flat_store_dword", func() {
-		kWave := kernels.NewWavefront()
+		kWave := kernels.NewWavefront(32)
 		wave := wavefront.NewWavefront(kWave)
 		inst := wavefront.NewInst(insts.NewInst())
 		inst.Format = insts.FormatTable[insts.FLAT]

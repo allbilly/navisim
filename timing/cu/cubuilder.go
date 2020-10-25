@@ -38,7 +38,7 @@ func MakeBuilder() Builder {
 	b.schedulerCount = 4
 	b.sgprCount = []int{2560, 2560, 2560, 2560}
 	b.vgprCount = []int{32768, 32768, 32768, 32768}
-	b.log2CachelineSize = 6
+	b.log2CachelineSize = 7
 	b.numSinglePrecisionUnit = 32
 
 	return b
@@ -135,34 +135,37 @@ func (b *Builder) equipSchedulers(cu *ComputeUnit) {
 		fetchArbitor.InstBufByteSize = 256
 		issueArbitor := NewIssueArbiter(cu.WfPools[i])
 		scheduler := NewScheduler(cu, fetchArbitor, issueArbitor, cu.WfPools[i])
-		cu.Scheduler = append(cu.Scheduler, scheduler)
+		cu.Schedulers = append(cu.Schedulers, scheduler)
 	}
 }
 
 func (b *Builder) equipScalarUnits(cu *ComputeUnit) {
-	cu.BranchUnit = NewBranchUnit(cu, b.scratchpadPreparer, b.alu)
 
-	scalarDecoder := NewDecodeUnit(cu)
-	cu.ScalarDecoder = scalarDecoder
 	for i := 0; i < b.simdCount; i++ {
+		branchUnit := NewBranchUnit(cu, b.scratchpadPreparer, b.alu)
+		scalarDecoder := NewDecodeUnit(cu)
+
 		scalarUnit := NewScalarUnit(cu, b.scratchpadPreparer, b.alu)
 		scalarUnit.log2CachelineSize = b.log2CachelineSize
 		scalarDecoder.AddExecutionUnit(scalarUnit)
-		cu.ScalarUnit = append(cu.ScalarUnit, scalarUnit)
+		cu.BranchUnits = append(cu.BranchUnits, branchUnit)
+		cu.ScalarUnits = append(cu.ScalarUnits, scalarUnit)
+		cu.ScalarDecoders = append(cu.ScalarDecoders, scalarDecoder)
 	}
 }
 
 func (b *Builder) equipSIMDUnits(cu *ComputeUnit) {
-	vectorDecoder := NewDecodeUnit(cu)
-	cu.VectorDecoder = vectorDecoder
+
 	for i := 0; i < b.simdCount; i++ {
+		vectorDecoder := NewDecodeUnit(cu)
 		name := fmt.Sprintf(b.name+".SIMD%d", i)
 		simdUnit := NewSIMDUnit(cu, name, b.scratchpadPreparer, b.alu)
 		if b.enableVisTracing {
 			tracing.CollectTrace(simdUnit, b.visTracer)
 		}
 		vectorDecoder.AddExecutionUnit(simdUnit)
-		cu.SIMDUnit = append(cu.SIMDUnit, simdUnit)
+		cu.SIMDUnits = append(cu.SIMDUnits, simdUnit)
+		cu.VectorDecoders = append(cu.VectorDecoders, vectorDecoder)
 	}
 }
 
@@ -179,40 +182,37 @@ func (b *Builder) equipLDSUnit(cu *ComputeUnit) {
 }
 
 func (b *Builder) equipVectorMemoryUnit(cu *ComputeUnit) {
-	vectorMemDecoder := NewDecodeUnit(cu)
-	cu.VectorMemDecoder = vectorMemDecoder
-
-	coalescer := &defaultCoalescer{
-		log2CacheLineSize: b.log2CachelineSize,
-	}
-	vectorMemoryUnit := NewVectorMemoryUnit(cu, b.scratchpadPreparer, coalescer)
-	cu.VectorMemUnit = vectorMemoryUnit
-
-	vectorMemoryUnit.postInstructionPipelineBuffer = util.NewBuffer(8)
-	vectorMemoryUnit.instructionPipeline = pipelining.NewPipeline(
-		cu.Name()+".VectorMemoryUnit.InstPipeline",
-		6, 1,
-		vectorMemoryUnit.postInstructionPipelineBuffer)
-
-	vectorMemoryUnit.postTransactionPipelineBuffer = util.NewBuffer(8)
-	vectorMemoryUnit.transactionPipeline = pipelining.NewPipeline(
-		cu.Name()+".VectorMemoryUnit.TransactionPipeline",
-		60, 1,
-		vectorMemoryUnit.postTransactionPipelineBuffer)
-
 	for i := 0; i < b.simdCount; i++ {
+		vectorMemDecoder := NewDecodeUnit(cu)
+		coalescer := &defaultCoalescer{
+			log2CacheLineSize: b.log2CachelineSize,
+		}
+		vectorMemoryUnit := NewVectorMemoryUnit(cu, b.scratchpadPreparer, coalescer)
+		vectorMemoryUnit.postInstructionPipelineBuffer = util.NewBuffer(8)
+		vectorMemoryUnit.instructionPipeline = pipelining.NewPipeline(
+			cu.Name()+".VectorMemoryUnit.InstPipeline",
+			6, 1,
+			vectorMemoryUnit.postInstructionPipelineBuffer)
+
+		vectorMemoryUnit.postTransactionPipelineBuffer = util.NewBuffer(8)
+		vectorMemoryUnit.transactionPipeline = pipelining.NewPipeline(
+			cu.Name()+".VectorMemoryUnit.TransactionPipeline",
+			60, 1,
+			vectorMemoryUnit.postTransactionPipelineBuffer)
 		vectorMemDecoder.AddExecutionUnit(vectorMemoryUnit)
+		cu.VectorMemUnits = append(cu.VectorMemUnits, vectorMemoryUnit)
+		cu.VectorDecoders = append(cu.VectorDecoders, vectorMemDecoder)
 	}
 }
 
 func (b *Builder) equipRegisterFiles(cu *ComputeUnit) {
 	for i := 0; i < b.simdCount; i++ {
 		sRegFile := NewSimpleRegisterFile(uint64(b.sgprCount[i]*4), 0)
-		cu.SRegFile = append(cu.SRegFile, sRegFile)
+		cu.SRegFiles = append(cu.SRegFiles, sRegFile)
 	}
 
 	for i := 0; i < b.simdCount; i++ {
 		vRegFile := NewSimpleRegisterFile(uint64(b.vgprCount[i]*4), 1024)
-		cu.VRegFile = append(cu.VRegFile, vRegFile)
+		cu.VRegFiles = append(cu.VRegFiles, vRegFile)
 	}
 }
