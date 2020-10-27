@@ -33,6 +33,7 @@ func NewGridBuilder(wavefrontSize int) *GridBuilderImpl {
 	return b
 }
 
+// GridBuilderImpl implements gridBuilder
 type GridBuilderImpl struct {
 	hsaco         *insts.HsaCo
 	packet        *HsaKernelDispatchPacket
@@ -44,6 +45,7 @@ type GridBuilderImpl struct {
 	xid, yid, zid int
 }
 
+// SetKernel builds a grid through kernelLaunchInfo
 func (b *GridBuilderImpl) SetKernel(
 	info KernelLaunchInfo,
 ) {
@@ -86,10 +88,12 @@ func (b *GridBuilderImpl) countWG() {
 	}
 }
 
+// NumWG returns how many wg in the grid
 func (b *GridBuilderImpl) NumWG() int {
 	return b.numWG
 }
 
+// NextWG builds the next wg
 func (b *GridBuilderImpl) NextWG() *WorkGroup {
 	wg := NewWorkGroup()
 

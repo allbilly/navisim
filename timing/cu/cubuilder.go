@@ -111,6 +111,7 @@ func (b *Builder) Build(name string) *ComputeUnit {
 	cu.WfDispatcher = NewWfDispatcher(cu)
 	cu.InFlightVectorMemAccessLimit = 512
 	cu.log2CacheLineSize = b.log2CachelineSize
+	cu.numSinglePrecisionUnit = b.numSinglePrecisionUnit
 
 	b.alu = emu.NewALU(nil)
 	b.scratchpadPreparer = NewScratchpadPreparerImpl(cu)
@@ -140,7 +141,6 @@ func (b *Builder) equipSchedulers(cu *ComputeUnit) {
 }
 
 func (b *Builder) equipScalarUnits(cu *ComputeUnit) {
-
 	for i := 0; i < b.simdCount; i++ {
 		branchUnit := NewBranchUnit(cu, b.scratchpadPreparer, b.alu)
 		scalarDecoder := NewDecodeUnit(cu)
@@ -155,7 +155,6 @@ func (b *Builder) equipScalarUnits(cu *ComputeUnit) {
 }
 
 func (b *Builder) equipSIMDUnits(cu *ComputeUnit) {
-
 	for i := 0; i < b.simdCount; i++ {
 		vectorDecoder := NewDecodeUnit(cu)
 		name := fmt.Sprintf(b.name+".SIMD%d", i)
@@ -201,7 +200,7 @@ func (b *Builder) equipVectorMemoryUnit(cu *ComputeUnit) {
 			vectorMemoryUnit.postTransactionPipelineBuffer)
 		vectorMemDecoder.AddExecutionUnit(vectorMemoryUnit)
 		cu.VectorMemUnits = append(cu.VectorMemUnits, vectorMemoryUnit)
-		cu.VectorDecoders = append(cu.VectorDecoders, vectorMemDecoder)
+		cu.VectorMemDecoders = append(cu.VectorMemDecoders, vectorMemDecoder)
 	}
 }
 
