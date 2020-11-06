@@ -585,13 +585,16 @@ func (cu *ComputeUnit) handleScalarDataLoadReturn(
 	now akita.VTimeInSec,
 	rsp *mem.DataReadyRsp,
 ) {
+	// if rsp.ID == "20282" {
+	// 	fmt.Println("Here")
+	// }
 	if len(cu.InFlightScalarMemAccess) == 0 {
 		return
 	}
 
-	info := cu.InFlightScalarMemAccess[0]
+	info := cu.findScalarMemAccess(rsp.RespondTo)
 	req := info.Req
-	if req.ID != rsp.RespondTo {
+	if info == nil {
 		return
 	}
 
@@ -604,8 +607,6 @@ func (cu *ComputeUnit) handleScalarDataLoadReturn(
 	}
 	cu.SRegFiles[wf.SIMDID].Write(access)
 
-	cu.InFlightScalarMemAccess = cu.InFlightScalarMemAccess[1:]
-
 	cu.logInstTask(now, wf, info.Inst, true)
 	tracing.TraceReqFinalize(req, now, cu)
 
@@ -613,7 +614,18 @@ func (cu *ComputeUnit) handleScalarDataLoadReturn(
 		wf.OutstandingScalarMemAccess--
 	}
 }
-
+func (cu *ComputeUnit) findScalarMemAccess(id string) *ScalarMemAccessInfo {
+	length := len(cu.InFlightScalarMemAccess)
+	for i := 0; i < length; i++ {
+		if cu.InFlightScalarMemAccess[i].Req.ID == id {
+			info := cu.InFlightScalarMemAccess[i]
+			cu.InFlightScalarMemAccess[i] = cu.InFlightScalarMemAccess[length-1]
+			cu.InFlightScalarMemAccess = cu.InFlightScalarMemAccess[:length-1]
+			return info
+		}
+	}
+	return nil
+}
 func (cu *ComputeUnit) isLastRead(req *mem.ReadReq) bool {
 	return !req.CanWaitForCoalesce
 }
@@ -646,17 +658,8 @@ func (cu *ComputeUnit) handleVectorDataLoadReturn(
 		return
 	}
 
-	info := cu.InFlightVectorMemAccess[0]
+	info := cu.findVectorMemAccessRead(rsp.RespondTo)
 
-	if info.Read == nil {
-		return
-	}
-
-	if info.Read.ID != rsp.RespondTo {
-		return
-	}
-
-	cu.InFlightVectorMemAccess = cu.InFlightVectorMemAccess[1:]
 	tracing.TraceReqFinalize(info.Read, now, cu)
 
 	wf := info.Wavefront
@@ -688,7 +691,19 @@ func (cu *ComputeUnit) handleVectorDataLoadReturn(
 		cu.logInstTask(now, wf, info.Inst, true)
 	}
 }
+func (cu *ComputeUnit) findVectorMemAccessRead(id string) VectorMemAccessInfo {
+	length := len(cu.InFlightVectorMemAccess)
+	for i := 0; i < length; i++ {
+		info := cu.InFlightVectorMemAccess[i]
+		if info.Read != nil && info.Read.ID == id {
 
+			cu.InFlightVectorMemAccess[i] = cu.InFlightVectorMemAccess[length-1]
+			cu.InFlightVectorMemAccess = cu.InFlightVectorMemAccess[:length-1]
+			return info
+		}
+	}
+	return VectorMemAccessInfo{}
+}
 func (cu *ComputeUnit) handleVectorDataStoreRsp(
 	now akita.VTimeInSec,
 	rsp *mem.WriteDoneRsp,
@@ -697,17 +712,8 @@ func (cu *ComputeUnit) handleVectorDataStoreRsp(
 		return
 	}
 
-	info := cu.InFlightVectorMemAccess[0]
+	info := cu.findVectorMemAccessWrite(rsp.RespondTo)
 
-	if info.Write == nil {
-		return
-	}
-
-	if info.Write.ID != rsp.RespondTo {
-		return
-	}
-
-	cu.InFlightVectorMemAccess = cu.InFlightVectorMemAccess[1:]
 	tracing.TraceReqFinalize(info.Write, now, cu)
 
 	wf := info.Wavefront
@@ -718,6 +724,19 @@ func (cu *ComputeUnit) handleVectorDataStoreRsp(
 		}
 		cu.logInstTask(now, wf, info.Inst, true)
 	}
+}
+func (cu *ComputeUnit) findVectorMemAccessWrite(id string) VectorMemAccessInfo {
+	length := len(cu.InFlightVectorMemAccess)
+	for i := 0; i < length; i++ {
+		info := cu.InFlightVectorMemAccess[i]
+		if info.Write != nil && info.Write.ID == id {
+
+			cu.InFlightVectorMemAccess[i] = cu.InFlightVectorMemAccess[length-1]
+			cu.InFlightVectorMemAccess = cu.InFlightVectorMemAccess[:length-1]
+			return info
+		}
+	}
+	return VectorMemAccessInfo{}
 }
 
 // UpdatePCAndSetReady is self explained
