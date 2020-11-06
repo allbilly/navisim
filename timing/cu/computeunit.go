@@ -696,7 +696,6 @@ func (cu *ComputeUnit) findVectorMemAccessRead(id string) VectorMemAccessInfo {
 	for i := 0; i < length; i++ {
 		info := cu.InFlightVectorMemAccess[i]
 		if info.Read != nil && info.Read.ID == id {
-
 			cu.InFlightVectorMemAccess[i] = cu.InFlightVectorMemAccess[length-1]
 			cu.InFlightVectorMemAccess = cu.InFlightVectorMemAccess[:length-1]
 			return info
@@ -730,7 +729,6 @@ func (cu *ComputeUnit) findVectorMemAccessWrite(id string) VectorMemAccessInfo {
 	for i := 0; i < length; i++ {
 		info := cu.InFlightVectorMemAccess[i]
 		if info.Write != nil && info.Write.ID == id {
-
 			cu.InFlightVectorMemAccess[i] = cu.InFlightVectorMemAccess[length-1]
 			cu.InFlightVectorMemAccess = cu.InFlightVectorMemAccess[:length-1]
 			return info

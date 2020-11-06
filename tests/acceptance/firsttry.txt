@@ -1,0 +1,5 @@
+unning cd ../../samples/pagerank && ./pagerank -verify -node=64 -sparsity=0.5 -iterations=2 -gpus=1
+Failed.
+Running cd ../../samples/pagerank && ./pagerank -verify -node=64 -sparsity=0.5 -iterations=2 -gpus=1 -parallel
+Failed.
+Running cd ../../samples/simpleconvolution && ./simpleconvolution -verify -gpus=1 -timing -parallel
