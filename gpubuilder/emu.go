@@ -13,7 +13,6 @@ import (
 	"gitlab.com/akita/mem/vm"
 	"gitlab.com/akita/navisim"
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/emu"
 	"gitlab.com/akita/navisim/rdnaemu"
 	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/cp"
@@ -149,7 +148,7 @@ func (b *EmuGPUBuilder) buildComputeUnits() {
 			if err != nil {
 				log.Fatal(err.Error())
 			}
-			isaDebugger := emu.NewISADebugger(log.New(isaDebug, "", 0))
+			isaDebugger := rdnaemu.NewISADebugger(log.New(isaDebug, "", 0))
 			computeUnit.AcceptHook(isaDebugger)
 		}
 	}

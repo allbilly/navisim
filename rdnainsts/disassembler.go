@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+// extractBits takes the bits from a uint32 number. The range is specified with
+// lo (includeds) and hi (included).
 func extractBits(number uint32, lo uint8, hi uint8) uint32 {
 	var mask uint64
 	var extracted uint64
@@ -411,13 +413,17 @@ func (d *Disassembler) decodeSMEM(inst *Inst, buf []byte) error {
 		inst.Data.RegCount = 16
 	}
 
-	if inst.Imm {
-		bits64 := int64(extractBits(bytesHi, 0, 19))
-		inst.Offset = NewIntOperand(0, bits64)
-	} else {
-		bits := int(extractBits(bytesHi, 0, 19))
-		inst.Offset = NewSRegOperand(bits, bits, 1)
-	}
+	// if inst.Imm {
+	// 	bits64 := int64(extractBits(bytesHi, 0, 19))
+	// 	inst.Offset = NewIntOperand(0, bits64)
+	// } else {
+	// 	bits := int(extractBits(bytesHi, 0, 19))
+	// 	inst.Offset = NewSRegOperand(bits, bits, 1)
+	// }
+
+	bits64 := int64(extractBits(bytesHi, 0, 20))
+	inst.Offset = NewIntOperand(0, bits64)
+
 	return nil
 }
 

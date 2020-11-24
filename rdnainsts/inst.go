@@ -141,7 +141,11 @@ func (i Inst) flatString() string {
 func (i Inst) smemString() string {
 	// TODO: Consider store instructions, and the case if imm = 0
 	s := fmt.Sprintf("%s %s, %s, %#x",
-		i.InstName, i.Data.String(), i.Base.String(), uint16(i.Offset.Code))
+		i.InstName,
+		i.Data.String(),
+		i.Base.String(),
+		uint16(i.Offset.IntValue),
+	)
 	return s
 }
 
