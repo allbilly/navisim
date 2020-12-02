@@ -31,29 +31,29 @@ func (u *ALUImpl) runSOP2(state InstEmuState) {
 		u.runSMAXI32(state)
 	case 9:
 		u.runSMAXU32(state)
-	case 12:
+	case 14:
 		u.runSANDB32(state)
-	case 13:
-		u.runSANDB64(state)
 	case 15:
+		u.runSANDB64(state)
+	case 17:
 		u.runSORB64(state)
-	case 16, 17:
-		u.runSXORB64(state)
 	case 19:
+		u.runSXORB64(state)
+	case 20:
 		u.runSANDN2B64(state)
-	case 28:
-		u.runSLSHLB32(state)
-	case 29:
-		u.runSLSHLB64(state)
 	case 30:
-		u.runSLSHRB32(state)
+		u.runSLSHLB32(state)
 	case 31:
-		u.runSLSHRB64(state)
+		u.runSLSHLB64(state)
 	case 32:
-		u.runSASHRI32(state)
+		u.runSLSHRB32(state)
+	case 33:
+		u.runSLSHRB64(state)
 	case 34:
-		u.runSBFMB32(state)
+		u.runSASHRI32(state)
 	case 36:
+		u.runSBFMB32(state)
+	case 38:
 		u.runSMULI32(state)
 	default:
 		log.Panicf("Opcode %d for SOP2 format is not implemented", inst.Opcode)

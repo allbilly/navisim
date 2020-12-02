@@ -6,8 +6,8 @@ import (
 	"math"
 
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 // KernelArgs defines kernel arguments
@@ -28,7 +28,7 @@ type Benchmark struct {
 	driver  *driver.Driver
 	context *driver.Context
 	queue   *driver.CommandQueue
-	hsaco   *insts.HsaCo
+	hsaco   *rdnainsts.HsaCo
 	gpus    []int
 
 	Length       int

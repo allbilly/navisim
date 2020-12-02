@@ -22,6 +22,7 @@ func (a *storageAccessor) Read(pid ca.PID, vAddr, byteSize uint64) []byte {
 	offset := uint64(0)
 
 	for sizeLeft > 0 {
+
 		currVAddr := vAddr + offset
 		nextPageStart := ((currVAddr >> a.log2PageSize) + 1) << a.log2PageSize
 		sizeInPageLeft := nextPageStart - currVAddr
