@@ -348,7 +348,7 @@ def main():
         err |= mm.test()
         err |= mt.test()
         err |= bs.test()
-        err |= sc.test()
+        #err |= sc.test()
         err |= fw.test(test_multi_gpu=False)
         err |= re.test()
         err |= mp.test(test_multi_gpu=False)
