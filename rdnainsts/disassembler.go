@@ -383,9 +383,9 @@ func (d *Disassembler) decodeSMEM(inst *Inst, buf []byte) error {
 		inst.GlobalLevelCoherent = true
 	}
 
-	if extractBits(bytesLo, 17, 17) != 0 {
-		inst.Imm = true
-	}
+	// if extractBits(bytesLo, 17, 17) != 0 {
+	// 	inst.Imm = true
+	// }
 
 	sbaseValue := extractBits(bytesLo, 0, 5)
 	bits := int(sbaseValue << 1)
@@ -402,7 +402,7 @@ func (d *Disassembler) decodeSMEM(inst *Inst, buf []byte) error {
 	}
 
 	switch inst.Opcode {
-	case 0:
+	case 0, 8:
 		inst.Data.RegCount = 1
 	case 1, 9:
 		inst.Data.RegCount = 2
