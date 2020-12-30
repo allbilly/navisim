@@ -70,6 +70,10 @@ func (wf *Wavefront) VRegValue(lane int, i int) uint32 {
 // ReadReg returns the raw register value
 //nolint:gocyclo
 func (wf *Wavefront) ReadReg(reg *rdnainsts.Reg, regCount int, laneID int) []byte {
+	if regCount == 0 {
+		regCount = 1
+	}
+
 	numBytes := reg.ByteSize
 	if regCount >= 2 {
 		numBytes *= regCount
@@ -100,7 +104,7 @@ func (wf *Wavefront) ReadReg(reg *rdnainsts.Reg, regCount int, laneID int) []byt
 	} else if reg.RegType == rdnainsts.M0 {
 		copy(value, rdnainsts.Uint32ToBytes(wf.M0))
 	} else {
-		log.Panicf("Register type %s not supported", reg.Name)
+		log.Panicf("Register type %s is not supported", reg.Name)
 	}
 
 	return value
@@ -114,6 +118,10 @@ func (wf *Wavefront) WriteReg(
 	laneID int,
 	data []byte,
 ) {
+	if regCount == 0 {
+		regCount = 1
+	}
+
 	numBytes := reg.ByteSize
 	if regCount >= 2 {
 		numBytes *= regCount
@@ -129,7 +137,7 @@ func (wf *Wavefront) WriteReg(
 		wf.SCC = data[0]
 	} else if reg.RegType == rdnainsts.VCC {
 		wf.VCC = rdnainsts.BytesToUint64(data)
-	} else if reg.RegType == rdnainsts.VCCLO && regCount == 2 {
+	} else if reg.RegType == rdnainsts.VCCLO && regCount == 1 {
 		wf.VCC = rdnainsts.BytesToUint64(data)
 	} else if reg.RegType == rdnainsts.VCCLO && regCount == 1 {
 		wf.VCC &= uint64(0x00000000ffffffff)

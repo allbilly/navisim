@@ -11,24 +11,24 @@ import (
 func (u *ALUImpl) runFlat(state InstEmuState) {
 	inst := state.Inst()
 	switch inst.Opcode {
-	case 16:
+	case 8:
 		u.runFlatLoadUByte(state)
-	case 18:
+	case 10:
 		u.runFlatLoadUShort(state)
-	case 20:
+	case 12:
 		u.runFlatLoadDWord(state)
-	case 21:
+	case 13:
 		u.runFlatLoadDWordX2(state)
-	case 23:
+	case 14:
 		u.runFlatLoadDWordX4(state)
 	case 28:
 		u.runFlatStoreDWord(state)
 	case 29:
 		u.runFlatStoreDWordX2(state)
 	case 30:
-		u.runFlatStoreDWordX3(state)
-	case 31:
 		u.runFlatStoreDWordX4(state)
+	case 31:
+		u.runFlatStoreDWordX3(state)
 	default:
 		log.Panicf("Opcode %d for FLAT format is not implemented", inst.Opcode)
 	}

@@ -6,32 +6,32 @@ import "log"
 func (u *ALUImpl) runSOP1(state InstEmuState) {
 	inst := state.Inst()
 	switch inst.Opcode {
-	case 0:
+	case 3:
 		u.runSMOVB32(state)
-	case 1:
-		u.runSMOVB64(state)
 	case 4:
-		u.runSNOTU32(state)
-	case 8:
+		u.runSMOVB64(state)
+	case 11:
 		u.runSBREVB32(state)
-	case 28:
+	case 31:
 		u.runSGETPCB64(state)
-	case 32:
-		u.runSANDSAVEEXECB64(state)
-	case 33:
-		u.runSORSAVEEXECB64(state)
-	case 34:
-		u.runSXORSAVEEXECB64(state)
-	case 35:
-		u.runSANDN2SAVEEXECB64(state)
 	case 36:
-		u.runSORN2SAVEEXECB64(state)
+		u.runSANDSAVEEXECB64(state)
 	case 37:
-		u.runSNANDSAVEEXECB64(state)
+		u.runSORSAVEEXECB64(state)
 	case 38:
-		u.runSNORSAVEEXECB64(state)
+		u.runSXORSAVEEXECB64(state)
 	case 39:
+		u.runSANDN2SAVEEXECB64(state)
+	case 40:
+		u.runSORN2SAVEEXECB64(state)
+	case 41:
+		u.runSNANDSAVEEXECB64(state)
+	case 42:
+		u.runSNORSAVEEXECB64(state)
+	case 43:
 		u.runSNXORSAVEEXECB64(state)
+	case 60:
+		u.runSANDSAVEEXECB32(state)
 	default:
 		log.Panicf("Opcode %d for SOP1 format is not implemented", inst.Opcode)
 	}
@@ -45,14 +45,6 @@ func (u *ALUImpl) runSMOVB32(state InstEmuState) {
 func (u *ALUImpl) runSMOVB64(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP1()
 	sp.DST = sp.SRC0
-}
-
-func (u *ALUImpl) runSNOTU32(state InstEmuState) {
-	sp := state.Scratchpad().AsSOP1()
-	sp.DST = ^sp.SRC0
-	if sp.DST != 0 {
-		sp.SCC = 1
-	}
 }
 
 func (u *ALUImpl) runSBREVB32(state InstEmuState) {
@@ -154,6 +146,17 @@ func (u *ALUImpl) runSNXORSAVEEXECB64(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP1()
 	sp.DST = sp.EXEC
 	sp.EXEC = ^(sp.SRC0 ^ sp.EXEC)
+	if sp.EXEC != 0 {
+		sp.SCC = 1
+	} else {
+		sp.SCC = 0
+	}
+}
+
+func (u *ALUImpl) runSANDSAVEEXECB32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP1()
+	sp.DST = sp.EXEC
+	sp.EXEC = (sp.SRC0 & sp.EXEC)
 	if sp.EXEC != 0 {
 		sp.SCC = 1
 	} else {
