@@ -670,7 +670,6 @@ func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 
 // func (d *Disassembler) decodeVOP3P(inst *Inst, buf []byte) error {
 // }
-}
 
 func (d *Disassembler) combineDSOffsets(inst *Inst) {
 	switch inst.Opcode {
