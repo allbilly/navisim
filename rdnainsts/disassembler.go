@@ -383,10 +383,6 @@ func (d *Disassembler) decodeSMEM(inst *Inst, buf []byte) error {
 		inst.GlobalLevelCoherent = true
 	}
 
-	// if extractBits(bytesLo, 17, 17) != 0 {
-	// 	inst.Imm = true
-	// }
-
 	sbaseValue := extractBits(bytesLo, 0, 5)
 	bits := int(sbaseValue << 1)
 	inst.Base = NewSRegOperand(bits, bits, 2)
@@ -413,14 +409,6 @@ func (d *Disassembler) decodeSMEM(inst *Inst, buf []byte) error {
 	case 4, 12:
 		inst.Data.RegCount = 16
 	}
-
-	// if inst.Imm {
-	// 	bits64 := int64(extractBits(bytesHi, 0, 19))
-	// 	inst.Offset = NewIntOperand(0, bits64)
-	// } else {
-	// 	bits := int(extractBits(bytesHi, 0, 19))
-	// 	inst.Offset = NewSRegOperand(bits, bits, 1)
-	// }
 
 	bits64 := int64(extractBits(bytesHi, 0, 20))
 	inst.Offset = NewIntOperand(0, bits64)
@@ -682,12 +670,7 @@ func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 
 // func (d *Disassembler) decodeVOP3P(inst *Inst, buf []byte) error {
 // }
-
-// func (d *Disassembler) decodeSCRATCH(inst *Inst, buf []byte) error {
-// }
-
-// func (d *Disassembler) decodeGLOBAL(inst *Inst, buf []byte) error {
-// }
+}
 
 func (d *Disassembler) combineDSOffsets(inst *Inst) {
 	switch inst.Opcode {
@@ -749,10 +732,6 @@ func (d *Disassembler) Decode(buf []byte) (*Inst, error) {
 		err = d.decodeDS(inst, buf)
 	// case VOP3P:
 	// 	err = d.decodeVOP3P(inst, buf)
-	// case SCRATCH:
-	// 	err = d.decodeSCRATCH(inst, buf)
-	// case GLOBAL:
-	// 	err = d.decodeGLOBAL(inst, buf)
 	default:
 		log.Panicf("unabkle to decode instruction type %s", inst.FormatName)
 	}
