@@ -22,11 +22,12 @@ type GridBuilder interface {
 	SetKernel(info KernelLaunchInfo)
 	NumWG() int
 	NextWG() *WorkGroup
+	SetWavefrontSize(n int)
 }
 
 // NewGridBuilder creates a default grid builder
 func NewGridBuilder() GridBuilder {
-	return &gridBuilderImpl{}
+	return &gridBuilderImpl{wfSize: 32}
 }
 
 type gridBuilderImpl struct {
@@ -35,13 +36,16 @@ type gridBuilderImpl struct {
 	filter     WGFilterFunc
 	packetAddr uint64
 	numWG      int
+	wfSize     int
 
 	xid, yid, zid int
 }
 
-func (b *gridBuilderImpl) SetKernel(
-	info KernelLaunchInfo,
-) {
+func (b *gridBuilderImpl) SetWavefrontSize(n int) {
+	b.wfSize = n
+}
+
+func (b *gridBuilderImpl) SetKernel(info KernelLaunchInfo) {
 	b.hsaco = info.CodeObject
 	b.packet = info.Packet
 	b.packetAddr = info.PacketAddr
@@ -157,11 +161,10 @@ func (b *gridBuilderImpl) spawnWorkItems(wg *WorkGroup) {
 
 func (b *gridBuilderImpl) formWavefronts(wg *WorkGroup) {
 	var wf *Wavefront
-	wavefrontSize := 64
 	for i, wi := range wg.WorkItems {
 		wg := wi.WG
 		inWGID := wi.IDZ*wg.SizeX*wg.SizeY + wi.IDY*wg.SizeX + wi.IDX
-		if inWGID%wavefrontSize == 0 {
+		if inWGID%b.wfSize == 0 {
 			wf = NewWavefront()
 			wf.FirstWiFlatID = wg.WorkItems[i].FlattenedID()
 			wf.CodeObject = b.hsaco
@@ -171,7 +174,7 @@ func (b *gridBuilderImpl) formWavefronts(wg *WorkGroup) {
 			wg.Wavefronts = append(wg.Wavefronts, wf)
 		}
 		wf.WorkItems = append(wf.WorkItems, wi)
-		wf.InitExecMask |= 1 << uint32(inWGID%wavefrontSize)
+		wf.InitExecMask |= 1 << uint32(inWGID%b.wfSize)
 	}
 }
 

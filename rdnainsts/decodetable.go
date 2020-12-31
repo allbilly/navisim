@@ -109,7 +109,7 @@ func (d *Disassembler) initializeDecodeTable() {
 
 	// VOP1 instructions
 	d.addInstType(&InstType{"v_nop", 0, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 0, 0, 0})
-	d.addInstType(&InstType{"v_mov_b32_e32", 1, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 0, 0, 0})
+	d.addInstType(&InstType{"v_mov_b32", 1, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 0, 0, 0})
 	d.addInstType(&InstType{"v_readfirstlane_b32", 2, FormatTable[VOP1], 0, ExeUnitVALU, 32, 32, 0, 0, 0})
 	d.addInstType(&InstType{"v_cvt_i32_f64", 3, FormatTable[VOP1], 0, ExeUnitVALU, 32, 64, 0, 0, 0})
 	d.addInstType(&InstType{"v_cvt_f64_i32", 4, FormatTable[VOP1], 0, ExeUnitVALU, 64, 32, 0, 0, 0})
