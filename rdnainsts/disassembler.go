@@ -353,8 +353,15 @@ func (d *Disassembler) decodeFLAT(inst *Inst, buf []byte) error {
 	bits := int(extractBits(bytesLo, 14, 15))
 	inst.Seg = bits
 
+	bits64 := int64(extractBits(bytesLo, 0, 11))
+	inst.Offset = NewIntOperand(bits, bits64)
+
 	bits = int(extractBits(bytesHi, 0, 7))
 	inst.Addr = NewVRegOperand(bits, bits, 2)
+	bits = int(extractBits(bytesHi, 16, 22))
+	if bits != 0x7f {
+		inst.SAddr = NewSRegOperand(bits, bits, 0)
+	}
 	bits = int(extractBits(bytesHi, 24, 31))
 	inst.Dst = NewVRegOperand(bits, bits, 0)
 	bits = int(extractBits(bytesHi, 8, 15))

@@ -731,7 +731,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_cmpx_nlt_f16", 254, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 64, 64, 0, 0})
 	d.addInstType(&InstType{"v_cmpx_tru_f16", 255, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 64, 64, 0, 0})
 
-	d.addInstType(&InstType{"v_cndmask_b32_e32", 1 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_cndmask_b32_e32", 1 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
 	d.addInstType(&InstType{"v_add_f32", 3 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_sub_f32", 4 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_subrev_f32", 5 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})

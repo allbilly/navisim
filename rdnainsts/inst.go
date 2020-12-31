@@ -50,6 +50,7 @@ type Inst struct {
 	SDst *Operand // For VOP3b
 
 	Addr   *Operand
+	SAddr  *Operand // For GLOBAL
 	Data   *Operand
 	Data1  *Operand
 	Base   *Operand
