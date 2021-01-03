@@ -57,6 +57,8 @@ func (u *ALUImpl) runVOP2(state InstEmuState) {
 		u.runVADDNCU32E32(state)
 	case 40:
 		u.runVADDCOCIU32E32(state)
+	case 43:
+		u.runVFMACF32(state)
 	default:
 		log.Panicf("Opcode %d for VOP2 format (%s) is not implemented",
 			inst.Opcode, inst.String(nil))
@@ -594,4 +596,6 @@ func (u *ALUImpl) runVADDCOCIU32E32(state InstEmuState) {
 			}
 		}
 	}
+}
+func (u *ALUImpl) runVFMACF32(state InstEmuState) {
 }

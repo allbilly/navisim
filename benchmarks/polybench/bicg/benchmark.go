@@ -7,8 +7,8 @@ import (
 	"math/rand"
 
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 // Kernel1Args list first set of kernel arguments
@@ -33,7 +33,7 @@ type Benchmark struct {
 	context          *driver.Context
 	gpus             []int
 	queues           []*driver.CommandQueue
-	kernel1, kernel2 *insts.HsaCo
+	kernel1, kernel2 *rdnainsts.HsaCo
 
 	NX, NY             int
 	a, r, s, p, q      []float32
