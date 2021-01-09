@@ -598,4 +598,26 @@ func (u *ALUImpl) runVADDCOCIU32E32(state InstEmuState) {
 	}
 }
 func (u *ALUImpl) runVFMACF32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP2()
+	inst := state.Inst()
+	var dst float32
+	var src0 float32
+	var src1 float32
+
+	var i uint
+	if !inst.IsSdwa {
+		for i = 0; i < 64; i++ {
+			if !laneMasked(sp.EXEC, i) {
+				continue
+			}
+			src0 = asFloat32(uint32(sp.SRC0[i]))
+			src1 = asFloat32(uint32(sp.SRC1[i]))
+			dst = asFloat32(uint32(sp.DST[i]))
+
+			dst = src0*src1 + dst
+			sp.DST[i] = uint64(float32ToBits(dst))
+		}
+	} else {
+		log.Panicf("SDWA for VOP2 instruction opcode  %d not implemented \n", inst.Opcode)
+	}
 }

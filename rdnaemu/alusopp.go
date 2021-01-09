@@ -90,4 +90,5 @@ func laneMasked(Exec uint64, laneID uint) bool {
 }
 
 func (u *ALUImpl) runSCLAUSE(state InstEmuState) {
+
 }
