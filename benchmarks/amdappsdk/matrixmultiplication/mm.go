@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
 )
 
@@ -20,7 +20,7 @@ type GPUMatrixMultiplier struct {
 	driver           *driver.Driver
 	context          *driver.Context
 	gpus             []int
-	kernel           *insts.HsaCo
+	kernel           *rdnainsts.HsaCo
 	useUnifiedMemory bool
 }
 

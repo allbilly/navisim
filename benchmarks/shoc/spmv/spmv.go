@@ -8,7 +8,7 @@ import (
 
 	"gitlab.com/akita/navisim/benchmarks/matrix/csr"
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
 )
 
@@ -35,7 +35,7 @@ type Benchmark struct {
 	gpus             []int
 	queues           []*driver.CommandQueue
 	useUnifiedMemory bool
-	spmvKernel       *insts.HsaCo
+	spmvKernel       *rdnainsts.HsaCo
 
 	Dim       int32
 	Sparsity  float64
