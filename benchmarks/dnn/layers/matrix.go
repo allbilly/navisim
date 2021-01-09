@@ -2,7 +2,7 @@ package layers
 
 import (
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
 )
 
@@ -17,8 +17,8 @@ type MatrixOperator struct {
 	driver  *driver.Driver
 	context *driver.Context
 
-	gemmKernel      *insts.HsaCo
-	transposeKernel *insts.HsaCo
+	gemmKernel      *rdnainsts.HsaCo
+	transposeKernel *rdnainsts.HsaCo
 }
 
 // NewMatrixOperator creates a new matrix operator.

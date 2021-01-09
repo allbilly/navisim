@@ -153,6 +153,9 @@ func (d *Disassembler) decodeVOP1(inst *Inst, buf []byte) error {
 		}
 		inst.Src0.LiteralConstant = BytesToUint32(buf[4:8])
 	}
+	if inst.SRC0Width == 64 {
+		inst.Src0.RegCount = 2
+	}
 
 	dstValue := extractBits(bytes, 17, 24)
 	switch inst.Opcode {
@@ -161,16 +164,19 @@ func (d *Disassembler) decodeVOP1(inst *Inst, buf []byte) error {
 	default:
 		inst.Dst, _ = getOperand(uint16(dstValue + 256))
 	}
-
-	switch {
-	case inst.Opcode == 3, inst.Opcode == 15, inst.Opcode == 21, inst.Opcode == 60:
-		inst.Src0.RegCount = 2
-	case inst.Opcode == 4, inst.Opcode == 16, inst.Opcode == 22:
+	if inst.DSTWidth == 64 {
 		inst.Dst.RegCount = 2
-	case inst.Opcode >= 23 && inst.Opcode <= 26, inst.Opcode == 52, inst.Opcode == 61, inst.Opcode == 62:
-		inst.Dst.RegCount = 2
-		inst.Src0.RegCount = 2
 	}
+
+	// switch {
+	// case inst.Opcode == 3, inst.Opcode == 15, inst.Opcode == 21, inst.Opcode == 60:
+	// 	inst.Src0.RegCount = 2
+	// case inst.Opcode == 4, inst.Opcode == 16, inst.Opcode == 22:
+	// 	inst.Dst.RegCount = 2
+	// case inst.Opcode >= 23 && inst.Opcode <= 26, inst.Opcode == 47, inst.Opcode == 49, inst.Opcode == 52, inst.Opcode == 61, inst.Opcode == 62:
+	// 	inst.Dst.RegCount = 2
+	// 	inst.Src0.RegCount = 2
+	// }
 
 	return nil
 }
@@ -322,12 +328,7 @@ func (d *Disassembler) decodeVOP2(inst *Inst, buf []byte) error {
 	inst.Dst = NewVRegOperand(bits, bits, 0)
 
 	switch inst.Opcode {
-	case 24: // v_madak
-		inst.Imm = true
-		inst.ByteSize += 0
-		inst.Src2 = &Operand{0, LiteralConstant, nil, 0, 0, 0, 0}
-		inst.Src2.LiteralConstant = BytesToUint32(buf[4:8])
-	case 33: // v_madak
+	case 32, 33: // v_madmk v_madak
 		inst.Imm = true
 		inst.ByteSize += 4
 		inst.Src2 = &Operand{0, LiteralConstant, nil, 0, 0, 0, 0}
@@ -352,8 +353,15 @@ func (d *Disassembler) decodeFLAT(inst *Inst, buf []byte) error {
 	bits := int(extractBits(bytesLo, 14, 15))
 	inst.Seg = bits
 
+	bits64 := int64(extractBits(bytesLo, 0, 11))
+	inst.Offset = NewIntOperand(bits, bits64)
+
 	bits = int(extractBits(bytesHi, 0, 7))
 	inst.Addr = NewVRegOperand(bits, bits, 2)
+	bits = int(extractBits(bytesHi, 16, 22))
+	if bits != 0x7f {
+		inst.SAddr = NewSRegOperand(bits, bits, 0)
+	}
 	bits = int(extractBits(bytesHi, 24, 31))
 	inst.Dst = NewVRegOperand(bits, bits, 0)
 	bits = int(extractBits(bytesHi, 8, 15))
@@ -382,10 +390,6 @@ func (d *Disassembler) decodeSMEM(inst *Inst, buf []byte) error {
 		inst.GlobalLevelCoherent = true
 	}
 
-	if extractBits(bytesLo, 17, 17) != 0 {
-		inst.Imm = true
-	}
-
 	sbaseValue := extractBits(bytesLo, 0, 5)
 	bits := int(sbaseValue << 1)
 	inst.Base = NewSRegOperand(bits, bits, 2)
@@ -401,7 +405,7 @@ func (d *Disassembler) decodeSMEM(inst *Inst, buf []byte) error {
 	}
 
 	switch inst.Opcode {
-	case 0:
+	case 0, 8:
 		inst.Data.RegCount = 1
 	case 1, 9:
 		inst.Data.RegCount = 2
@@ -412,14 +416,6 @@ func (d *Disassembler) decodeSMEM(inst *Inst, buf []byte) error {
 	case 4, 12:
 		inst.Data.RegCount = 16
 	}
-
-	// if inst.Imm {
-	// 	bits64 := int64(extractBits(bytesHi, 0, 19))
-	// 	inst.Offset = NewIntOperand(0, bits64)
-	// } else {
-	// 	bits := int(extractBits(bytesHi, 0, 19))
-	// 	inst.Offset = NewSRegOperand(bits, bits, 1)
-	// }
 
 	bits64 := int64(extractBits(bytesHi, 0, 20))
 	inst.Offset = NewIntOperand(0, bits64)
@@ -682,12 +678,6 @@ func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 // func (d *Disassembler) decodeVOP3P(inst *Inst, buf []byte) error {
 // }
 
-// func (d *Disassembler) decodeSCRATCH(inst *Inst, buf []byte) error {
-// }
-
-// func (d *Disassembler) decodeGLOBAL(inst *Inst, buf []byte) error {
-// }
-
 func (d *Disassembler) combineDSOffsets(inst *Inst) {
 	switch inst.Opcode {
 	default:
@@ -748,10 +738,6 @@ func (d *Disassembler) Decode(buf []byte) (*Inst, error) {
 		err = d.decodeDS(inst, buf)
 	// case VOP3P:
 	// 	err = d.decodeVOP3P(inst, buf)
-	// case SCRATCH:
-	// 	err = d.decodeSCRATCH(inst, buf)
-	// case GLOBAL:
-	// 	err = d.decodeGLOBAL(inst, buf)
 	default:
 		log.Panicf("unabkle to decode instruction type %s", inst.FormatName)
 	}

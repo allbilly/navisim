@@ -8,7 +8,7 @@ import (
 	"math/rand"
 
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
 )
 
@@ -46,8 +46,8 @@ type Benchmark struct {
 	gpus    []int
 	queues  []*driver.CommandQueue
 
-	computeKernel *insts.HsaCo
-	swapKernel    *insts.HsaCo
+	computeKernel *rdnainsts.HsaCo
+	swapKernel    *rdnainsts.HsaCo
 
 	NumClusters   int
 	NumPoints     int

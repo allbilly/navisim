@@ -6,7 +6,7 @@ import (
 	"math/rand"
 
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
 )
 
@@ -32,7 +32,7 @@ type Benchmark struct {
 	gpus             []int
 	queues           []*driver.CommandQueue
 	useUnifiedMemory bool
-	fftKernel        *insts.HsaCo
+	fftKernel        *rdnainsts.HsaCo
 
 	Bytes      int32
 	Passes     int32

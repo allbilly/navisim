@@ -50,6 +50,7 @@ type Inst struct {
 	SDst *Operand // For VOP3b
 
 	Addr   *Operand
+	SAddr  *Operand // For GLOBAL
 	Data   *Operand
 	Data1  *Operand
 	Base   *Operand
@@ -201,22 +202,18 @@ func (i Inst) vop2String() string {
 
 	s += fmt.Sprintf(", %s, %s", i.Src0.String(), i.Src1.String())
 
-	/*switch i.Opcode {
-	case 0, 28, 29:
-		//s += ", vcc"
-		//case 24: // madak
-		//s += ", " + i.Src2.String()
-	}*/
-
 	if i.IsSdwa {
 		s = strings.ReplaceAll(s, "_e32", "_sdwa")
 		s += i.sdwaVOP2String()
 	}
 
 	switch i.Opcode {
-	case 1, 40:
+	case 1, 40, 41, 42:
 		s += ", vcc_lo"
+	case 32, 33: //v_madak v_madmk
+		s += ", " + i.Src2.String()
 	}
+
 	return s
 }
 
@@ -363,16 +360,8 @@ func (i Inst) dsString() string {
 
 // }
 
-// func (i Inst) scratchString() string {
-
-// }
-
-// func (i Inst) globalString() string {
-
-// }
-
-//nolint:gocyclo
 // String returns the disassembly of an instruction
+//nolint:gocyclo
 func (i Inst) String(file *elf.File) string {
 	switch i.FormatType {
 	case SOP2:
@@ -403,10 +392,6 @@ func (i Inst) String(file *elf.File) string {
 		return i.dsString()
 	// case VOP3P:
 	// 	return i.vop3pString()
-	// case SCRATCH:
-	// 	return i.scratchString()
-	// case GLOBAL:
-	// 	return i.globalString()
 	default:
 		log.Panic("Unknown instruction format type.")
 		return i.InstName
