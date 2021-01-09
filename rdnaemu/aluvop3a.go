@@ -16,79 +16,73 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	u.vop3aPreprocess(state)
 
 	switch inst.Opcode {
-	case 65: // 0x41
+	case 1: // 0x41
 		u.runVCmpLtF32VOP3a(state)
-	case 68: //0x44
+	case 5: //0x44
 		u.runVCmpGtF32VOP3a(state)
-	case 78: // 0x41
+	case 14: // 0x41
 		u.runVCmpNltF32VOP3a(state)
-	case 193: // 0xC1
+	case 129: // 0xC1
 		u.runVCmpLtI32VOP3a(state)
-	case 195: // 0xC3
+	case 131: // 0xC3
 		u.runVCmpLeI32VOP3a(state)
-	case 196: // 0xC4
+	case 132: // 0xC4
 		u.runVCmpGtI32VOP3a(state)
-	case 198: // 0xC6
+	case 134: // 0xC6
 		u.runVCmpGEI32VOP3a(state)
-	case 201: // 0xC9
+	case 193: // 0xC9
 		u.runVCmpLtU32VOP3a(state)
-	case 202: // 0xCA
+	case 194: // 0xCA
 		u.runVCmpEqU32VOP3a(state)
-	case 203: // 0xCB
+	case 195: // 0xCB
 		u.runVCmpLeU32VOP3a(state)
-	case 204: // 0xCC
+	case 196: // 0xCC
 		u.runVCmpGtU32VOP3a(state)
-	case 205: // 0xCD
-		u.runVCmpLgU32VOP3a(state)
-	case 206: // 0xCE
+	case 198: // 0xCE
 		u.runVCmpGeU32VOP3a(state)
-	case 233: // 0xE9
+	case 225: // 0xE9
 		u.runVCmpLtU64VOP3a(state)
-	case 256:
+	case 256 + 1:
 		u.runVCNDMASKB32VOP3a(state)
-	case 258:
-		u.runVSUBF32VOP3a(state)
-	case 449:
+	case 321:
 		u.runVMADF32(state)
-	case 450:
+	case 322:
 		u.runVMADI32I24(state)
-	case 451, 488:
-		u.runVMADU64U32(state)
-	case 460:
+	case 332:
 		u.runVFMAF64(state)
-	case 464:
+	case 337:
 		u.runVMIN3F32(state)
-	case 465:
+	case 338:
 		u.runVMIN3I32(state)
-	case 466:
+	case 339:
 		u.runVMIN3U32(state)
-	case 467:
+	case 340:
 		u.runVMAX3F32(state)
-	case 468:
+	case 341:
 		u.runVMAX3I32(state)
-	case 469:
+	case 342:
 		u.runVMAX3U32(state)
-	case 470:
+	case 343:
 		u.runVMED3F32(state)
-	case 471:
+	case 344:
 		u.runVMED3I32(state)
-	case 472:
+	case 345:
 		u.runVMED3U32(state)
-	case 479:
+	case 352:
 		u.runVDIVFIXUPF64(state)
-	case 483:
+	case 368:
 		u.runVDIVFMASF64(state)
-	case 640:
+	case 356:
 		u.runVADDF64(state)
-	case 641:
+	case 357:
 		u.runVMULF64(state)
-	case 645:
+	case 361:
 		u.runVMULLOU32(state)
-	case 646:
+	case 362:
 		u.runVMULHIU32(state)
-	case 655:
+	case 767:
 		u.runVLSHLREVB64(state)
-	case 657:
+	case 769:
 		u.runVASHRREVI64(state)
 	default:
 		log.Panicf("Opcode %d for VOP3a format is not implemented", inst.Opcode)
@@ -447,24 +441,6 @@ func (u *ALUImpl) runVCmpGtU32VOP3a(state InstEmuState) {
 	}
 }
 
-func (u *ALUImpl) runVCmpLgU32VOP3a(state InstEmuState) {
-	sp := state.Scratchpad().AsVOP3A()
-
-	var i uint
-	for i = 0; i < 64; i++ {
-		if !laneMasked(sp.EXEC, i) {
-			continue
-		}
-
-		src0 := sp.SRC0[i]
-		src1 := sp.SRC1[i]
-
-		if src0 != src1 {
-			sp.DST[0] |= (1 << i)
-		}
-	}
-}
-
 func (u *ALUImpl) runVCmpGeU32VOP3a(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 
@@ -518,21 +494,6 @@ func (u *ALUImpl) runVCNDMASKB32VOP3a(state InstEmuState) {
 	}
 }
 
-func (u *ALUImpl) runVSUBF32VOP3a(state InstEmuState) {
-	sp := state.Scratchpad().AsVOP3A()
-
-	var i uint
-	for i = 0; i < 64; i++ {
-		if !laneMasked(sp.EXEC, i) {
-			continue
-		}
-		src0 := math.Float32frombits(uint32(sp.SRC0[i]))
-		src1 := math.Float32frombits(uint32(sp.SRC1[i]))
-		dst := src0 - src1
-		sp.DST[i] = uint64(math.Float32bits(dst))
-	}
-}
-
 func (u *ALUImpl) runVMADF32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 
@@ -566,19 +527,6 @@ func (u *ALUImpl) runVMADI32I24(state InstEmuState) {
 		src2 := int32(sp.SRC2[i])
 
 		sp.DST[i] = uint64(src0*src1 + src2)
-	}
-}
-
-func (u *ALUImpl) runVMADU64U32(state InstEmuState) {
-	sp := state.Scratchpad().AsVOP3A()
-
-	var i uint
-	for i = 0; i < 64; i++ {
-		if !laneMasked(sp.EXEC, i) {
-			continue
-		}
-
-		sp.DST[i] = sp.SRC0[i]*sp.SRC1[i] + sp.SRC2[i]
 	}
 }
 
