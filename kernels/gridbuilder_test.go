@@ -4,7 +4,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/rdnainsts"
 )
 
@@ -45,7 +44,7 @@ var _ = Describe("GridBuilder", func() {
 	})
 
 	It("should build partial 2d wavefront", func() {
-		codeObject := new(insts.HsaCo)
+		codeObject := new(rdnainsts.HsaCo)
 		packet := new(HsaKernelDispatchPacket)
 		packet.WorkgroupSizeX = 8
 		packet.WorkgroupSizeY = 8
@@ -84,7 +83,7 @@ var _ = Describe("GridBuilder", func() {
 	})
 
 	It("should build 1D grid workgroup", func() {
-		codeObject := new(insts.HsaCo)
+		codeObject := new(rdnainsts.HsaCo)
 		packet := new(HsaKernelDispatchPacket)
 		packet.WorkgroupSizeX = 256
 		packet.WorkgroupSizeY = 1
@@ -128,7 +127,7 @@ var _ = Describe("GridBuilder", func() {
 	})
 
 	It("should build 2D grid", func() {
-		codeObject := new(insts.HsaCo)
+		codeObject := new(rdnainsts.HsaCo)
 		packet := new(HsaKernelDispatchPacket)
 		packet.WorkgroupSizeX = 16
 		packet.WorkgroupSizeY = 16
