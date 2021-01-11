@@ -37,6 +37,8 @@ func (u *ALUImpl) runSOP2(state InstEmuState) {
 		u.runSANDB64(state)
 	case 17:
 		u.runSORB64(state)
+	case 18:
+		u.runSXORB32(state)
 	case 19:
 		u.runSXORB64(state)
 	case 20:
@@ -229,6 +231,17 @@ func (u *ALUImpl) runSANDB64(state InstEmuState) {
 func (u *ALUImpl) runSORB64(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP2()
 	sp.DST = sp.SRC0 | sp.SRC1
+	if sp.DST != 0 {
+		sp.SCC = 1
+	} else {
+		sp.SCC = 0
+	}
+}
+
+func (u *ALUImpl) runSXORB32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP2()
+
+	sp.DST = sp.SRC0 ^ sp.SRC1
 	if sp.DST != 0 {
 		sp.SCC = 1
 	} else {
