@@ -2,13 +2,12 @@ package kernels
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 // A Grid is a running instance of a kernel.
 type Grid struct {
-	CodeObject    *insts.HsaCo
+	CodeObject    *rdnainsts.HsaCo
 	Packet        *HsaKernelDispatchPacket
 	PacketAddress uint64
 

@@ -12,7 +12,7 @@ import (
 )
 
 // extractBits takes the bits from a uint32 number. The range is specified with
-// lo (includeds) and hi (included).
+// lo (included) and hi (included).
 func extractBits(number uint32, lo uint8, hi uint8) uint32 {
 	var mask uint64
 	var extracted uint64
@@ -167,16 +167,6 @@ func (d *Disassembler) decodeVOP1(inst *Inst, buf []byte) error {
 	if inst.DSTWidth == 64 {
 		inst.Dst.RegCount = 2
 	}
-
-	// switch {
-	// case inst.Opcode == 3, inst.Opcode == 15, inst.Opcode == 21, inst.Opcode == 60:
-	// 	inst.Src0.RegCount = 2
-	// case inst.Opcode == 4, inst.Opcode == 16, inst.Opcode == 22:
-	// 	inst.Dst.RegCount = 2
-	// case inst.Opcode >= 23 && inst.Opcode <= 26, inst.Opcode == 47, inst.Opcode == 49, inst.Opcode == 52, inst.Opcode == 61, inst.Opcode == 62:
-	// 	inst.Dst.RegCount = 2
-	// 	inst.Src0.RegCount = 2
-	// }
 
 	return nil
 }

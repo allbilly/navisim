@@ -4,12 +4,11 @@
 package dispatching
 
 import (
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
 	akita "gitlab.com/akita/akita"
 	kernels "gitlab.com/akita/navisim/kernels"
 	resource "gitlab.com/akita/navisim/timing/cp/internal/resource"
+	reflect "reflect"
 )
 
 // MockCUResourcePool is a mock of CUResourcePool interface
