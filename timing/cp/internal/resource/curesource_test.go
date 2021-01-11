@@ -3,8 +3,8 @@ package resource
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 func assertAllResourcesFree(r *CUResourceImpl) {
@@ -27,7 +27,7 @@ var _ = Describe("cuResource", func() {
 	var (
 		r  *CUResourceImpl
 		wg *kernels.WorkGroup
-		co *insts.HsaCo
+		co *rdnainsts.HsaCo
 	)
 
 	BeforeEach(func() {
@@ -61,7 +61,7 @@ var _ = Describe("cuResource", func() {
 			wg.Wavefronts = append(wg.Wavefronts, wf)
 		}
 
-		co = insts.NewHsaCo()
+		co = rdnainsts.NewHsaCo()
 		wg.CodeObject = co
 	})
 

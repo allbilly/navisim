@@ -9,6 +9,7 @@ import (
 	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -39,8 +40,8 @@ func (d *mockDecoder) Decode(buf []byte) (*insts.Inst, error) {
 func exampleGrid() *kernels.Grid {
 	grid := kernels.NewGrid()
 
-	grid.CodeObject = insts.NewHsaCo()
-	grid.CodeObject.HsaCoHeader = new(insts.HsaCoHeader)
+	grid.CodeObject = rdnainsts.NewHsaCo()
+	grid.CodeObject.HsaCoHeader = new(rdnainsts.HsaCoHeader)
 
 	packet := new(kernels.HsaKernelDispatchPacket)
 	grid.Packet = packet

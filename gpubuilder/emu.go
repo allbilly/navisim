@@ -13,8 +13,8 @@ import (
 	"gitlab.com/akita/mem/vm"
 	"gitlab.com/akita/navisim"
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/emu"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnaemu"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/cp"
 	"gitlab.com/akita/util/tracing"
 )
@@ -34,7 +34,7 @@ type EmuGPUBuilder struct {
 	commandProcessor *cp.CommandProcessor
 	gpuMem           *idealmemcontroller.Comp
 	dmaEngine        *cp.DMAEngine
-	computeUnits     []*emu.ComputeUnit
+	computeUnits     []*rdnaemu.ComputeUnit
 
 	enableISADebug     bool
 	enableMemTracing   bool
@@ -132,10 +132,10 @@ func (b *EmuGPUBuilder) clear() {
 }
 
 func (b *EmuGPUBuilder) buildComputeUnits() {
-	disassembler := insts.NewDisassembler()
+	disassembler := rdnainsts.NewDisassembler()
 
 	for i := 0; i < 4; i++ {
-		computeUnit := emu.BuildComputeUnit(
+		computeUnit := rdnaemu.BuildComputeUnit(
 			fmt.Sprintf("%s.CU%d", b.gpuName, i),
 			b.engine, disassembler, b.pageTable,
 			b.log2PageSize, b.gpuMem.Storage, nil)
@@ -148,7 +148,7 @@ func (b *EmuGPUBuilder) buildComputeUnits() {
 			if err != nil {
 				log.Fatal(err.Error())
 			}
-			isaDebugger := emu.NewISADebugger(log.New(isaDebug, "", 0))
+			isaDebugger := rdnaemu.NewISADebugger(log.New(isaDebug, "", 0))
 			computeUnit.AcceptHook(isaDebugger)
 		}
 	}

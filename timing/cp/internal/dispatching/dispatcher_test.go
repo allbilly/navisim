@@ -5,9 +5,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 var _ = Describe("Dispatcher", func() {
@@ -46,7 +46,7 @@ var _ = Describe("Dispatcher", func() {
 	})
 
 	It("should start dispatching a new kernel", func() {
-		hsaco := insts.NewHsaCo()
+		hsaco := rdnainsts.NewHsaCo()
 		packet := &kernels.HsaKernelDispatchPacket{}
 		packetAddr := uint64(0x40)
 

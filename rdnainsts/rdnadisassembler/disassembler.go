@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 
 	_, filename := filepath.Split(path)
 
-	disasm := insts.NewDisassembler()
+	disasm := rdnainsts.NewDisassembler()
 
 	disasm.Disassemble(elfFile, filename, os.Stdout)
 }

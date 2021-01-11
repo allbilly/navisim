@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
 )
 
@@ -25,7 +25,7 @@ type KernelArgs struct {
 type Benchmark struct {
 	driver  *driver.Driver
 	context *driver.Context
-	kernel  *insts.HsaCo
+	kernel  *rdnainsts.HsaCo
 	gpus    []int
 
 	Width     uint32

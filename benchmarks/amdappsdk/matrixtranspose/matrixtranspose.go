@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
 )
 
@@ -32,7 +32,7 @@ type Benchmark struct {
 	gpus    []int
 	queues  []*driver.CommandQueue
 
-	kernel *insts.HsaCo
+	kernel *rdnainsts.HsaCo
 
 	Width              int
 	elemsPerThread1Dim int

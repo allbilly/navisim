@@ -7,7 +7,7 @@ import (
 	"math/rand"
 
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
 )
 
@@ -61,7 +61,7 @@ type Benchmark struct {
 	context          *driver.Context
 	gpuIDs           []int
 	useUnifiedMemory bool
-	kernel1, kernel2 *insts.HsaCo
+	kernel1, kernel2 *rdnainsts.HsaCo
 
 	blockSize         int
 	length            int

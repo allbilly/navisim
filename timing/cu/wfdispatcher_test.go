@@ -3,9 +3,9 @@ package cu
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -45,7 +45,7 @@ var _ = Describe("WfDispatcher", func() {
 			LDSOffset:  512,
 		}
 
-		co := insts.NewHsaCo()
+		co := rdnainsts.NewHsaCo()
 		co.KernelCodeEntryByteOffset = 256
 		packet := new(kernels.HsaKernelDispatchPacket)
 		packet.KernelObject = 65536
