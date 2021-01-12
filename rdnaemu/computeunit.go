@@ -1,11 +1,10 @@
 package rdnaemu
 
 import (
+	"encoding/binary"
 	"log"
 	"math"
 	"reflect"
-
-	"encoding/binary"
 
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
@@ -345,6 +344,12 @@ func (cu *ComputeUnit) runWfUntilBarrier(wf *Wavefront) error {
 		}
 
 		if inst.FormatType == rdnainsts.SOPP && inst.Opcode == 1 { // S_BARRIER
+			wf.Completed = true
+			cu.logInst(wf, inst)
+			break
+		}
+
+		if inst.FormatType == rdnainsts.SOPK && inst.Opcode == 23 { // S_BARRIER
 			wf.Completed = true
 			cu.logInst(wf, inst)
 			break

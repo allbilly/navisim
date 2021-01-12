@@ -262,6 +262,7 @@ func (p *ScratchpadPreparerImpl) prepareSOPK(
 	scratchPad := instEmuState.Scratchpad()
 	layout := scratchPad.AsSOPK()
 	layout.SCC = wf.SCC
+	log.Printf("%t\n", inst.Dst)
 	p.readOperand(inst.Dst, wf, 0, scratchPad[0:8])
 	p.readOperand(inst.SImm16, wf, 0, scratchPad[8:16])
 }
