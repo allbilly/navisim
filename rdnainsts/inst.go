@@ -359,6 +359,10 @@ func (i Inst) dsString() string {
 // func (i Inst) vop3pString() string {
 
 // }
+func (i Inst) mubufString() string {
+	s := i.InstName + " "
+	return s
+}
 
 // String returns the disassembly of an instruction
 //nolint:gocyclo
@@ -392,6 +396,8 @@ func (i Inst) String(file *elf.File) string {
 		return i.dsString()
 	// case VOP3P:
 	// 	return i.vop3pString()
+	case MUBUF:
+		return i.mubufString()
 	default:
 		log.Panic("Unknown instruction format type.")
 		return i.InstName

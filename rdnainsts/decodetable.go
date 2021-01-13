@@ -1263,4 +1263,6 @@ func (d *Disassembler) initializeDecodeTable() {
 	// d.addInstType(&InstType{"scratch_load_sbyte_d16_hi", 35, FormatTable[SCRATCH], 0, ExeUnitVMem, 32, 32, 32, 0, 0})
 	// d.addInstType(&InstType{"scratch_load_short_d16", 36, FormatTable[SCRATCH], 0, ExeUnitVMem, 32, 32, 32, 0, 0})
 	// d.addInstType(&InstType{"scratch_load_short_d16_hi", 37, FormatTable[SCRATCH], 0, ExeUnitVMem, 32, 32, 32, 0, 0})
+	//MUBUF instructions
+	d.addInstType(&InstType{"buffer_gl0_inv", 113, FormatTable[MUBUF], 0, ExeUnitVMem, 0, 0, 0, 0, 0})
 }

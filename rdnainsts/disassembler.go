@@ -664,6 +664,9 @@ func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 
 	return nil
 }
+func (d *Disassembler) decodeMUBUF(inst *Inst, buf []byte) error {
+	return nil
+}
 
 // func (d *Disassembler) decodeVOP3P(inst *Inst, buf []byte) error {
 // }
@@ -728,6 +731,8 @@ func (d *Disassembler) Decode(buf []byte) (*Inst, error) {
 		err = d.decodeDS(inst, buf)
 	// case VOP3P:
 	// 	err = d.decodeVOP3P(inst, buf)
+	case MUBUF:
+		err = d.decodeMUBUF(inst, buf)
 	default:
 		log.Panicf("unabkle to decode instruction type %s", inst.FormatName)
 	}
