@@ -641,6 +641,10 @@ func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 		inst.Data = NewVRegOperand(data0Bits, data0Bits, 1)
 		if inst.SRC0Width == 64 {
 			inst.Data.RegCount = 2
+		} else if inst.SRC0Width == 96 {
+			inst.Data.RegCount = 3
+		} else if inst.SRC0Width == 128 {
+			inst.Data.RegCount = 4
 		}
 	}
 
@@ -659,6 +663,8 @@ func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 			inst.Dst.RegCount = 2
 		} else if inst.DSTWidth == 128 {
 			inst.Dst.RegCount = 4
+		} else if inst.DSTWidth == 96 {
+			inst.Dst.RegCount = 3
 		}
 	}
 
