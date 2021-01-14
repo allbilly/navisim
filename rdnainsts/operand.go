@@ -145,6 +145,8 @@ func getOperand(num uint16) (*Operand, error) {
 		return NewRegOperand(code, Timp0+RegType(num-112), 0), nil
 	case num == 124:
 		return NewRegOperand(code, M0, 0), nil
+	case num == 125:
+		return NewRegOperand(code, NULL, 0), nil
 	case num == 126:
 		return NewRegOperand(code, EXECLO, 0), nil
 	case num == 127:
