@@ -13,6 +13,8 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	u.vop3aPreprocess(state)
 
 	switch inst.Opcode {
+	case 769:
+		u.runVASHRREVI64(state)
 
 	default:
 		log.Panicf("Opcode %d for VOP3a format is not implemented", inst.Opcode)
@@ -173,5 +175,17 @@ func (u *ALUImpl) vop3aPostprocess(state InstEmuState) {
 
 	if inst.Omod != 0 {
 		log.Panic("Output modifiers are not supported.")
+	}
+}
+func (u *ALUImpl) runVASHRREVI64(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = int64ToBits(asInt64(sp.SRC1[i]) >> sp.SRC0[i])
 	}
 }

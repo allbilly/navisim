@@ -78,8 +78,63 @@ func (u *ALUImpl) Run(state InstEmuState) {
 func (u *ALUImpl) runSMEM(state InstEmuState) {
 	inst := state.Inst()
 	switch inst.Opcode {
+	case 0:
+		u.runSLOADDWORD(state)
+	case 1:
+		u.runSLOADDWORDX2(state)
+	case 2:
+		u.runSLOADDWORDX4(state)
+	case 3:
+		u.runSLOADDWORDX8(state)
 
 	default:
 		log.Panicf("Opcode %d for SMEM format is not implemented", inst.Opcode)
 	}
+}
+func (u *ALUImpl) runSLOADDWORD(state InstEmuState) {
+	sp := state.Scratchpad().AsSMEM()
+	pid := state.PID()
+
+	buf := u.storageAccessor.Read(pid, sp.Base+sp.Offset, 4)
+
+	sp.DST[0] = rdnainsts.BytesToUint32(buf)
+}
+
+func (u *ALUImpl) runSLOADDWORDX2(state InstEmuState) {
+	sp := state.Scratchpad().AsSMEM()
+	spRaw := state.Scratchpad()
+	pid := state.PID()
+
+	buf := u.storageAccessor.Read(pid, sp.Base+sp.Offset, 8)
+	copy(spRaw[32:40], buf)
+}
+
+func (u *ALUImpl) runSLOADDWORDX4(state InstEmuState) {
+	sp := state.Scratchpad().AsSMEM()
+	spRaw := state.Scratchpad()
+	pid := state.PID()
+
+	buf := u.storageAccessor.Read(pid, sp.Base+sp.Offset, 16)
+	copy(spRaw[32:48], buf)
+}
+
+func (u *ALUImpl) runSLOADDWORDX8(state InstEmuState) {
+	sp := state.Scratchpad().AsSMEM()
+	spRaw := state.Scratchpad()
+	pid := state.PID()
+
+	buf := u.storageAccessor.Read(pid, sp.Base+sp.Offset, 32)
+	copy(spRaw[32:64], buf)
+}
+
+func (u *ALUImpl) sdwaSrcSelect(src uint32, sel rdnainsts.SDWASelect) uint32 {
+	return src
+}
+func (u *ALUImpl) sdwaDstSelect(
+	dstOld uint32,
+	dstNew uint32,
+	sel rdnainsts.SDWASelect,
+	unused rdnainsts.SDWAUnused,
+) uint32 {
+	return dstNew
 }
