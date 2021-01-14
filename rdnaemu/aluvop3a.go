@@ -12,6 +12,7 @@ import (
 //nolint:gocyclo,funlen
 func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	inst := state.Inst()
+	log.Printf("Inst %d\n", inst.Opcode)
 
 	u.vop3aPreprocess(state)
 
@@ -514,6 +515,7 @@ func (u *ALUImpl) runVMULU32U24VOP3a(state InstEmuState) {
 		src1 := (uint32(sp.SRC1[i]) << 8) >> 8
 		dst := src0 * src1
 		sp.DST[i] = uint64(dst)
+
 	}
 
 }
@@ -627,7 +629,6 @@ func (u *ALUImpl) runVADDLSHLU32(state InstEmuState) {
 			bitops.ExtractBitsFromU64(sp.SRC1[i], 0, 4), 23))
 
 		sp.DST[i] =   (sp.SRC0[i] << src1 ) + sp.SRC2[i]
-
 	}
 }
 
@@ -1102,6 +1103,7 @@ func (u *ALUImpl) runVADD3U32(state InstEmuState) {
 
 
 			sp.DST[i] = uint64(src0+src1+src2)
+
 		}
 	} else {
 		log.Panicf("SDWA for VOP3A instruction opcode  %d not implemented \n", inst.Opcode)

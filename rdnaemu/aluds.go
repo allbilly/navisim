@@ -6,6 +6,7 @@ import (
 
 func (u *ALUImpl) runDS(state InstEmuState) {
 	inst := state.Inst()
+	log.Printf("%d\n", inst.Opcode)
 	switch inst.Opcode {
 	case 13:
 		u.runDSWRITEB32(state)
@@ -29,6 +30,7 @@ func (u *ALUImpl) runDS(state InstEmuState) {
 }
 
 func (u *ALUImpl) runDSWRITEB32(state InstEmuState) {
+
 	inst := state.Inst()
 	sp := state.Scratchpad()
 	layout := sp.AsDS()
@@ -48,12 +50,12 @@ func (u *ALUImpl) runDSWRITEB32(state InstEmuState) {
 }
 
 func (u *ALUImpl) runDSWRITEB128(state InstEmuState) {
-	//INocrrect . Just dummy code
 	inst := state.Inst()
 	sp := state.Scratchpad()
 	layout := sp.AsDS()
 	lds := u.LDS()
 
+	print(len(lds))
 	i := uint(0)
 	for i = 0; i < 64; i++ {
 		if !laneMasked(layout.EXEC, i) {
@@ -61,9 +63,10 @@ func (u *ALUImpl) runDSWRITEB128(state InstEmuState) {
 		}
 
 		addr0 := layout.ADDR[i] + inst.Offset0
-		data0offset := uint(8 + 64*4)
+		data0Offset := uint(8 + 64*4)
 
-		copy(lds[addr0:addr0+4], sp[data0offset+i*16:data0offset+i*16+4])
+		copy(lds[addr0:addr0+16], sp[data0Offset+i*16:data0Offset+i*16+16])
+
 	}
 }
 
