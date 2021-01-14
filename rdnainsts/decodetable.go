@@ -931,7 +931,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_interp_p1lv_f16", 835, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_perm_b32", 836, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_xad_u32", 837, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_lshl_add_u32", 838, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_lshl_add_u32", 838, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
 	d.addInstType(&InstType{"v_add_lshl_u32", 839, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_fma_f16", 843, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_min3_f16", 849, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
@@ -957,7 +957,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_cvt_pknorm_u16_f32", 873, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_pk_u16_u32", 874, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_cvt_pk_i16_i32", 875, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_add3_u32", 877, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"v_add3_u32", 877, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 32, 0})
 
 	// VOP3B Instructions
 	d.addInstType(&InstType{"v_div_scale_f32", 365, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
@@ -1111,9 +1111,9 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"ds_or_b64", 74, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
 	d.addInstType(&InstType{"ds_xor_b64", 75, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
 	d.addInstType(&InstType{"ds_mskor_b64", 76, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
-	d.addInstType(&InstType{"ds_write_b64", 77, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
+	d.addInstType(&InstType{"ds_write_b64", 77, FormatTable[DS], 0, ExeUnitLDS, 0, 64, 0, 0, 0})
 	d.addInstType(&InstType{"ds_write2_b64", 78, FormatTable[DS], 0, ExeUnitLDS, 0, 64, 64, 0, 0})
-	d.addInstType(&InstType{"ds_write2st64_b64", 79, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
+	d.addInstType(&InstType{"ds_write2st64_b64", 79, FormatTable[DS], 0, ExeUnitLDS, 0, 64, 64, 0, 0})
 	d.addInstType(&InstType{"ds_cmpst_b64", 80, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
 	d.addInstType(&InstType{"ds_cmpst_f64", 81, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
 	d.addInstType(&InstType{"ds_min_f64", 82, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
@@ -1140,8 +1140,8 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"ds_min_rtn_f64", 114, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
 	d.addInstType(&InstType{"ds_max_rtn_f64", 115, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
 	d.addInstType(&InstType{"ds_read_b64", 118, FormatTable[DS], 0, ExeUnitLDS, 64, 0, 0, 0, 0})
-	d.addInstType(&InstType{"ds_read2_b64", 119, FormatTable[DS], 0, ExeUnitLDS, 128, 0, 0, 0, 0})
-	d.addInstType(&InstType{"ds_read2st64_b64", 120, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
+	d.addInstType(&InstType{"ds_read2_b64", 119, FormatTable[DS], 0, ExeUnitLDS, 64, 0, 0, 0, 0})
+	d.addInstType(&InstType{"ds_read2st64_b64", 120, FormatTable[DS], 0, ExeUnitLDS, 64, 0, 0, 0, 0})
 	d.addInstType(&InstType{"ds_condxchg32_rtn_b64", 126, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
 	d.addInstType(&InstType{"ds_write_b8_d16_hi", 160, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
 	d.addInstType(&InstType{"ds_write_b16_d16_hi", 161, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
@@ -1155,10 +1155,10 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"ds_read_addtid_b32", 177, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
 	d.addInstType(&InstType{"ds_permute_b32", 178, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
 	d.addInstType(&InstType{"ds_bpermute_b32", 179, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
-	d.addInstType(&InstType{"ds_write_b96", 222, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
-	d.addInstType(&InstType{"ds_write_b128", 223, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
-	d.addInstType(&InstType{"ds_read_b96", 254, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
-	d.addInstType(&InstType{"ds_read_b128", 255, FormatTable[DS], 0, ExeUnitLDS, 0, 0, 0, 0, 0})
+	d.addInstType(&InstType{"ds_write_b96", 222, FormatTable[DS], 0, ExeUnitLDS, 0, 96, 0, 0, 0})
+	d.addInstType(&InstType{"ds_write_b128", 223, FormatTable[DS], 0, ExeUnitLDS, 0, 128, 0, 0, 0})
+	d.addInstType(&InstType{"ds_read_b96", 254, FormatTable[DS], 0, ExeUnitLDS, 96, 0, 0, 0, 0})
+	d.addInstType(&InstType{"ds_read_b128", 255, FormatTable[DS], 0, ExeUnitLDS, 128, 0, 0, 0, 0})
 
 	// VOP3P Instructions
 	d.addInstType(&InstType{"v_pk_mad_i16", 0, FormatTable[VOP3P], 0, ExeUnitVALU, 0, 0, 0, 0, 0})
@@ -1263,4 +1263,6 @@ func (d *Disassembler) initializeDecodeTable() {
 	// d.addInstType(&InstType{"scratch_load_sbyte_d16_hi", 35, FormatTable[SCRATCH], 0, ExeUnitVMem, 32, 32, 32, 0, 0})
 	// d.addInstType(&InstType{"scratch_load_short_d16", 36, FormatTable[SCRATCH], 0, ExeUnitVMem, 32, 32, 32, 0, 0})
 	// d.addInstType(&InstType{"scratch_load_short_d16_hi", 37, FormatTable[SCRATCH], 0, ExeUnitVMem, 32, 32, 32, 0, 0})
+	//MUBUF instructions
+	d.addInstType(&InstType{"buffer_gl0_inv", 113, FormatTable[MUBUF], 0, ExeUnitVMem, 0, 0, 0, 0, 0})
 }

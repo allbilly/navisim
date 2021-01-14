@@ -620,6 +620,7 @@ func (d *Disassembler) decodeSOPK(inst *Inst, buf []byte) error {
 	return nil
 }
 
+//nolint:gocyclo
 func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 	bytesLo := binary.LittleEndian.Uint32(buf)
 	bytesHi := binary.LittleEndian.Uint32(buf[4:])
@@ -641,6 +642,10 @@ func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 		inst.Data = NewVRegOperand(data0Bits, data0Bits, 1)
 		if inst.SRC0Width == 64 {
 			inst.Data.RegCount = 2
+		} else if inst.SRC0Width == 96 {
+			inst.Data.RegCount = 3
+		} else if inst.SRC0Width == 128 {
+			inst.Data.RegCount = 4
 		}
 	}
 
@@ -659,9 +664,14 @@ func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 			inst.Dst.RegCount = 2
 		} else if inst.DSTWidth == 128 {
 			inst.Dst.RegCount = 4
+		} else if inst.DSTWidth == 96 {
+			inst.Dst.RegCount = 3
 		}
 	}
 
+	return nil
+}
+func (d *Disassembler) decodeMUBUF(inst *Inst, buf []byte) error {
 	return nil
 }
 
@@ -728,6 +738,8 @@ func (d *Disassembler) Decode(buf []byte) (*Inst, error) {
 		err = d.decodeDS(inst, buf)
 	// case VOP3P:
 	// 	err = d.decodeVOP3P(inst, buf)
+	case MUBUF:
+		err = d.decodeMUBUF(inst, buf)
 	default:
 		log.Panicf("unabkle to decode instruction type %s", inst.FormatName)
 	}
