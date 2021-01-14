@@ -324,7 +324,7 @@ func (i Inst) sopkString() string {
 func (i Inst) dsString() string {
 	s := i.InstName + " "
 	switch i.Opcode {
-	case 54, 55, 56, 57, 58, 59, 60, 118, 119, 120:
+	case 54, 55, 56, 57, 58, 59, 60, 118, 119, 120, 254, 255:
 		s += i.Dst.String() + ", "
 	}
 
@@ -339,7 +339,7 @@ func (i Inst) dsString() string {
 	}
 
 	switch i.Opcode {
-	case 13, 54:
+	case 13, 54, 77, 118, 222, 223, 254, 255:
 		if i.Offset0 > 0 {
 			s += fmt.Sprintf(" offset:%d", i.Offset0)
 		}
@@ -359,6 +359,10 @@ func (i Inst) dsString() string {
 // func (i Inst) vop3pString() string {
 
 // }
+func (i Inst) mubufString() string {
+	s := i.InstName + " "
+	return s
+}
 
 // String returns the disassembly of an instruction
 //nolint:gocyclo
@@ -392,6 +396,8 @@ func (i Inst) String(file *elf.File) string {
 		return i.dsString()
 	// case VOP3P:
 	// 	return i.vop3pString()
+	case MUBUF:
+		return i.mubufString()
 	default:
 		log.Panic("Unknown instruction format type.")
 		return i.InstName

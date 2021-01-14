@@ -444,6 +444,7 @@ const (
 	VMCNT
 	EXPCNT
 	LGKMCNT
+	NULL
 )
 
 // Regs are a list of all registers
@@ -848,4 +849,5 @@ var Regs = map[RegType]*Reg{
 	VMCNT:          {VMCNT, "vmcnt", 1, false},
 	EXPCNT:         {EXPCNT, "expcnt", 1, false},
 	LGKMCNT:        {LGKMCNT, "lgkmcnt", 1, false},
+	NULL:           {NULL, "null", 4, false},
 }
