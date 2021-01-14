@@ -1,11 +1,7 @@
 package rdnaemu
 
 import (
-	"bytes"
-	"fmt"
 	"log"
-
-	"encoding/binary"
 
 	"gitlab.com/akita/navisim/rdnainsts"
 )
@@ -82,121 +78,8 @@ func (u *ALUImpl) Run(state InstEmuState) {
 func (u *ALUImpl) runSMEM(state InstEmuState) {
 	inst := state.Inst()
 	switch inst.Opcode {
-	case 0:
-		u.runSLOADDWORD(state)
-	case 1:
-		u.runSLOADDWORDX2(state)
-	case 2:
-		u.runSLOADDWORDX4(state)
-	case 3:
-		u.runSLOADDWORDX8(state)
+
 	default:
 		log.Panicf("Opcode %d for SMEM format is not implemented", inst.Opcode)
 	}
-}
-
-func (u *ALUImpl) runSLOADDWORD(state InstEmuState) {
-	sp := state.Scratchpad().AsSMEM()
-	pid := state.PID()
-
-	buf := u.storageAccessor.Read(pid, sp.Base+sp.Offset, 4)
-
-	sp.DST[0] = rdnainsts.BytesToUint32(buf)
-}
-
-func (u *ALUImpl) runSLOADDWORDX2(state InstEmuState) {
-	sp := state.Scratchpad().AsSMEM()
-	spRaw := state.Scratchpad()
-	pid := state.PID()
-
-	buf := u.storageAccessor.Read(pid, sp.Base+sp.Offset, 8)
-	copy(spRaw[32:40], buf)
-}
-
-func (u *ALUImpl) runSLOADDWORDX4(state InstEmuState) {
-	sp := state.Scratchpad().AsSMEM()
-	spRaw := state.Scratchpad()
-	pid := state.PID()
-
-	buf := u.storageAccessor.Read(pid, sp.Base+sp.Offset, 16)
-	copy(spRaw[32:48], buf)
-}
-
-func (u *ALUImpl) runSLOADDWORDX8(state InstEmuState) {
-	sp := state.Scratchpad().AsSMEM()
-	spRaw := state.Scratchpad()
-	pid := state.PID()
-
-	buf := u.storageAccessor.Read(pid, sp.Base+sp.Offset, 32)
-	copy(spRaw[32:64], buf)
-}
-
-func (u *ALUImpl) sdwaSrcSelect(src uint32, sel rdnainsts.SDWASelect) uint32 {
-	switch sel {
-	case rdnainsts.SDWASelectByte0:
-		return src & 0x000000ff
-	case rdnainsts.SDWASelectByte1:
-		return (src & 0x0000ff00) >> 8
-	case rdnainsts.SDWASelectByte2:
-		return (src & 0x00ff0000) >> 16
-	case rdnainsts.SDWASelectByte3:
-		return (src & 0xff000000) >> 24
-	case rdnainsts.SDWASelectWord0:
-		return src & 0x0000ffff
-	case rdnainsts.SDWASelectWord1:
-		return (src & 0xffff0000) >> 16
-	case rdnainsts.SDWASelectDWord:
-		return src
-	}
-	return src
-}
-
-func (u *ALUImpl) sdwaDstSelect(
-	dstOld uint32,
-	dstNew uint32,
-	sel rdnainsts.SDWASelect,
-	unused rdnainsts.SDWAUnused,
-) uint32 {
-	value := dstNew
-	switch sel {
-	case rdnainsts.SDWASelectByte0:
-		value = value & 0x000000ff
-	case rdnainsts.SDWASelectByte1:
-		value = (value << 8) & 0x0000ff00
-	case rdnainsts.SDWASelectByte2:
-		value = (value << 16) & 0x00ff0000
-	case rdnainsts.SDWASelectByte3:
-		value = (value << 24) & 0xff000000
-	case rdnainsts.SDWASelectWord0:
-		value = value & 0x0000ffff
-	case rdnainsts.SDWASelectWord1:
-		value = (value << 16) & 0xffff0000
-	}
-
-	return value
-}
-
-//nolint:unused
-func (u *ALUImpl) dumpScratchpadAsSop2(
-	state InstEmuState,
-	byteCount int,
-) string {
-	scratchpad := state.Scratchpad()
-	layout := new(SOP2Layout)
-
-	err := binary.Read(bytes.NewBuffer(scratchpad), binary.LittleEndian, layout)
-	if err != nil {
-		panic(err)
-	}
-
-	output := fmt.Sprintf(
-		`
-			SRC0: 0x%[1]x(%[1]d),
-			SRC1: 0x%[2]x(%[2]d),
-			SCC: 0x%[3]x(%[3]d),
-			DST: 0x%[4]x(%[4]d)\n",
-		`,
-		layout.SRC0, layout.SRC1, layout.SCC, layout.DST)
-
-	return output
 }
