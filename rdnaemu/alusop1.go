@@ -6,6 +6,8 @@ import "log"
 func (u *ALUImpl) runSOP1(state InstEmuState) {
 	inst := state.Inst()
 	switch inst.Opcode {
+	case 3:
+		u.runSMOVB32(state)
 	case 60:
 		u.runSANDSAVEEXECB32(state)
 
@@ -22,4 +24,9 @@ func (u *ALUImpl) runSANDSAVEEXECB32(state InstEmuState) {
 	} else {
 		sp.SCC = 0
 	}
+}
+
+func (u *ALUImpl) runSMOVB32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP1()
+	sp.DST = sp.SRC0
 }
