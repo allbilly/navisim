@@ -3,7 +3,7 @@ package emu
 import (
 	"log"
 
-	"gitlab.com/akita/mgpusim/insts"
+	"gitlab.com/akita/navisim/insts"
 )
 
 //nolint:gocyclo

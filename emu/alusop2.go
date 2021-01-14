@@ -4,7 +4,7 @@ import (
 	"log"
 	"math"
 
-	"gitlab.com/akita/mgpusim/insts"
+	"gitlab.com/akita/navisim/insts"
 )
 
 //nolint:gocyclo,funlen

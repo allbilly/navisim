@@ -7,7 +7,7 @@ import (
 
 	"encoding/binary"
 
-	"gitlab.com/akita/mgpusim/insts"
+	"gitlab.com/akita/navisim/insts"
 )
 
 //ALU does its jobs
