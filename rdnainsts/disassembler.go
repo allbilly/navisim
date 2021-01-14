@@ -620,6 +620,7 @@ func (d *Disassembler) decodeSOPK(inst *Inst, buf []byte) error {
 	return nil
 }
 
+//nolint:gocyclo
 func (d *Disassembler) decodeDS(inst *Inst, buf []byte) error {
 	bytesLo := binary.LittleEndian.Uint32(buf)
 	bytesHi := binary.LittleEndian.Uint32(buf[4:])
