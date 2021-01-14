@@ -5,7 +5,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/mgpusim/insts"
 )
 
 var _ = Describe("ALU", func() {

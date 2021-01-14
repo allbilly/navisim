@@ -7,7 +7,7 @@ import (
 
 	"github.com/tebeka/atexit"
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/mgpusim/insts"
 )
 
 // ISADebugger is a hook that hooks to a emulator computeunit for each intruction
@@ -60,7 +60,7 @@ func (h *ISADebugger) logWholeWf(wf *Wavefront) {
 		output += ","
 	}
 
-	output += "{"
+	output += fmt.Sprintf("{")
 	output += fmt.Sprintf(`"wg":[%d,%d,%d],"wf":%d,`,
 		wf.WG.IDX, wf.WG.IDY, wf.WG.IDZ, wf.FirstWiFlatID)
 	output += fmt.Sprintf(`"Inst":"%s",`, wf.Inst().String(nil))
@@ -72,7 +72,7 @@ func (h *ISADebugger) logWholeWf(wf *Wavefront) {
 	output += fmt.Sprintf(`"VCCHi":%d,`, wf.VCC>>32)
 	output += fmt.Sprintf(`"SCC":%d,`, wf.SCC)
 
-	output += `"SGPRs":[`
+	output += fmt.Sprintf(`"SGPRs":[`)
 	for i := 0; i < int(wf.CodeObject.WFSgprCount); i++ {
 		if i > 0 {
 			output += ","
@@ -106,7 +106,7 @@ func (h *ISADebugger) logWholeWf(wf *Wavefront) {
 	output += `,"LDS":`
 	output += fmt.Sprintf(`"%s"`, base64.StdEncoding.EncodeToString(wf.LDS))
 
-	output += "}"
+	output += fmt.Sprintf("}")
 
 	h.Logger.Print(output)
 }
