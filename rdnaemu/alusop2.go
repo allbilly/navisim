@@ -8,6 +8,8 @@ import (
 func (u *ALUImpl) runSOP2(state InstEmuState) {
 	inst := state.Inst()
 	switch inst.Opcode {
+	case 2:
+		u.runSADDI32(state)
 	case 14:
 		u.runSANDB32(state)
 	case 15:
@@ -17,6 +19,25 @@ func (u *ALUImpl) runSOP2(state InstEmuState) {
 	default:
 		log.Panicf("Opcode %d for SOP2 format is not implemented", inst.Opcode)
 	}
+}
+
+func (u *ALUImpl) runSADDI32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP2()
+
+	src0 := asInt32(uint32(sp.SRC0))
+	src1 := asInt32(uint32(sp.SRC1))
+	dst := src0 + src1
+
+	if src0 > 0 && src0 > 0 && dst < 0 {
+		sp.SCC = 1
+	} else if src0 < 0 && src1 < 0 && dst < 0 {
+		sp.SCC = 1
+	} else {
+		sp.SCC = 0
+	}
+
+	sp.DST = uint64(int32ToBits(dst))
+
 }
 
 func (u *ALUImpl) runSANDB32(state InstEmuState) {
