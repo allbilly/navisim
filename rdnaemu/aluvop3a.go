@@ -194,18 +194,23 @@ func (u *ALUImpl) runVASHRREVI64(state InstEmuState) {
 }
 
 func (u *ALUImpl) runVCNDMASKB32(state InstEmuState) {
-	sp := state.Scratchpad().AsVOP3A()
+	sp := state.Scratchpad().AsVOP2()
+	inst := state.Inst()
+	if inst.IsSdwa == false {
+		var i uint
+		for i = 0; i < 64; i++ {
+			if !laneMasked(sp.EXEC, i) {
+				continue
+			}
 
-	var i uint
-	for i = 0; i < 64; i++ {
-		if !laneMasked(sp.EXEC, i) {
-			continue
+			if (sp.VCC & (1 << i)) > 0 {
+				sp.DST[i] = sp.SRC1[i]
+			} else {
+				sp.DST[i] = sp.SRC0[i]
+			}
 		}
-
-		if (sp.SRC2[i] & (1 << i)) > 0 {
-			sp.DST[i] = sp.SRC1[i]
-		} else {
-			sp.DST[i] = sp.SRC0[i]
-		}
+	} else {
+		log.Panicf("SDWA for VOP2 instruction opcode %d not implemented \n", inst.Opcode)
 	}
+
 }
