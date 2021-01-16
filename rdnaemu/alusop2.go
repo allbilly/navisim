@@ -38,11 +38,11 @@ func (u *ALUImpl) runSADDU32(state InstEmuState) {
 	if src0 > math.MaxUint32-src1 {
 		sp.SCC = 1
 	} else {
+
 		sp.SCC = 0
 	}
 
 	sp.DST = uint64(dst)
-
 }
 
 func (u *ALUImpl) runSADDCU32(state InstEmuState) {
@@ -81,12 +81,11 @@ func (u *ALUImpl) runSADDI32(state InstEmuState) {
 	src1 := asInt32(uint32(sp.SRC1))
 	dst := src0 + src1
 
-	if src0 > 0 && src1 > 0 && dst < 0 {
+	if src0 > math.MaxInt32-src1 {
 		sp.SCC = 1
-	} else if src0 < 0 && src1 < 0 && dst < 0 {
+	}
+	if src0 < math.MinInt32-src1 {
 		sp.SCC = 1
-	} else {
-		sp.SCC = 0
 	}
 
 	sp.DST = uint64(int32ToBits(dst))

@@ -13,9 +13,9 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 
 	switch inst.Opcode {
 	case 257: //256+1
-		u.runVCNDMASKB32(state)
+		u.runVCNDMASKB32VOP3A(state)
 	case 767:
-		u.runVLSHRREVB64(state)
+		u.runVLSHLREVB64(state)
 	case 769:
 		u.runVASHRREVI64(state)
 
@@ -193,29 +193,7 @@ func (u *ALUImpl) runVASHRREVI64(state InstEmuState) {
 	}
 }
 
-func (u *ALUImpl) runVCNDMASKB32(state InstEmuState) {
-	sp := state.Scratchpad().AsVOP2()
-	inst := state.Inst()
-	if inst.IsSdwa == false {
-		var i uint
-		for i = 0; i < 64; i++ {
-			if !laneMasked(sp.EXEC, i) {
-				continue
-			}
-
-			if (sp.VCC & (1 << i)) > 0 {
-				sp.DST[i] = sp.SRC1[i]
-			} else {
-				sp.DST[i] = sp.SRC0[i]
-			}
-		}
-	} else {
-		log.Panicf("SDWA for VOP2 instruction opcode %d not implemented \n", inst.Opcode)
-	}
-
-}
-
-func (u *ALUImpl) runVLSHRREVB64(state InstEmuState) {
+func (u *ALUImpl) runVCNDMASKB32VOP3A(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 
 	var i uint
@@ -224,6 +202,23 @@ func (u *ALUImpl) runVLSHRREVB64(state InstEmuState) {
 			continue
 		}
 
-		sp.DST[i] = sp.SRC1[i] >> sp.SRC0[i]
+		if (sp.SRC2[i] & (1 << i)) > 0 {
+			sp.DST[i] = sp.SRC1[i]
+		} else {
+			sp.DST[i] = sp.SRC0[i]
+		}
+	}
+}
+
+func (u *ALUImpl) runVLSHLREVB64(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = sp.SRC1[i] << sp.SRC0[i]
 	}
 }
