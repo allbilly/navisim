@@ -9,13 +9,13 @@ import (
 //nolint:gocyclo,funlen
 func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	inst := state.Inst()
-
-	log.Printf("%t", inst.InstName)
 	u.vop3aPreprocess(state)
 
 	switch inst.Opcode {
 	case 257: //256+1
 		u.runVCNDMASKB32(state)
+	case 767:
+		u.runVLSHRREVB64(state)
 	case 769:
 		u.runVASHRREVI64(state)
 
@@ -213,4 +213,17 @@ func (u *ALUImpl) runVCNDMASKB32(state InstEmuState) {
 		log.Panicf("SDWA for VOP2 instruction opcode %d not implemented \n", inst.Opcode)
 	}
 
+}
+
+func (u *ALUImpl) runVLSHRREVB64(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = sp.SRC1[i] >> sp.SRC0[i]
+	}
 }
