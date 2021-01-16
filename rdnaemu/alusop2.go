@@ -15,6 +15,8 @@ func (u *ALUImpl) runSOP2(state InstEmuState) {
 		u.runSADDI32(state)
 	case 4:
 		u.runSADDCU32(state)
+	case 7:
+		u.runSMINU32(state)
 	case 14:
 		u.runSANDB32(state)
 	case 15:
@@ -59,6 +61,17 @@ func (u *ALUImpl) runSADDCU32(state InstEmuState) {
 
 	sp.DST = uint64(dst)
 
+}
+
+func (u *ALUImpl) runSMINU32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP2()
+
+	if sp.SRC0 < sp.SRC1 {
+		sp.DST = sp.SRC0
+		sp.SCC = 1
+	} else {
+		sp.DST = sp.SRC1
+	}
 }
 
 func (u *ALUImpl) runSADDI32(state InstEmuState) {
