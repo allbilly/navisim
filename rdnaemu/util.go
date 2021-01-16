@@ -14,6 +14,7 @@ func asInt64(bits uint64) int64 {
 	return *((*int64)((unsafe.Pointer(&bits))))
 }
 
+//nolint:deadcode,unused
 func asFloat32(bits uint32) float32 {
 	return *((*float32)((unsafe.Pointer(&bits))))
 }
@@ -30,6 +31,7 @@ func int64ToBits(num int64) uint64 {
 	return *((*uint64)((unsafe.Pointer(&num))))
 }
 
+//nolint:deadcode,unused
 func float32ToBits(num float32) uint32 {
 	return *((*uint32)((unsafe.Pointer(&num))))
 }

@@ -261,11 +261,18 @@ func (u *ALUImpl) sdwaDstSelect(
 	return value
 }
 
-func (u *ALUImpl) dumpScratchpadAsSop2(state InstEmuState, byteCount int) string {
+//nolint:unused
+func (u *ALUImpl) dumpScratchpadAsSop2(
+	state InstEmuState,
+	byteCount int,
+) string {
 	scratchpad := state.Scratchpad()
 	layout := new(SOP2Layout)
 
-	binary.Read(bytes.NewBuffer(scratchpad), binary.LittleEndian, layout)
+	err := binary.Read(bytes.NewBuffer(scratchpad), binary.LittleEndian, layout)
+	if err != nil {
+		panic(err)
+	}
 
 	output := fmt.Sprintf(
 		`
