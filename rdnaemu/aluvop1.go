@@ -47,7 +47,26 @@ func (u *ALUImpl) runVCVTF32U32(state InstEmuState) {
 }
 
 func (u *ALUImpl) runVCVTU32F32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP1()
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
 
+		src := math.Float32frombits(uint32(sp.SRC0[i]))
+
+		var dst uint64
+		if math.IsNaN(float64(src)) || src < 0 {
+			dst = 0
+		} else if uint64(src) > math.MaxUint32 {
+			dst = math.MaxUint32
+		} else {
+			dst = uint64(src)
+		}
+
+		sp.DST[i] = dst
+	}
 }
 
 func (u *ALUImpl) runVRCPIFLAGF32(state InstEmuState) {
