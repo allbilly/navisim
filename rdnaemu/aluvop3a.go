@@ -9,11 +9,14 @@ import (
 //nolint:gocyclo,funlen
 func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	inst := state.Inst()
+	log.Printf("%s\n", inst.InstName)
 	u.vop3aPreprocess(state)
 
 	switch inst.Opcode {
 	case 257: //256+1
 		u.runVCNDMASKB32VOP3A(state)
+	case 361:
+		u.runVMULOU32(state)
 	case 767:
 		u.runVLSHLREVB64(state)
 	case 769:
@@ -220,5 +223,17 @@ func (u *ALUImpl) runVLSHLREVB64(state InstEmuState) {
 		}
 
 		sp.DST[i] = sp.SRC1[i] << sp.SRC0[i]
+	}
+}
+
+func (u *ALUImpl) runVMULOU32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+		sp.DST[i] = (sp.SRC0[i] * sp.SRC1[i])
 	}
 }
