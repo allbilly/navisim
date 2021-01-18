@@ -80,7 +80,7 @@ var _ = Describe("ALU", func() {
 		Expect(sp.SCC).To(Equal(uint8(1)))
 	})
 
-	FIt("should run S_ADDC_U32", func() {
+	It("should run S_ADDC_U32", func() {
 		state.inst = rdnainsts.NewInst()
 		state.inst.FormatType = rdnainsts.SOP2
 		state.inst.Opcode = 4

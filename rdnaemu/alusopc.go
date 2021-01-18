@@ -12,6 +12,7 @@ func (u *ALUImpl) runSOPC(state InstEmuState) {
 		u.runSCMPEQU32(state)
 	case 7:
 		u.runSCMPLGU32(state)
+
 	default:
 		log.Panicf("Opcode %d for SOPC format is not implemented", inst.Opcode)
 	}
