@@ -759,9 +759,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_add_nc_u32_e32", 37 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_sub_nc_u32", 38 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_subrev_nc_u32", 39 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_add_co_ci_u32_e32", 40 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_sub_co_ci_u32", 41 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"v_subrev_co_ci_u32", 42 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
+
 	d.addInstType(&InstType{"v_fmac_f32", 43 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_fmamk_f32", 44 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"v_fmaak_f32", 45 + 256, FormatTable[VOP3a], 0, ExeUnitVALU, 32, 32, 32, 0, 0})
@@ -967,6 +965,9 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"v_add_co_u32_e64", 783, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 32})
 	d.addInstType(&InstType{"v_sub_co_u32", 784, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 32})
 	d.addInstType(&InstType{"v_subrev_co_u32", 793, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 0, 32})
+	d.addInstType(&InstType{"v_add_co_ci_u32_e32", 40 + 256, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 32, 32})
+	d.addInstType(&InstType{"v_sub_co_ci_u32", 41 + 256, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 32, 32})
+	d.addInstType(&InstType{"v_subrev_co_ci_u32", 42 + 256, FormatTable[VOP3b], 0, ExeUnitVALU, 32, 32, 32, 32, 32})
 
 	// SOP1 Instructions
 	d.addInstType(&InstType{"s_mov_b32", 3, FormatTable[SOP1], 0, ExeUnitScalar, 32, 32, 0, 0, 0})

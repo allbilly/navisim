@@ -429,6 +429,9 @@ func (d *Disassembler) decodeSOPP(inst *Inst, buf []byte) error {
 func (d *Disassembler) decodeVOPC(inst *Inst, buf []byte) error {
 	bytes := binary.LittleEndian.Uint32(buf)
 	inst.Src0, _ = getOperand(uint16(extractBits(bytes, 0, 8)))
+	if inst.SRC0Width == 64 {
+		inst.Src0.RegCount = 2
+	}
 	if inst.Src0.OperandType == LiteralConstant {
 		inst.ByteSize += 4
 		if len(buf) < 8 {
@@ -439,6 +442,9 @@ func (d *Disassembler) decodeVOPC(inst *Inst, buf []byte) error {
 
 	bits := int(extractBits(bytes, 9, 16))
 	inst.Src1 = NewVRegOperand(bits, bits, 0)
+	if inst.SRC1Width == 64 {
+		inst.Src1.RegCount = 2
+	}
 	return nil
 }
 
@@ -470,7 +476,7 @@ func (d *Disassembler) isVOP3bOpcode(opcode Opcode) bool {
 	//}
 
 	switch opcode {
-	case 365, 366, 374, 375, 783, 784, 793:
+	case 365, 366, 374, 375, 783, 784, 793, 296, 297, 298:
 		return true
 	}
 
