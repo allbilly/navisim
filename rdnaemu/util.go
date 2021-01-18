@@ -19,6 +19,7 @@ func asFloat32(bits uint32) float32 {
 	return *((*float32)((unsafe.Pointer(&bits))))
 }
 
+//nolint:deadcode,unused
 func int16ToBits(num int16) uint16 {
 	return *((*uint16)((unsafe.Pointer(&num))))
 }
