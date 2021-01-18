@@ -50,7 +50,6 @@ func (u *ALUImpl) runVCNDMASKB32(state InstEmuState) {
 	} else {
 		log.Panicf("SDWA for VOP2 instruction opcode %d not implemented \n", inst.Opcode)
 	}
-
 }
 
 func (u *ALUImpl) runVADDNCU32(state InstEmuState) {
