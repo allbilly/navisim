@@ -46,61 +46,6 @@ var _ = Describe("ALU", func() {
 		mockCtrl.Finish()
 	})
 
-	It("should run FLAT_LOAD_UBYTE", func() {
-		for i := 0; i < 64; i++ {
-			pageTable.EXPECT().Find(ca.PID(1), uint64(i*4)).
-				Return(vm.Page{
-					PAddr: uint64(0),
-				}, true)
-		}
-		state.inst = rdnainsts.NewInst()
-		state.inst.FormatType = rdnainsts.FLAT
-		state.inst.Opcode = 16
-
-		layout := state.Scratchpad().AsFlat()
-		for i := 0; i < 64; i++ {
-			layout.ADDR[i] = uint64(i * 4)
-			storage.Write(uint64(i*4), rdnainsts.Uint32ToBytes(uint32(i)))
-		}
-		layout.EXEC = 0xffffffffffffffff
-
-		alu.Run(state)
-
-		for i := 0; i < 64; i++ {
-			Expect(layout.DST[i*4]).To(Equal(uint32(i)))
-			Expect(layout.DST[i*4+1]).To(Equal(uint32(0)))
-			Expect(layout.DST[i*4+2]).To(Equal(uint32(0)))
-			Expect(layout.DST[i*4+3]).To(Equal(uint32(0)))
-		}
-	})
-
-	It("should run FLAT_LOAD_USHORT", func() {
-		for i := 0; i < 64; i++ {
-			pageTable.EXPECT().
-				Find(ca.PID(1), uint64(i*4)).
-				Return(vm.Page{
-					PAddr: uint64(0),
-				}, true)
-		}
-		state.inst = rdnainsts.NewInst()
-		state.inst.FormatType = rdnainsts.FLAT
-		state.inst.Opcode = 18
-
-		layout := state.Scratchpad().AsFlat()
-		for i := 0; i < 64; i++ {
-			layout.ADDR[i] = uint64(i * 4)
-			storage.Write(uint64(i*4), rdnainsts.Uint32ToBytes(uint32(i)))
-		}
-		layout.EXEC = 0xffffffffffffffff
-
-		alu.Run(state)
-
-		for i := 0; i < 64; i++ {
-			Expect(layout.DST[i*4]).To(Equal(uint32(i)))
-
-		}
-	})
-
 	It("should run FLAT_LOAD_DWORD", func() {
 		for i := 0; i < 64; i++ {
 			pageTable.EXPECT().
@@ -111,7 +56,7 @@ var _ = Describe("ALU", func() {
 		}
 		state.inst = rdnainsts.NewInst()
 		state.inst.FormatType = rdnainsts.FLAT
-		state.inst.Opcode = 20
+		state.inst.Opcode = 12
 
 		layout := state.Scratchpad().AsFlat()
 		for i := 0; i < 64; i++ {
@@ -124,66 +69,6 @@ var _ = Describe("ALU", func() {
 
 		for i := 0; i < 64; i++ {
 			Expect(layout.DST[i*4]).To(Equal(uint32(i)))
-		}
-	})
-
-	It("should run FLAT_LOAD_DWORDX2", func() {
-		for i := 0; i < 64; i++ {
-			pageTable.EXPECT().
-				Find(ca.PID(1), uint64(i*8)).
-				Return(vm.Page{
-					PAddr: uint64(0),
-				}, true)
-		}
-		state.inst = rdnainsts.NewInst()
-		state.inst.FormatType = rdnainsts.FLAT
-		state.inst.Opcode = 21
-
-		layout := state.Scratchpad().AsFlat()
-		for i := 0; i < 64; i++ {
-			layout.ADDR[i] = uint64(i * 8)
-			storage.Write(uint64(i*8), rdnainsts.Uint32ToBytes(uint32(i)))
-			storage.Write(uint64(i*8+4), rdnainsts.Uint32ToBytes(uint32(i)))
-		}
-		layout.EXEC = 0xffffffffffffffff
-
-		alu.Run(state)
-
-		for i := 0; i < 64; i++ {
-			Expect(layout.DST[i*4]).To(Equal(uint32(i)))
-			Expect(layout.DST[i*4+1]).To(Equal(uint32(i)))
-		}
-	})
-
-	It("should run FLAT_LOAD_DWORDX4", func() {
-		for i := 0; i < 64; i++ {
-			pageTable.EXPECT().
-				Find(ca.PID(1), uint64(i*16)).
-				Return(vm.Page{
-					PAddr: uint64(0),
-				}, true)
-		}
-		state.inst = rdnainsts.NewInst()
-		state.inst.FormatType = rdnainsts.FLAT
-		state.inst.Opcode = 23
-
-		layout := state.Scratchpad().AsFlat()
-		for i := 0; i < 64; i++ {
-			layout.ADDR[i] = uint64(i * 16)
-			storage.Write(uint64(i*16), rdnainsts.Uint32ToBytes(uint32(i)))
-			storage.Write(uint64(i*16+4), rdnainsts.Uint32ToBytes(uint32(i)))
-			storage.Write(uint64(i*16+8), rdnainsts.Uint32ToBytes(uint32(i)))
-			storage.Write(uint64(i*16+12), rdnainsts.Uint32ToBytes(uint32(i)))
-		}
-		layout.EXEC = 0xffffffffffffffff
-
-		alu.Run(state)
-
-		for i := 0; i < 64; i++ {
-			Expect(layout.DST[i*4]).To(Equal(uint32(i)))
-			Expect(layout.DST[i*4+1]).To(Equal(uint32(i)))
-			Expect(layout.DST[i*4+2]).To(Equal(uint32(i)))
-			Expect(layout.DST[i*4+3]).To(Equal(uint32(i)))
 		}
 	})
 
@@ -212,101 +97,6 @@ var _ = Describe("ALU", func() {
 			buf, err := storage.Read(uint64(i*4), uint64(4))
 			Expect(err).To(BeNil())
 			Expect(rdnainsts.BytesToUint32(buf)).To(Equal(uint32(i)))
-		}
-	})
-
-	It("should run FLAT_STORE_DWORDX2", func() {
-		for i := 0; i < 64; i++ {
-			pageTable.EXPECT().
-				Find(ca.PID(1), uint64(i*16)).
-				Return(vm.Page{
-					PAddr: uint64(0),
-				}, true)
-		}
-		state.inst = rdnainsts.NewInst()
-		state.inst.FormatType = rdnainsts.FLAT
-		state.inst.Opcode = 29
-
-		layout := state.Scratchpad().AsFlat()
-		for i := 0; i < 64; i++ {
-			layout.ADDR[i] = uint64(i * 16)
-			layout.DATA[i*4] = uint32(i)
-			layout.DATA[(i*4)+1] = uint32(i)
-		}
-		layout.EXEC = 0xffffffffffffffff
-
-		alu.Run(state)
-
-		for i := 0; i < 64; i++ {
-			buf, err := storage.Read(uint64(i*16), uint64(16))
-			Expect(err).To(BeNil())
-			Expect(rdnainsts.BytesToUint32(buf[0:4])).To(Equal(uint32(i)))
-		}
-	})
-
-	It("should run FLAT_STORE_DWORDX3", func() {
-		for i := 0; i < 64; i++ {
-			pageTable.EXPECT().
-				Find(ca.PID(1), uint64(i*16)).
-				Return(vm.Page{
-					PAddr: uint64(0),
-				}, true)
-		}
-		state.inst = rdnainsts.NewInst()
-		state.inst.FormatType = rdnainsts.FLAT
-		state.inst.Opcode = 30
-
-		layout := state.Scratchpad().AsFlat()
-		for i := 0; i < 64; i++ {
-			layout.ADDR[i] = uint64(i * 16)
-			layout.DATA[i*4] = uint32(i)
-			layout.DATA[(i*4)+1] = uint32(i)
-			layout.DATA[(i*4)+2] = uint32(i)
-		}
-		layout.EXEC = 0xffffffffffffffff
-
-		alu.Run(state)
-
-		for i := 0; i < 64; i++ {
-			buf, err := storage.Read(uint64(i*16), uint64(16))
-			Expect(err).To(BeNil())
-			Expect(rdnainsts.BytesToUint32(buf[0:4])).To(Equal(uint32(i)))
-			Expect(rdnainsts.BytesToUint32(buf[4:8])).To(Equal(uint32(i)))
-			Expect(rdnainsts.BytesToUint32(buf[8:12])).To(Equal(uint32(i)))
-		}
-	})
-
-	It("should run FLAT_STORE_DWORDX4", func() {
-		for i := 0; i < 64; i++ {
-			pageTable.EXPECT().
-				Find(ca.PID(1), uint64(i*16)).
-				Return(vm.Page{
-					PAddr: uint64(0),
-				}, true)
-		}
-		state.inst = rdnainsts.NewInst()
-		state.inst.FormatType = rdnainsts.FLAT
-		state.inst.Opcode = 31
-
-		layout := state.Scratchpad().AsFlat()
-		for i := 0; i < 64; i++ {
-			layout.ADDR[i] = uint64(i * 16)
-			layout.DATA[i*4] = uint32(i)
-			layout.DATA[(i*4)+1] = uint32(i)
-			layout.DATA[(i*4)+2] = uint32(i)
-			layout.DATA[(i*4)+3] = uint32(i)
-		}
-		layout.EXEC = 0xffffffffffffffff
-
-		alu.Run(state)
-
-		for i := 0; i < 64; i++ {
-			buf, err := storage.Read(uint64(i*16), uint64(16))
-			Expect(err).To(BeNil())
-			Expect(rdnainsts.BytesToUint32(buf[0:4])).To(Equal(uint32(i)))
-			Expect(rdnainsts.BytesToUint32(buf[4:8])).To(Equal(uint32(i)))
-			Expect(rdnainsts.BytesToUint32(buf[8:12])).To(Equal(uint32(i)))
-			Expect(rdnainsts.BytesToUint32(buf[12:16])).To(Equal(uint32(i)))
 		}
 	})
 })
