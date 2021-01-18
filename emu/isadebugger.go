@@ -60,7 +60,7 @@ func (h *ISADebugger) logWholeWf(wf *Wavefront) {
 		output += ","
 	}
 
-	output += fmt.Sprintf("{")
+	output += "{"
 	output += fmt.Sprintf(`"wg":[%d,%d,%d],"wf":%d,`,
 		wf.WG.IDX, wf.WG.IDY, wf.WG.IDZ, wf.FirstWiFlatID)
 	output += fmt.Sprintf(`"Inst":"%s",`, wf.Inst().String(nil))
@@ -72,7 +72,7 @@ func (h *ISADebugger) logWholeWf(wf *Wavefront) {
 	output += fmt.Sprintf(`"VCCHi":%d,`, wf.VCC>>32)
 	output += fmt.Sprintf(`"SCC":%d,`, wf.SCC)
 
-	output += fmt.Sprintf(`"SGPRs":[`)
+	output += `"SGPRs":[`
 	for i := 0; i < int(wf.CodeObject.WFSgprCount); i++ {
 		if i > 0 {
 			output += ","
@@ -106,7 +106,7 @@ func (h *ISADebugger) logWholeWf(wf *Wavefront) {
 	output += `,"LDS":`
 	output += fmt.Sprintf(`"%s"`, base64.StdEncoding.EncodeToString(wf.LDS))
 
-	output += fmt.Sprintf("}")
+	output += "}"
 
 	h.Logger.Print(output)
 }

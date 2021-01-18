@@ -7,7 +7,7 @@ import (
 	"gitlab.com/akita/navisim/rdnainsts"
 )
 
-var _ = Describe("GridBuilder", func() {
+var _ = PDescribe("GridBuilder", func() {
 
 	var (
 		builder *gridBuilderImpl
