@@ -35,13 +35,12 @@ func (u *ALUImpl) runVOP2(state InstEmuState) {
 func (u *ALUImpl) runVCNDMASKB32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue
 			}
-
 			if (sp.VCC & (1 << i)) > 0 {
 				sp.DST[i] = sp.SRC1[i]
 			} else {
@@ -233,7 +232,7 @@ func (u *ALUImpl) runVFMACF32(state InstEmuState) {
 	var src1 float32
 
 	var i uint
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue

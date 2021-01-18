@@ -38,10 +38,8 @@ func (u *ALUImpl) runSADDU32(state InstEmuState) {
 	if src0 > math.MaxUint32-src1 {
 		sp.SCC = 1
 	} else {
-
 		sp.SCC = 0
 	}
-
 	sp.DST = uint64(dst)
 }
 
@@ -58,14 +56,11 @@ func (u *ALUImpl) runSADDCU32(state InstEmuState) {
 	} else {
 		sp.SCC = 0
 	}
-
 	sp.DST = uint64(dst)
-
 }
 
 func (u *ALUImpl) runSMINU32(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP2()
-
 	if sp.SRC0 < sp.SRC1 {
 		sp.DST = sp.SRC0
 		sp.SCC = 1
@@ -89,12 +84,10 @@ func (u *ALUImpl) runSADDI32(state InstEmuState) {
 	}
 
 	sp.DST = uint64(int32ToBits(dst))
-
 }
 
 func (u *ALUImpl) runSANDB32(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP2()
-
 	sp.DST = sp.SRC0 & sp.SRC1
 	if sp.DST != 0 {
 		sp.SCC = 1
@@ -104,7 +97,6 @@ func (u *ALUImpl) runSANDB32(state InstEmuState) {
 }
 func (u *ALUImpl) runSANDB64(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP2()
-
 	sp.DST = sp.SRC0 & sp.SRC1
 	if sp.DST != 0 {
 		sp.SCC = 1
@@ -114,7 +106,6 @@ func (u *ALUImpl) runSANDB64(state InstEmuState) {
 }
 func (u *ALUImpl) runSMULI32(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP2()
-
 	src0 := asInt32(uint32(sp.SRC0))
 	src1 := asInt32(uint32(sp.SRC1))
 	dst := src0 * src1
