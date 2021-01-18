@@ -1,1 +1,35 @@
 package rdnaemu
+
+import (
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"gitlab.com/akita/navisim/rdnainsts"
+)
+
+var _ = Describe("ALU", func() {
+
+	var (
+		alu   *ALUImpl
+		state *mockInstState
+	)
+
+	BeforeEach(func() {
+		alu = NewALU(nil)
+
+		state = new(mockInstState)
+		state.scratchpad = make([]byte, 4096)
+	})
+
+	It("should run s_mov_b32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.SOP1
+		state.inst.Opcode = 3
+
+		sp := state.Scratchpad().AsSOP1()
+		sp.SRC0 = 0x0000ffffffff0000
+
+		alu.Run(state)
+
+		Expect(sp.DST).To(Equal(uint64(0x0000ffffffff0000)))
+	})
+})

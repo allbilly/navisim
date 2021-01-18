@@ -9,10 +9,13 @@ import (
 //nolint:gocyclo,funlen
 func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	inst := state.Inst()
-
 	u.vop3aPreprocess(state)
 
 	switch inst.Opcode {
+	case 257: //256+1
+		u.runVCNDMASKB32VOP3A(state)
+	case 767:
+		u.runVLSHLREVB64(state)
 	case 769:
 		u.runVASHRREVI64(state)
 
@@ -187,5 +190,35 @@ func (u *ALUImpl) runVASHRREVI64(state InstEmuState) {
 		}
 
 		sp.DST[i] = int64ToBits(asInt64(sp.SRC1[i]) >> sp.SRC0[i])
+	}
+}
+
+func (u *ALUImpl) runVCNDMASKB32VOP3A(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		if (sp.SRC2[i] & (1 << i)) > 0 {
+			sp.DST[i] = sp.SRC1[i]
+		} else {
+			sp.DST[i] = sp.SRC0[i]
+		}
+	}
+}
+
+func (u *ALUImpl) runVLSHLREVB64(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = sp.SRC1[i] << sp.SRC0[i]
 	}
 }
