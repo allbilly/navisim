@@ -13,5 +13,5 @@ import (
 func TestEmulator(t *testing.T) {
 	log.SetOutput(GinkgoWriter)
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "GCN3 Emulator")
+	RunSpecs(t, "RDNA Emulator")
 }
