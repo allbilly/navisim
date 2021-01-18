@@ -10,20 +10,20 @@ import (
 var _ = PDescribe("GridBuilder", func() {
 
 	var (
-		builder *gridBuilderImpl
+		builder GridBuilder
 	)
 
 	BeforeEach(func() {
-		builder = &gridBuilderImpl{}
+		builder = NewGridBuilder()
 	})
 
 	It("should build partial wavefront", func() {
 		codeObject := new(rdnainsts.HsaCo)
 		packet := new(HsaKernelDispatchPacket)
-		packet.WorkgroupSizeX = 64
+		packet.WorkgroupSizeX = 32
 		packet.WorkgroupSizeY = 1
 		packet.WorkgroupSizeZ = 1
-		packet.GridSizeX = 32
+		packet.GridSizeX = 16
 		packet.GridSizeY = 1
 		packet.GridSizeZ = 1
 		builder.SetKernel(KernelLaunchInfo{
@@ -35,12 +35,12 @@ var _ = PDescribe("GridBuilder", func() {
 		wg := builder.NextWG()
 
 		Expect(builder.NumWG()).To(Equal(1))
-		Expect(wg.SizeX).To(Equal(64))
-		Expect(wg.CurrSizeX).To(Equal(32))
+		Expect(wg.SizeX).To(Equal(32))
+		Expect(wg.CurrSizeX).To(Equal(16))
 		Expect(wg.Wavefronts).To(HaveLen(1))
-		Expect(wg.WorkItems).To(HaveLen(32))
+		Expect(wg.WorkItems).To(HaveLen(16))
 		Expect(wg.Wavefronts[0].InitExecMask).
-			To(Equal(uint64(0x00000000ffffffff)))
+			To(Equal(uint64(0x0000ffff)))
 	})
 
 	It("should build partial 2d wavefront", func() {
@@ -68,7 +68,7 @@ var _ = PDescribe("GridBuilder", func() {
 		Expect(wg1.Wavefronts).To(HaveLen(1))
 		Expect(wg1.WorkItems).To(HaveLen(32))
 		Expect(wg1.Wavefronts[0].InitExecMask).
-			To(Equal(uint64(0x00000000ffffffff)))
+			To(Equal(uint64(0xffffffff)))
 
 		wg2 := builder.NextWG()
 		Expect(wg2.SizeX).To(Equal(8))
@@ -78,7 +78,7 @@ var _ = PDescribe("GridBuilder", func() {
 		Expect(wg2.Wavefronts).To(HaveLen(1))
 		Expect(wg2.WorkItems).To(HaveLen(16))
 		Expect(wg2.Wavefronts[0].InitExecMask).
-			To(Equal(uint64(0x000000000f0f0f0f)))
+			To(Equal(uint64(0xf0f0f0f)))
 
 	})
 
@@ -111,7 +111,7 @@ var _ = PDescribe("GridBuilder", func() {
 		Expect(wg1.IDX).To(Equal(0))
 		Expect(wg1.IDY).To(Equal(0))
 		Expect(wg1.IDZ).To(Equal(0))
-		Expect(wg1.Wavefronts).To(HaveLen(4))
+		Expect(wg1.Wavefronts).To(HaveLen(8))
 		Expect(wg1.WorkItems).To(HaveLen(256))
 		Expect(wg2.SizeX).To(Equal(256))
 		Expect(wg2.SizeY).To(Equal(1))
@@ -154,24 +154,33 @@ var _ = PDescribe("GridBuilder", func() {
 		Expect(wg1.SizeX).To(Equal(16))
 		Expect(wg1.SizeY).To(Equal(16))
 		Expect(wg1.SizeZ).To(Equal(1))
+		Expect(wg1.CurrSizeX).To(Equal(16))
+		Expect(wg1.CurrSizeY).To(Equal(16))
+		Expect(wg1.CurrSizeZ).To(Equal(1))
 		Expect(wg1.IDX).To(Equal(0))
 		Expect(wg1.IDY).To(Equal(0))
 		Expect(wg1.IDZ).To(Equal(0))
-		Expect(wg1.Wavefronts).To(HaveLen(4))
+		Expect(wg1.Wavefronts).To(HaveLen(8))
 		Expect(wg1.WorkItems).To(HaveLen(256))
 
 		Expect(wg2.SizeX).To(Equal(16))
 		Expect(wg2.SizeY).To(Equal(16))
 		Expect(wg2.SizeZ).To(Equal(1))
+		Expect(wg2.CurrSizeX).To(Equal(16))
+		Expect(wg2.CurrSizeY).To(Equal(16))
+		Expect(wg2.CurrSizeZ).To(Equal(1))
 		Expect(wg2.IDX).To(Equal(1))
 		Expect(wg2.IDY).To(Equal(0))
 		Expect(wg2.IDZ).To(Equal(0))
+		Expect(wg2.Wavefronts).To(HaveLen(8))
+		Expect(wg2.WorkItems).To(HaveLen(256))
 
 		Expect(wg3.IDX).To(Equal(2))
 		Expect(wg3.IDY).To(Equal(0))
 		Expect(wg3.CurrSizeX).To(Equal(1))
 		Expect(wg3.CurrSizeY).To(Equal(16))
-		Expect(wg3.Wavefronts).To(HaveLen(4))
+		Expect(wg3.Wavefronts).To(HaveLen(8))
+		Expect(wg3.WorkItems).To(HaveLen(16))
 
 		Expect(wg4.IDX).To(Equal(0))
 		Expect(wg4.IDY).To(Equal(1))
@@ -193,4 +202,5 @@ var _ = PDescribe("GridBuilder", func() {
 
 		Expect(wg7).To(BeNil())
 	})
+
 })
