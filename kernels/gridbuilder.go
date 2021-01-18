@@ -27,7 +27,7 @@ type GridBuilder interface {
 }
 
 // NewGridBuilder creates a default grid builder
-func NewGridBuilder(wavefrontSize int) *GridBuilderImpl {
+func NewGridBuilder(wavefrontSize int) GridBuilder {
 	b := &GridBuilderImpl{}
 	b.wavefrontSize = wavefrontSize
 	return b
