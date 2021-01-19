@@ -60,4 +60,23 @@ var _ = Describe("ALU", func() {
 		Expect(sp.VCC).To(Equal(uint64(0x4)))
 	})
 
+	It("should run v_cmp_gt_u32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOPC
+		state.inst.Opcode = 198
+
+		sp := state.Scratchpad().AsVOPC()
+		sp.EXEC = 0x7
+		sp.SRC0[0] = 1
+		sp.SRC1[0] = 1
+		sp.SRC0[1] = 1
+		sp.SRC1[1] = 2
+		sp.SRC0[2] = 1
+		sp.SRC1[2] = 0
+
+		alu.Run(state)
+
+		Expect(sp.VCC).To(Equal(uint64(0x5)))
+	})
+
 })
