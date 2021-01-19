@@ -74,4 +74,19 @@ var _ = Describe("ALU", func() {
 		}
 	})
 
+	It("should run V_MUL_HI_U32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP3a
+		state.inst.Opcode = 362
+
+		sp := state.Scratchpad().AsVOP3A()
+		sp.SRC0[0] = uint64(0x80000000)
+		sp.SRC1[0] = uint64(2)
+		sp.EXEC = 1
+
+		alu.Run(state)
+
+		Expect(sp.DST[0]).To(Equal(uint64(1)))
+	})
+
 })
