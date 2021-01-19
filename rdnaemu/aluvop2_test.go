@@ -1,6 +1,8 @@
 package rdnaemu
 
 import (
+	"math"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"gitlab.com/akita/navisim/rdnainsts"
@@ -54,6 +56,21 @@ var _ = Describe("ALU", func() {
 		alu.Run(state)
 
 		Expect(asFloat32(uint32(sp.DST[0]))).To(Equal(float32(1024.0 + 16.0*4.0)))
+	})
+
+	It("should run V_MUL_F32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 8
+
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = uint64(math.Float32bits(2.0))
+		sp.SRC1[0] = uint64(math.Float32bits(3.1))
+		sp.EXEC = 0x1
+
+		alu.Run(state)
+
+		Expect(sp.DST[0]).To(Equal(uint64(math.Float32bits(float32(6.2)))))
 	})
 
 })
