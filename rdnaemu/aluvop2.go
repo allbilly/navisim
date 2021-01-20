@@ -13,6 +13,8 @@ func (u *ALUImpl) runVOP2(state InstEmuState) {
 		u.runVCNDMASKB32(state)
 	case 8:
 		u.runVMULF32(state)
+	case 11:
+		u.runVMULU32U24(state)
 	case 15:
 		u.runVMINF32(state)
 	case 16:
@@ -35,6 +37,21 @@ func (u *ALUImpl) runVOP2(state InstEmuState) {
 	default:
 		log.Panicf("Opcode %d for VOP2 format (%s) is not implemented",
 			inst.Opcode, inst.String(nil))
+	}
+}
+
+func (u *ALUImpl) runVMULU32U24(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP2()
+
+	for i := 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, uint(i)) {
+			continue
+		}
+
+		src0 := (uint32(sp.SRC0[i]) << 8) >> 8
+		src1 := (uint32(sp.SRC1[i]) << 8) >> 8
+		dst := src0 * src1
+		sp.DST[i] = uint64(dst)
 	}
 }
 
