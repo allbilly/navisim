@@ -110,6 +110,7 @@ func (i Inst) vop1String() string {
 		i.Src0.String()
 }
 
+//nolint:gocyclo
 func (i Inst) flatString() string {
 	var s string
 	switch i.Seg {
