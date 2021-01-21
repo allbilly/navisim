@@ -151,6 +151,9 @@ func (wf *Wavefront) WriteReg(
 		wf.Exec = rdnainsts.BytesToUint64(data)
 	} else if reg.RegType == rdnainsts.EXECLO && regCount == 2 {
 		wf.Exec = rdnainsts.BytesToUint64(data)
+	} else if reg.RegType == rdnainsts.EXECLO && regCount == 1 {
+		wf.Exec &= uint64(0x00000000ffffffff)
+		wf.Exec |= uint64(rdnainsts.BytesToUint32(data))
 	} else if reg.RegType == rdnainsts.M0 {
 		wf.M0 = rdnainsts.BytesToUint32(data)
 	} else {
