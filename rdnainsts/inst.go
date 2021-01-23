@@ -110,6 +110,7 @@ func (i Inst) vop1String() string {
 		i.Src0.String()
 }
 
+//nolint:gocyclo
 func (i Inst) flatString() string {
 	var s string
 	switch i.Seg {
@@ -131,8 +132,11 @@ func (i Inst) flatString() string {
 
 	if i.Seg == 2 {
 		switch i.Opcode {
-		case 9, 12, 14, 28, 30:
-			s += ", off" //+ fmt.Sprintf(" offset:%d", i.FlatOffset)
+		case 9, 10, 12, 14, 28, 30:
+			s += ", off"
+			if i.Offset.IntValue != 0 {
+				s += fmt.Sprintf(" offset:%d", i.Offset.IntValue)
+			}
 		}
 	}
 
@@ -174,7 +178,7 @@ func (i Inst) soppString(file *elf.File) string {
 	} else if i.Opcode == 1 || i.Opcode == 10 || i.Opcode == 31 {
 		// Does not print anything
 	} else {
-		operandStr = " " + i.SImm16.String()
+		operandStr = " " + fmt.Sprintf("0x%x", i.SImm16.IntValue)
 	}
 
 	s := i.InstName + operandStr

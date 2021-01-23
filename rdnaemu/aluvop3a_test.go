@@ -2,17 +2,57 @@ package rdnaemu
 
 import (
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 var _ = Describe("ALU", func() {
 
 	var (
+		alu   *ALUImpl
 		state *mockInstState
 	)
 
 	BeforeEach(func() {
-
+		alu = NewALU(nil)
 		state = new(mockInstState)
 		state.scratchpad = make([]byte, 4096)
 	})
+
+	It("should run V_CNDMASK_B32 VOP3a", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP3a
+		state.inst.Opcode = 257
+
+		sp := state.Scratchpad().AsVOP3A()
+		sp.SRC0[0] = 1
+		sp.SRC1[0] = 2
+		sp.SRC0[1] = 1
+		sp.SRC1[1] = 2
+		sp.SRC2[0] = 1
+		sp.EXEC = 3
+
+		alu.Run(state)
+
+		Expect(sp.DST[0]).To(Equal(uint64(2)))
+		Expect(sp.DST[1]).To(Equal(uint64(1)))
+	})
+
+	It("should run V_LSHL_REV B64", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP3a
+		state.inst.Opcode = 767
+
+		sp := state.Scratchpad().AsVOP3A()
+
+		sp.SRC1[0] = uint64(0x0000000000010000)
+		sp.SRC0[0] = uint64(3)
+		sp.EXEC = 0x1
+
+		alu.Run(state)
+
+		Expect(sp.DST[0]).To(Equal(uint64(0x0000000000080000)))
+
+	})
+
 })

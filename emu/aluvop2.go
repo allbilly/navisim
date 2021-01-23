@@ -4,7 +4,7 @@ import (
 	"log"
 	"math"
 
-	"gitlab.com/akita/mgpusim/bitops"
+	"gitlab.com/akita/navisim/bitops"
 )
 
 //nolint:gocyclo,funlen
@@ -76,7 +76,7 @@ func (u *ALUImpl) runVOP2(state InstEmuState) {
 func (u *ALUImpl) runVCNDMASKB32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -97,7 +97,7 @@ func (u *ALUImpl) runVCNDMASKB32(state InstEmuState) {
 func (u *ALUImpl) runVADDF32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -117,7 +117,7 @@ func (u *ALUImpl) runVADDF32(state InstEmuState) {
 func (u *ALUImpl) runVSUBF32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -137,7 +137,7 @@ func (u *ALUImpl) runVSUBF32(state InstEmuState) {
 func (u *ALUImpl) runVSUBREVF32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -157,7 +157,7 @@ func (u *ALUImpl) runVSUBREVF32(state InstEmuState) {
 func (u *ALUImpl) runVMULF32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -177,7 +177,7 @@ func (u *ALUImpl) runVMULF32(state InstEmuState) {
 func (u *ALUImpl) runVMULI32I24(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -215,7 +215,7 @@ func (u *ALUImpl) runVMULU32U24(state InstEmuState) {
 func (u *ALUImpl) runVMINF32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -239,7 +239,7 @@ func (u *ALUImpl) runVMINF32(state InstEmuState) {
 func (u *ALUImpl) runVMAXF32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -347,7 +347,7 @@ func (u *ALUImpl) runVMAXU32(state InstEmuState) {
 func (u *ALUImpl) runVLSHRREVB32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -366,7 +366,7 @@ func (u *ALUImpl) runVLSHRREVB32(state InstEmuState) {
 func (u *ALUImpl) runVASHRREVI32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -374,7 +374,7 @@ func (u *ALUImpl) runVASHRREVI32(state InstEmuState) {
 			}
 			src0 := uint32(sp.SRC0[i])
 			src1 := int32(sp.SRC1[i])
-			dst := src1 >> (src0 & 0X1f)
+			dst := src1 >> (src0 & 0x1f)
 			sp.DST[i] = uint64(dst)
 		}
 	} else {
@@ -385,7 +385,7 @@ func (u *ALUImpl) runVASHRREVI32(state InstEmuState) {
 func (u *ALUImpl) runVLSHLREVB32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		var i uint
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
@@ -405,7 +405,7 @@ func (u *ALUImpl) runVANDB32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
 	var i uint
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue
@@ -434,7 +434,7 @@ func (u *ALUImpl) runVORB32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
 	var i uint
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue
@@ -463,7 +463,7 @@ func (u *ALUImpl) runVXORB32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
 	var i uint
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue
@@ -496,7 +496,7 @@ func (u *ALUImpl) runVMACF32(state InstEmuState) {
 	var src1 float32
 
 	var i uint
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue
@@ -523,7 +523,7 @@ func (u *ALUImpl) runVMADAKF32(state InstEmuState) {
 
 	var i uint
 	k = asFloat32(uint32(sp.LiteralConstant))
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue
@@ -543,35 +543,27 @@ func (u *ALUImpl) runVADDI32(state InstEmuState) {
 	inst := state.Inst()
 	sp.VCC = 0
 
-	if inst.IsSdwa == true {
+	if !inst.IsSdwa {
 		u.runVADDI32SDWA(state)
 	} else {
-		u.runVADDI32Regular(state)
+		var i uint
+		for i = 0; i < 64; i++ {
+			if !laneMasked(sp.EXEC, i) {
+				continue
+			}
+			src0 := asInt32(uint32(sp.SRC0[i]) & uint32(inst.Src0Sel))
+			src1 := asInt32(uint32(sp.SRC1[i]) & uint32(inst.Src1Sel))
+			if (src1 > 0 && src0 > math.MaxInt32-src1) ||
+				(src1 < 0 && src0 < math.MinInt32+src1) {
+				sp.VCC |= 1 << uint32(i)
+			}
+			result := int32ToBits((src0 + src1) & asInt32(uint32(inst.DstSel)))
+			sp.DST[i] = uint64(result)
+		}
 	}
 }
 
 func (u *ALUImpl) runVADDI32SDWA(state InstEmuState) {
-	sp := state.Scratchpad().AsVOP2()
-	inst := state.Inst()
-
-	var i uint
-	for i = 0; i < 64; i++ {
-		if !laneMasked(sp.EXEC, i) {
-			continue
-		}
-
-		src0 := asInt32(uint32(sp.SRC0[i]) & uint32(inst.Src0Sel))
-		src1 := asInt32(uint32(sp.SRC1[i]) & uint32(inst.Src1Sel))
-		if (src1 > 0 && src0 > math.MaxInt32-src1) ||
-			(src1 < 0 && src0 < math.MinInt32+src1) {
-			sp.VCC |= 1 << uint32(i)
-		}
-		result := int32ToBits((src0 + src1) & asInt32(uint32(inst.DstSel)))
-		sp.DST[i] = uint64(result)
-	}
-}
-
-func (u *ALUImpl) runVADDI32Regular(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 
 	var i uint
@@ -589,15 +581,6 @@ func (u *ALUImpl) runVADDI32Regular(state InstEmuState) {
 		}
 
 		sp.DST[i] = uint64(int32ToBits(src0 + src1))
-
-		// src0 := uint32(sp.SRC0[i])
-		// src1 := uint32(sp.SRC1[i])
-
-		// if uint64(src0)+uint64(src1) > 0xffffffff {
-		// 	sp.VCC |= 1 << uint32(i)
-		// }
-
-		// sp.DST[i] = uint64(src0 + src1)
 	}
 }
 
@@ -606,7 +589,7 @@ func (u *ALUImpl) runVSUBI32(state InstEmuState) {
 	sp.VCC = 0
 	inst := state.Inst()
 	var i uint
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue
@@ -631,7 +614,7 @@ func (u *ALUImpl) runVSUBREVI32(state InstEmuState) {
 	sp.VCC = 0
 	inst := state.Inst()
 	var i uint
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue
@@ -657,7 +640,7 @@ func (u *ALUImpl) runVADDCU32(state InstEmuState) {
 	inst := state.Inst()
 	var i uint
 
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue
@@ -683,7 +666,7 @@ func (u *ALUImpl) runVSUBBU32(state InstEmuState) {
 	inst := state.Inst()
 	var i uint
 
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue
@@ -708,7 +691,7 @@ func (u *ALUImpl) runVSUBBREVU32(state InstEmuState) {
 	inst := state.Inst()
 	var i uint
 
-	if inst.IsSdwa == false {
+	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue

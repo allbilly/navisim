@@ -3,8 +3,8 @@ package emu
 import (
 	"log"
 
-	"gitlab.com/akita/mgpusim/kernels"
 	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/util/ca"
 )
 
