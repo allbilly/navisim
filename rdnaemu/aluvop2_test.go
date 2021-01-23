@@ -37,6 +37,21 @@ var _ = Describe("ALU", func() {
 		Expect(sp.DST[0]).To(Equal(uint64(math.Float32bits(float32(8.4)))))
 	})
 
+	It("should run V_ASHRREV_I32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 24
+
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = 97
+		sp.SRC1[0] = uint64(int32ToBits(-64))
+		sp.EXEC = 1
+
+		alu.Run(state)
+		Expect(asInt32(uint32(sp.DST[0]))).To(Equal(int32(-32)))
+
+	})
+
 	It("should run V_LSHRREV_B32", func() {
 		state.inst = rdnainsts.NewInst()
 		state.inst.FormatType = rdnainsts.VOP2

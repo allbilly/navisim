@@ -14,11 +14,16 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	switch inst.Opcode {
 	case 257: //256+1
 		u.runVCNDMASKB32VOP3A(state)
+	case 361:
+		u.runVMULLOU32(state)
+	case 362:
+		u.runVMULHIU32(state)
 	case 767:
 		u.runVLSHLREVB64(state)
 	case 769:
 		u.runVASHRREVI64(state)
-
+	case 877:
+		u.runVADD3U32(state)
 	default:
 		log.Panicf("Opcode %d for VOP3a format is not implemented", inst.Opcode)
 	}
@@ -180,18 +185,6 @@ func (u *ALUImpl) vop3aPostprocess(state InstEmuState) {
 		log.Panic("Output modifiers are not supported.")
 	}
 }
-func (u *ALUImpl) runVASHRREVI64(state InstEmuState) {
-	sp := state.Scratchpad().AsVOP3A()
-
-	var i uint
-	for i = 0; i < 64; i++ {
-		if !laneMasked(sp.EXEC, i) {
-			continue
-		}
-
-		sp.DST[i] = int64ToBits(asInt64(sp.SRC1[i]) >> sp.SRC0[i])
-	}
-}
 
 func (u *ALUImpl) runVCNDMASKB32VOP3A(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
@@ -210,6 +203,32 @@ func (u *ALUImpl) runVCNDMASKB32VOP3A(state InstEmuState) {
 	}
 }
 
+func (u *ALUImpl) runVMULLOU32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = (sp.SRC0[i] * sp.SRC1[i])
+	}
+}
+
+func (u *ALUImpl) runVMULHIU32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = (sp.SRC0[i] * sp.SRC1[i]) >> 32
+	}
+}
+
 func (u *ALUImpl) runVLSHLREVB64(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 
@@ -220,5 +239,31 @@ func (u *ALUImpl) runVLSHLREVB64(state InstEmuState) {
 		}
 
 		sp.DST[i] = sp.SRC1[i] << sp.SRC0[i]
+	}
+}
+
+func (u *ALUImpl) runVASHRREVI64(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = int64ToBits(asInt64(sp.SRC1[i]) >> sp.SRC0[i])
+	}
+}
+
+func (u *ALUImpl) runVADD3U32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = sp.SRC0[i] + sp.SRC1[i] + sp.SRC2[i]
 	}
 }
