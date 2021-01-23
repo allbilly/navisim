@@ -11,8 +11,6 @@ func (u *ALUImpl) runVOP2(state InstEmuState) {
 	switch inst.Opcode {
 	case 1:
 		u.runVCNDMASKB32(state)
-	case 8:
-		u.runVMULF32(state)
 	case 15:
 		u.runVMINF32(state)
 	case 16:
