@@ -1,6 +1,8 @@
 package rdnaemu
 
 import (
+	"math"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"gitlab.com/akita/navisim/rdnainsts"
@@ -20,20 +22,20 @@ var _ = Describe("ALU", func() {
 		state.scratchpad = make([]byte, 4096)
 	})
 
-	// It("should run V_MUL_F32", func() {
-	// 	state.inst = rdnainsts.NewInst()
-	// 	state.inst.FormatType = rdnainsts.VOP2
-	// 	state.inst.Opcode = 8
+	It("should run V_MUL_F32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 8
 
-	// 	sp := state.Scratchpad().AsVOP2()
-	// 	sp.SRC0[0] = 0x04
-	// 	sp.SRC1[0] = 0x06
-	// 	sp.EXEC = 0x1
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = uint64(math.Float32bits(2.0))
+		sp.SRC1[0] = uint64(math.Float32bits(4.2))
+		sp.EXEC = 0x1
 
-	// 	alu.Run(state)
+		alu.Run(state)
 
-	// 	Expect(uint32(sp.DST[0])).To(Equal(uint32(0x18)))
-	// })
+		Expect(sp.DST[0]).To(Equal(uint64(math.Float32bits(float32(8.4)))))
+	})
 
 	It("should run V_LSHRREV_B32", func() {
 		state.inst = rdnainsts.NewInst()
