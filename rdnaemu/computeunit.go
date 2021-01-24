@@ -303,7 +303,7 @@ func (cu *ComputeUnit) initWfRegs(wf *Wavefront) {
 	}
 
 	var x, y, z int
-	for i := wf.FirstWiFlatID; i < wf.FirstWiFlatID+64; i++ {
+	for i := wf.FirstWiFlatID; i < wf.FirstWiFlatID+32; i++ {
 		z = i / (wf.WG.SizeX * wf.WG.SizeY)
 		y = i % (wf.WG.SizeX * wf.WG.SizeY) / wf.WG.SizeX
 		x = i % (wf.WG.SizeX * wf.WG.SizeY) % wf.WG.SizeX
