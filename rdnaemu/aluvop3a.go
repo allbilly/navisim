@@ -14,6 +14,8 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	switch inst.Opcode {
 	case 257: //256+1
 		u.runVCNDMASKB32VOP3A(state)
+	case 323:
+		u.runVMADU32U24(state)
 	case 361:
 		u.runVMULLOU32(state)
 	case 362:
@@ -22,6 +24,8 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 		u.runVLSHLREVB64(state)
 	case 769:
 		u.runVASHRREVI64(state)
+	case 838:
+		u.runVLSHLADDU32(state)
 	case 877:
 		u.runVADD3U32(state)
 	default:
@@ -203,6 +207,19 @@ func (u *ALUImpl) runVCNDMASKB32VOP3A(state InstEmuState) {
 	}
 }
 
+func (u *ALUImpl) runVMADU32U24(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = sp.SRC0[i]*sp.SRC1[i] + sp.SRC2[i]
+	}
+}
+
 func (u *ALUImpl) runVMULLOU32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 
@@ -252,6 +269,19 @@ func (u *ALUImpl) runVASHRREVI64(state InstEmuState) {
 		}
 
 		sp.DST[i] = int64ToBits(asInt64(sp.SRC1[i]) >> sp.SRC0[i])
+	}
+}
+
+func (u *ALUImpl) runVLSHLADDU32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = sp.SRC0[i]<<sp.SRC1[i] + sp.SRC2[i]
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/mem/idealmemcontroller"
 	"gitlab.com/akita/mem/vm"
+	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/util/ca"
 )
@@ -69,6 +70,38 @@ var _ = Describe("ALU", func() {
 
 		for i := 0; i < 64; i++ {
 			Expect(layout.DST[i*4]).To(Equal(uint32(i)))
+		}
+	})
+
+	It("should run FLAT_LOAD_DWORDX4", func() {
+		for i := 0; i < 64; i++ {
+			pageTable.EXPECT().
+				Find(ca.PID(1), uint64(i*16)).
+				Return(vm.Page{
+					PAddr: uint64(0),
+				}, true)
+		}
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.FLAT
+		state.inst.Opcode = 14
+
+		layout := state.Scratchpad().AsFlat()
+		for i := 0; i < 64; i++ {
+			layout.ADDR[i] = uint64(i * 16)
+			storage.Write(uint64(i*16), insts.Uint32ToBytes(uint32(i)))
+			storage.Write(uint64(i*16+4), insts.Uint32ToBytes(uint32(i)))
+			storage.Write(uint64(i*16+8), insts.Uint32ToBytes(uint32(i)))
+			storage.Write(uint64(i*16+12), insts.Uint32ToBytes(uint32(i)))
+		}
+		layout.EXEC = 0xffffffffffffffff
+
+		alu.Run(state)
+
+		for i := 0; i < 64; i++ {
+			Expect(layout.DST[i*4]).To(Equal(uint32(i)))
+			Expect(layout.DST[i*4+1]).To(Equal(uint32(i)))
+			Expect(layout.DST[i*4+2]).To(Equal(uint32(i)))
+			Expect(layout.DST[i*4+3]).To(Equal(uint32(i)))
 		}
 	})
 

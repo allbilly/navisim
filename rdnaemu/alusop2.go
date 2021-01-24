@@ -11,10 +11,10 @@ func (u *ALUImpl) runSOP2(state InstEmuState) {
 	switch inst.Opcode {
 	case 0:
 		u.runSADDU32(state)
-	case 3:
-		u.runSSUBI32(state)
 	case 2:
 		u.runSADDI32(state)
+	case 3:
+		u.runSSUBI32(state)
 	case 4:
 		u.runSADDCU32(state)
 	case 7:
@@ -23,6 +23,8 @@ func (u *ALUImpl) runSOP2(state InstEmuState) {
 		u.runSANDB32(state)
 	case 15:
 		u.runSANDB64(state)
+	case 30:
+		u.runSLSHLB32(state)
 	case 38:
 		u.runSMULI32(state)
 	default:
@@ -118,6 +120,21 @@ func (u *ALUImpl) runSANDB32(state InstEmuState) {
 func (u *ALUImpl) runSANDB64(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP2()
 	sp.DST = sp.SRC0 & sp.SRC1
+	if sp.DST != 0 {
+		sp.SCC = 1
+	} else {
+		sp.SCC = 0
+	}
+}
+func (u *ALUImpl) runSLSHLB32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP2()
+
+	src0 := uint32(sp.SRC0)
+	src1 := uint8(sp.SRC1)
+	dst := src0 << (src1 & 0x1f)
+
+	sp.DST = uint64(dst)
+
 	if sp.DST != 0 {
 		sp.SCC = 1
 	} else {
