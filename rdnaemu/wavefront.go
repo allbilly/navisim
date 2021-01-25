@@ -1,8 +1,6 @@
 package rdnaemu
 
 import (
-	"log"
-
 	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/util/ca"
@@ -79,7 +77,7 @@ func (wf *Wavefront) ReadReg(reg *rdnainsts.Reg, regCount int, laneID int) []byt
 		numBytes *= regCount
 	}
 
-	log.Printf("Reg type %s\n", reg.RegType)
+	//log.Printf("Reg type %s\n", reg.RegType)
 
 	// There are some concerns in terms of reading VCC and EXEC (64 or 32? And how to decide?)
 	var value = make([]byte, numBytes)

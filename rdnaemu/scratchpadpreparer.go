@@ -230,7 +230,7 @@ func (p *ScratchpadPreparerImpl) prepareMUBUF(
 	instEmuState InstEmuState, wf *Wavefront,
 ) {
 	inst := instEmuState.Inst()
-	log.Printf("inst %t\n", inst.InstName)
+	//log.Printf("inst %t\n", inst.InstName)
 	sp := instEmuState.Scratchpad()
 
 	copy(sp[0:8], wf.ReadReg(rdnainsts.Regs[rdnainsts.EXEC], 1, 0))
