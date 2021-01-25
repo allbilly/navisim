@@ -195,3 +195,11 @@ type DSLayout struct {
 	DATA1 [256]uint32
 	DST   [256]uint32
 }
+
+// MUBUFLayout represents the scratchpad layout for MUBUF instructions
+type MUBUFLayout struct {
+	EXEC uint64
+	ADDR [64]uint32
+	DATA [256]uint32
+	DST  [256]uint32
+}

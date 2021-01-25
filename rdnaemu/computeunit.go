@@ -352,13 +352,6 @@ func (cu *ComputeUnit) runWfUntilBarrier(wf *Wavefront) error {
 			break
 		}
 
-		//todo: incorrect. Verify later how to get this working
-		if inst.FormatType == rdnainsts.SOPP && inst.Opcode == 35 { // S_ENDPGM
-			wf.AtBarrier = true
-			cu.logInst(wf, inst)
-			break
-		}
-
 		cu.executeInst(wf)
 		cu.logInst(wf, inst)
 	}
