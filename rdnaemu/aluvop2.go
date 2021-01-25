@@ -140,22 +140,24 @@ func (u *ALUImpl) runVSUBREVNCU32(state InstEmuState) {
 func (u *ALUImpl) runVADDCOCIU32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP2()
 	inst := state.Inst()
+	newVCC := uint64(0)
 	var i uint
 	if !inst.IsSdwa {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {
 				continue
 			}
-			src0 := uint32(sp.SRC0[i])
-			src1 := uint32(sp.SRC1[i])
-			dst := src0 + src1 + uint32(sp.VCC)
-			sp.DST[i] = uint64(dst)
-			if src0 > math.MaxUint32-src1 {
-				sp.VCC = 1
-			} else {
-				sp.VCC = 0
+
+			carry := (sp.VCC & (1 << i)) >> i
+
+			if sp.SRC0[i] > math.MaxUint32-carry-sp.SRC1[i] {
+				newVCC |= 1 << uint32(i)
 			}
+
+			sp.DST[i] = sp.SRC0[i] + sp.SRC1[i] + carry
+			sp.DST[i] &= 0xffffffff
 		}
+		sp.VCC = newVCC
 	} else {
 		for i = 0; i < 64; i++ {
 			if !laneMasked(sp.EXEC, i) {

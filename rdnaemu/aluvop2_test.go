@@ -69,4 +69,23 @@ var _ = Describe("ALU", func() {
 
 		Expect(asFloat32(uint32(sp.DST[0]))).To(Equal(float32(16)))
 	})
+	FIt("should run v_add_co_ci", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 40
+
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = 0xf0000000
+		sp.SRC1[0] = 0x0000f000
+		sp.SRC0[1] = 0xf0000000
+		sp.SRC1[1] = 0x1000f000
+		sp.VCC = 0x00000001
+		sp.EXEC = 3
+
+		alu.Run(state)
+
+		Expect(sp.VCC).To(Equal(uint64(0x00000002)))
+		Expect(sp.DST[0]).To(Equal(uint64(0xf000f001)))
+		Expect(sp.DST[1]).To(Equal(uint64(0x0000f000)))
+	})
 })
