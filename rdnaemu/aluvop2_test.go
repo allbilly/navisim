@@ -55,5 +55,18 @@ var _ = Describe("ALU", func() {
 
 		Expect(asFloat32(uint32(sp.DST[0]))).To(Equal(float32(1024.0 + 16.0*4.0)))
 	})
+	It("should run v_max_f32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 16
 
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = uint64(float32ToBits(4))
+		sp.SRC1[0] = uint64(float32ToBits(16))
+		sp.EXEC = 1
+
+		alu.Run(state)
+
+		Expect(asFloat32(uint32(sp.DST[0]))).To(Equal(float32(16)))
+	})
 })

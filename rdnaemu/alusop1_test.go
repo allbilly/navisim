@@ -32,4 +32,20 @@ var _ = Describe("ALU", func() {
 
 		Expect(sp.DST).To(Equal(uint64(0x0000ffffffff0000)))
 	})
+	It("should run s_and_saveexec_b32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.SOP1
+		state.inst.Opcode = 60
+
+		sp := state.Scratchpad().AsSOP1()
+		sp.SRC0 = 0x00000000ffffff00
+		sp.EXEC = 0x00000000ffff0000
+
+		alu.Run(state)
+
+		Expect(sp.DST).To(Equal(uint64(0x00000000ffff0000)))
+		Expect(sp.EXEC).To(Equal(uint64(0x00000000ffff0000)))
+		Expect(sp.SCC).To(Equal(byte(0x1)))
+
+	})
 })
