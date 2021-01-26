@@ -226,21 +226,6 @@ func (p *ScratchpadPreparerImpl) prepareFlat(
 	}
 }
 
-func (p *ScratchpadPreparerImpl) prepareMUBUF(
-	instEmuState InstEmuState, wf *Wavefront,
-) {
-	inst := instEmuState.Inst()
-	//log.Printf("inst %t\n", inst.InstName)
-	sp := instEmuState.Scratchpad()
-
-	copy(sp[0:8], wf.ReadReg(rdnainsts.Regs[rdnainsts.EXEC], 1, 0))
-
-	for i := 0; i < 64; i++ {
-		p.readOperand(inst.Addr, wf, i, sp[8+i*8:8+i*8+8])
-		p.readOperand(inst.Data, wf, i, sp[520+i*16:520+i*16+16])
-	}
-}
-
 func (p *ScratchpadPreparerImpl) prepareSMEM(
 	instEmuState InstEmuState,
 	wf *Wavefront,
