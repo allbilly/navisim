@@ -27,8 +27,6 @@ func (u *ALUImpl) runFlatLoadUShort(state InstEmuState) {
 	pid := state.PID()
 	inst := state.Inst()
 
-	//log.Printf("%d\n", inst.Offset.IntValue)
-
 	for i := uint(0); i < 64; i++ {
 		if !laneMasked(sp.EXEC, i) {
 			continue
