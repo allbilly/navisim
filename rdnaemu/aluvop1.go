@@ -42,6 +42,9 @@ func (u *ALUImpl) runVCVTF32U32(state InstEmuState) {
 			continue
 		}
 		sp.DST[i] = uint64(math.Float32bits(float32(uint32(sp.SRC0[i]))))
+
+		log.Printf("%d,%d\n", sp.DST[i], sp.SRC0[i])
+
 	}
 }
 

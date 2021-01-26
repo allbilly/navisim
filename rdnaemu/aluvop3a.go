@@ -11,7 +11,7 @@ import (
 //nolint:gocyclo,funlen
 func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	inst := state.Inst()
-	log.Printf("%s\n", inst.InstName)
+	//log.Printf("%s\n", inst.InstName)
 	u.vop3aPreprocess(state)
 
 	switch inst.Opcode {

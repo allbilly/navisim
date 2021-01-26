@@ -151,6 +151,7 @@ func (u *ALUImpl) runVASHRREVI32(state InstEmuState) {
 			src1 := int32(sp.SRC1[i])
 			dst := src1 >> (src0 & 0X1f)
 			sp.DST[i] = uint64(dst)
+			log.Printf("%d\n", dst)
 		}
 	} else {
 		log.Panicf("SDWA for VOP2 instruction opcode  %d not implemented \n", inst.Opcode)

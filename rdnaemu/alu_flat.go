@@ -10,7 +10,7 @@ import (
 //nolint:funlen
 func (u *ALUImpl) runFlat(state InstEmuState) {
 	inst := state.Inst()
-	log.Printf("%s\n", inst.InstName)
+	//log.Printf("%s\n", inst.InstName)
 	switch inst.Opcode {
 	case 10:
 		u.runFlatLoadUShort(state)
@@ -25,11 +25,15 @@ func (u *ALUImpl) runFlat(state InstEmuState) {
 func (u *ALUImpl) runFlatLoadUShort(state InstEmuState) {
 	sp := state.Scratchpad().AsFlat()
 	pid := state.PID()
+	inst := state.Inst()
+
+	//log.Printf("%d\n", inst.Offset.IntValue)
+
 	for i := uint(0); i < 64; i++ {
 		if !laneMasked(sp.EXEC, i) {
 			continue
 		}
-		buf := u.storageAccessor.Read(pid, sp.ADDR[i], uint64(4))
+		buf := u.storageAccessor.Read(pid, sp.ADDR[i]+uint64(inst.Offset.IntValue), uint64(4))
 		buf[2] = 0
 		buf[3] = 0
 		sp.DST[i*4] = rdnainsts.BytesToUint32(buf)
@@ -39,18 +43,20 @@ func (u *ALUImpl) runFlatLoadUShort(state InstEmuState) {
 func (u *ALUImpl) runFlatLoadDWord(state InstEmuState) {
 	sp := state.Scratchpad().AsFlat()
 	pid := state.PID()
+	inst := state.Inst()
+
 	for i := uint(0); i < 64; i++ {
 		if !laneMasked(sp.EXEC, i) {
 			continue
 		}
-
-		buf := u.storageAccessor.Read(pid, sp.ADDR[i], uint64(4))
+		buf := u.storageAccessor.Read(pid, sp.ADDR[i]+uint64(inst.Offset.IntValue), uint64(4))
 		sp.DST[i*4] = rdnainsts.BytesToUint32(buf)
 	}
 }
 func (u *ALUImpl) runFlatStoreDWord(state InstEmuState) {
 	sp := state.Scratchpad().AsFlat()
 	pid := state.PID()
+	inst := state.Inst()
 
 	for i := uint(0); i < 64; i++ {
 		if !laneMasked(sp.EXEC, i) {
@@ -58,6 +64,6 @@ func (u *ALUImpl) runFlatStoreDWord(state InstEmuState) {
 		}
 
 		u.storageAccessor.Write(
-			pid, sp.ADDR[i], rdnainsts.Uint32ToBytes(sp.DATA[i*4]))
+			pid, sp.ADDR[i]+uint64(inst.Offset.IntValue), rdnainsts.Uint32ToBytes(sp.DATA[i*4]))
 	}
 }

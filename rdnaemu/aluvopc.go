@@ -66,8 +66,8 @@ func (u *ALUImpl) runVCMPLEU32(state InstEmuState) {
 			continue
 		}
 
-		src0 := asInt32(uint32(sp.SRC0[i]))
-		src1 := asInt32(uint32(sp.SRC1[i]))
+		src0 := uint32(sp.SRC0[i])
+		src1 := uint32(sp.SRC1[i])
 		if src0 <= src1 {
 			sp.VCC = sp.VCC | (1 << i)
 		}
@@ -83,8 +83,8 @@ func (u *ALUImpl) runVCMPGTU32(state InstEmuState) {
 			continue
 		}
 
-		src0 := (uint32(sp.SRC0[i]))
-		src1 := (uint32(sp.SRC1[i]))
+		src0 := uint32(sp.SRC0[i])
+		src1 := uint32(sp.SRC1[i])
 		if src0 > src1 {
 			sp.VCC = sp.VCC | (1 << i)
 		}
@@ -100,8 +100,8 @@ func (u *ALUImpl) runVCMPGEU32(state InstEmuState) {
 			continue
 		}
 
-		src0 := asInt32(uint32(sp.SRC0[i]))
-		src1 := asInt32(uint32(sp.SRC1[i]))
+		src0 := uint32(sp.SRC0[i])
+		src1 := uint32(sp.SRC1[i])
 		if src0 >= src1 {
 			sp.VCC = sp.VCC | (1 << i)
 		}

@@ -1,6 +1,8 @@
 package rdnaemu
 
 import (
+	"log"
+
 	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/util/ca"
@@ -105,8 +107,10 @@ func (wf *Wavefront) ReadReg(reg *rdnainsts.Reg, regCount int, laneID int) []byt
 		copy(value, rdnainsts.Uint32ToBytes(uint32(wf.Exec)))
 	} else if reg.RegType == rdnainsts.M0 {
 		copy(value, rdnainsts.Uint32ToBytes(wf.M0))
+	} else if reg.RegType == rdnainsts.NULL {
+
 	} else {
-		//log.Panicf("Register type %s is not supported", reg.Name)
+		log.Panicf("Register type %s is not supported", reg.Name)
 	}
 
 	return value
@@ -156,7 +160,9 @@ func (wf *Wavefront) WriteReg(
 		wf.Exec |= uint64(rdnainsts.BytesToUint32(data))
 	} else if reg.RegType == rdnainsts.M0 {
 		wf.M0 = rdnainsts.BytesToUint32(data)
+	} else if reg.RegType == rdnainsts.NULL {
+
 	} else {
-		//log.Panicf("Register type %s not supported", reg.Name)
+		log.Panicf("Register type %s not supported", reg.Name)
 	}
 }
