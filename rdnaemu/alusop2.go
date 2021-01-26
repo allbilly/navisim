@@ -13,6 +13,8 @@ func (u *ALUImpl) runSOP2(state InstEmuState) {
 		u.runSADDU32(state)
 	case 2:
 		u.runSADDI32(state)
+	case 3:
+		u.runSSUBI32(state)
 	case 4:
 		u.runSADDCU32(state)
 	case 7:
@@ -21,6 +23,12 @@ func (u *ALUImpl) runSOP2(state InstEmuState) {
 		u.runSANDB32(state)
 	case 15:
 		u.runSANDB64(state)
+	case 16:
+		u.runSORB32(state)
+	case 18:
+		u.runSXORB32(state)
+	case 34:
+		u.runSASHRI32(state)
 	case 38:
 		u.runSMULI32(state)
 	default:
@@ -69,6 +77,24 @@ func (u *ALUImpl) runSMINU32(state InstEmuState) {
 	}
 }
 
+func (u *ALUImpl) runSSUBI32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP2()
+
+	src0 := asInt32(uint32(sp.SRC0))
+	src1 := asInt32(uint32(sp.SRC1))
+	dst := src0 - src1
+
+	if src1 > 0 && dst > src0 {
+		sp.SCC = 1
+	} else if src1 < 0 && dst < src0 {
+		sp.SCC = 1
+	} else {
+		sp.SCC = 0
+	}
+
+	sp.DST = uint64(int32ToBits(dst))
+}
+
 func (u *ALUImpl) runSADDI32(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP2()
 
@@ -104,6 +130,17 @@ func (u *ALUImpl) runSANDB64(state InstEmuState) {
 		sp.SCC = 0
 	}
 }
+
+func (u *ALUImpl) runSORB32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP2()
+	sp.DST = sp.SRC0 | sp.SRC1
+	if sp.DST != 0 {
+		sp.SCC = 1
+	} else {
+		sp.SCC = 0
+	}
+}
+
 func (u *ALUImpl) runSMULI32(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP2()
 	src0 := asInt32(uint32(sp.SRC0))
@@ -114,5 +151,35 @@ func (u *ALUImpl) runSMULI32(state InstEmuState) {
 
 	if src0 != 0 && dst/src0 != src1 {
 		sp.SCC = 1
+	}
+}
+
+func (u *ALUImpl) runSASHRI32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP2()
+	src0 := asInt32(uint32(sp.SRC0))
+	src1 := uint8(sp.SRC1)
+	dst := src0 >> src1
+
+	sp.DST = uint64(int32ToBits(dst))
+
+	if sp.DST != 0 {
+		sp.SCC = 1
+	} else {
+		sp.SCC = 0
+	}
+}
+
+func (u *ALUImpl) runSXORB32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP2()
+	src0 := uint32(sp.SRC0)
+	src1 := uint32(sp.SRC1)
+	dst := src0 ^ src1
+
+	sp.DST = uint64(dst)
+
+	if sp.DST != 0 {
+		sp.SCC = 1
+	} else {
+		sp.SCC = 0
 	}
 }
