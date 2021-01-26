@@ -12,6 +12,8 @@ func (u *ALUImpl) runVOPC(state InstEmuState) {
 		u.runVCMPGTI32(state)
 	case 196:
 		u.runVCMPGTU32(state)
+	case 229:
+		u.runVCMPNEU64(state)
 
 	default:
 		log.Panicf("Opcode %d for VOPC format is not implemented", inst.Opcode)
@@ -47,6 +49,18 @@ func (u *ALUImpl) runVCMPGTU32(state InstEmuState) {
 		src1 := (uint32(sp.SRC1[i]))
 		if src0 > src1 {
 			sp.VCC = sp.VCC | (1 << i)
+		}
+	}
+}
+func (u *ALUImpl) runVCMPNEU64(state InstEmuState) {
+	sp := state.Scratchpad().AsVOPC()
+	sp.VCC = 0
+	var i uint
+	for i = 0; i < 64; i++ {
+		if laneMasked(sp.EXEC, i) {
+			if sp.SRC0[i] != sp.SRC1[i] {
+				sp.VCC = sp.VCC | (1 << i)
+			}
 		}
 	}
 }

@@ -101,6 +101,8 @@ func (wf *Wavefront) ReadReg(reg *rdnainsts.Reg, regCount int, laneID int) []byt
 		copy(value, rdnainsts.Uint64ToBytes(wf.Exec))
 	} else if reg.RegType == rdnainsts.EXECLO && regCount == 2 {
 		copy(value, rdnainsts.Uint64ToBytes(wf.Exec))
+	} else if reg.RegType == rdnainsts.EXECLO && regCount == 1 {
+		copy(value, rdnainsts.Uint32ToBytes(uint32(wf.Exec)))
 	} else if reg.RegType == rdnainsts.M0 {
 		copy(value, rdnainsts.Uint32ToBytes(wf.M0))
 	} else {
@@ -149,6 +151,9 @@ func (wf *Wavefront) WriteReg(
 		wf.Exec = rdnainsts.BytesToUint64(data)
 	} else if reg.RegType == rdnainsts.EXECLO && regCount == 2 {
 		wf.Exec = rdnainsts.BytesToUint64(data)
+	} else if reg.RegType == rdnainsts.EXECLO && regCount == 1 {
+		wf.Exec &= uint64(0x00000000ffffffff)
+		wf.Exec |= uint64(rdnainsts.BytesToUint32(data))
 	} else if reg.RegType == rdnainsts.M0 {
 		wf.M0 = rdnainsts.BytesToUint32(data)
 	} else {
