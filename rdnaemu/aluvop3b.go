@@ -37,3 +37,20 @@ func (u *ALUImpl) runVADDCOU32(state InstEmuState) {
 		}
 	}
 }
+func (u *ALUImpl) runVADDCOCIU32VOP3B(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3B()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+		sp.DST[i] = sp.SRC0[i] + sp.SRC1[i] + ((sp.SRC2[i] & (1 << i)) >> i)
+		carry := uint64(0)
+		if sp.DST[i] > 0xffffffff {
+			carry = 1
+		}
+		sp.SDST |= carry << i
+		sp.DST[i] &= 0xffffffff
+	}
+}

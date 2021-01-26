@@ -69,7 +69,7 @@ var _ = Describe("ALU", func() {
 
 		Expect(asFloat32(uint32(sp.DST[0]))).To(Equal(float32(16)))
 	})
-	FIt("should run v_add_co_ci", func() {
+	It("should run v_add_co_ci", func() {
 		state.inst = rdnainsts.NewInst()
 		state.inst.FormatType = rdnainsts.VOP2
 		state.inst.Opcode = 40
