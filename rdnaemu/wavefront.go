@@ -79,6 +79,8 @@ func (wf *Wavefront) ReadReg(reg *rdnainsts.Reg, regCount int, laneID int) []byt
 		numBytes *= regCount
 	}
 
+	//log.Printf("Reg type %s\n", reg.RegType)
+
 	// There are some concerns in terms of reading VCC and EXEC (64 or 32? And how to decide?)
 	var value = make([]byte, numBytes)
 	if reg.IsSReg() {
@@ -105,6 +107,8 @@ func (wf *Wavefront) ReadReg(reg *rdnainsts.Reg, regCount int, laneID int) []byt
 		copy(value, rdnainsts.Uint32ToBytes(uint32(wf.Exec)))
 	} else if reg.RegType == rdnainsts.M0 {
 		copy(value, rdnainsts.Uint32ToBytes(wf.M0))
+	} else if reg.RegType == rdnainsts.NULL {
+
 	} else {
 		log.Panicf("Register type %s is not supported", reg.Name)
 	}
@@ -156,6 +160,8 @@ func (wf *Wavefront) WriteReg(
 		wf.Exec |= uint64(rdnainsts.BytesToUint32(data))
 	} else if reg.RegType == rdnainsts.M0 {
 		wf.M0 = rdnainsts.BytesToUint32(data)
+	} else if reg.RegType == rdnainsts.NULL {
+
 	} else {
 		log.Panicf("Register type %s not supported", reg.Name)
 	}

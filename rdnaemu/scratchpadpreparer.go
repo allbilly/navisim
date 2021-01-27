@@ -64,6 +64,8 @@ func (p *ScratchpadPreparerImpl) Prepare(
 		p.prepareSOPK(instEmuState, wf)
 	case rdnainsts.DS:
 		p.prepareDS(instEmuState, wf)
+	case rdnainsts.MUBUF:
+		//p.prepareMUBUF(instEmuState, wf)
 	default:
 		log.Panicf("Inst format %s is not supported", inst.Format.FormatName)
 	}
@@ -341,6 +343,8 @@ func (p *ScratchpadPreparerImpl) Commit(
 		p.commitSOPK(instEmuState, wf)
 	case rdnainsts.DS:
 		p.commitDS(instEmuState, wf)
+	case rdnainsts.MUBUF:
+
 	default:
 		log.Panicf("Inst format %s is not supported", inst.Format.FormatName)
 	}
