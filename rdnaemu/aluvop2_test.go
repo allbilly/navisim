@@ -166,5 +166,33 @@ var _ = Describe("ALU", func() {
 
 		Expect(sp.DST[0]).To(Equal(uint64(2)))
 	})
+	FIt("should run v_max_i32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 18
+
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = uint64(int32ToBits(math.MinInt32))
+		sp.SRC1[0] = uint64(int32ToBits(math.MinInt32 + 1))
+		sp.EXEC = 1
+
+		alu.Run(state)
+
+		Expect(sp.DST[0]).To(Equal(uint64(int32ToBits(math.MinInt32 + 1))))
+	})
+	FIt("should run v_min_i32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 17
+
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = uint64(int32ToBits(math.MinInt32))
+		sp.SRC1[0] = 0
+		sp.EXEC = 1
+
+		alu.Run(state)
+
+		Expect(sp.DST[0]).To(Equal(uint64(int32ToBits(math.MinInt32))))
+	})
 
 })
