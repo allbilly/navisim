@@ -15,6 +15,8 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	u.vop3aPreprocess(state)
 
 	switch inst.Opcode {
+	case 4:
+		u.runVCMPLEF32VOP3A(state)
 	case 134:
 		u.runVCMPGEI32VOP3A(state)
 	case 257: //256+1
@@ -298,6 +300,22 @@ func (u *ALUImpl) runVCMPGEI32VOP3A(state InstEmuState) {
 		src1 := asInt32(uint32(sp.SRC1[i]))
 		if src0 >= src1 {
 			sp.VCC |= 1 << i
+		}
+	}
+}
+func (u *ALUImpl) runVCMPLEF32VOP3A(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+	sp.VCC = 0
+	var i uint
+	var src0, src1 float32
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+		src0 = math.Float32frombits(uint32(sp.SRC0[i]))
+		src1 = math.Float32frombits(uint32(sp.SRC1[i]))
+		if src0 <= src1 {
+			sp.VCC = sp.VCC | (1 << i)
 		}
 	}
 }
