@@ -166,7 +166,7 @@ var _ = Describe("ALU", func() {
 
 		Expect(sp.DST[0]).To(Equal(uint64(2)))
 	})
-	FIt("should run v_max_i32", func() {
+	It("should run v_max_i32", func() {
 		state.inst = rdnainsts.NewInst()
 		state.inst.FormatType = rdnainsts.VOP2
 		state.inst.Opcode = 18
@@ -180,7 +180,7 @@ var _ = Describe("ALU", func() {
 
 		Expect(sp.DST[0]).To(Equal(uint64(int32ToBits(math.MinInt32 + 1))))
 	})
-	FIt("should run v_min_i32", func() {
+	It("should run v_min_i32", func() {
 		state.inst = rdnainsts.NewInst()
 		state.inst.FormatType = rdnainsts.VOP2
 		state.inst.Opcode = 17
