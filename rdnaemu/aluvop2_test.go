@@ -194,5 +194,88 @@ var _ = Describe("ALU", func() {
 
 		Expect(sp.DST[0]).To(Equal(uint64(int32ToBits(math.MinInt32))))
 	})
+	It("should run v_add_f32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 3
 
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = uint64(float32ToBits(0.25))
+		sp.SRC1[0] = uint64(float32ToBits(4.25))
+		sp.EXEC = 1
+
+		alu.Run(state)
+
+		Expect(sp.DST[0]).To(Equal((uint64(float32ToBits(4.5)))))
+	})
+	It("should run v_min_f32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 15
+
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = uint64(float32ToBits(0.25))
+		sp.SRC1[0] = uint64(float32ToBits(4.25))
+		sp.EXEC = 1
+
+		alu.Run(state)
+
+		Expect(sp.DST[0]).To(Equal((uint64(float32ToBits(0.25)))))
+	})
+	It("should run v_lshlrev_b32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 26
+
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = 0x64
+		sp.SRC1[0] = 0x02
+		sp.EXEC = 1
+
+		alu.Run(state)
+
+		Expect(uint32(sp.DST[0])).To(Equal(uint32(0x20)))
+	})
+	It("should run V_XOR_B32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 29
+
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = 2 // 10
+		sp.SRC1[0] = 3 // 11
+		sp.EXEC = 1
+
+		alu.Run(state)
+
+		Expect(uint32(sp.DST[0])).To(Equal(uint32(1)))
+	})
+	It("should run v_sub_nc_u32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 38
+
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = 11
+		sp.SRC1[0] = 10
+		sp.EXEC = 1
+		alu.Run(state)
+
+		Expect(uint32(sp.DST[0])).To(Equal(uint32(1)))
+
+	})
+	It("should run v_sub_rev_nc_u32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 39
+
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = 1
+		sp.SRC1[0] = 10
+		sp.EXEC = 1
+		alu.Run(state)
+
+		Expect(uint32(sp.DST[0])).To(Equal(uint32(9)))
+
+	})
 })
