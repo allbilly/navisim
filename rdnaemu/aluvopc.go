@@ -8,6 +8,8 @@ import (
 func (u *ALUImpl) runVOPC(state InstEmuState) {
 	inst := state.Inst()
 	switch inst.Opcode {
+	case 129: // v_cmp_gt_i32_e32
+		u.runVCMPLTI32(state)
 	case 132: // v_cmp_gt_i32_e32
 		u.runVCMPGTI32(state)
 	case 194:
@@ -25,6 +27,22 @@ func (u *ALUImpl) runVOPC(state InstEmuState) {
 		log.Panicf("Opcode %d for VOPC format is not implemented", inst.Opcode)
 	}
 }
+
+func (u *ALUImpl) runVCMPLTI32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOPC()
+	sp.VCC = 0
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		if sp.SRC0[i] < sp.SRC1[i] {
+			sp.VCC = sp.VCC | (1 << i)
+		}
+	}
+}
+
 func (u *ALUImpl) runVCMPGTI32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOPC()
 	sp.VCC = 0

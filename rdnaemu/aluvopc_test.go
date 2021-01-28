@@ -20,6 +20,27 @@ var _ = Describe("ALU", func() {
 		state.scratchpad = make([]byte, 4096)
 	})
 
+	It("should run v_cmp_lt_u32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOPC
+		state.inst.Opcode = 129
+
+		sp := state.Scratchpad().AsVOPC()
+		sp.EXEC = 0xF
+		sp.SRC0[0] = 1
+		sp.SRC0[1] = uint64(int32ToBits(-1))
+		sp.SRC0[2] = 1
+		sp.SRC0[3] = 1
+		sp.SRC1[0] = 1
+		sp.SRC1[1] = uint64(int32ToBits(-2))
+		sp.SRC1[2] = 0
+		sp.SRC1[3] = 2
+
+		alu.Run(state)
+
+		Expect(sp.VCC).To(Equal(uint64(0x8)))
+	})
+
 	It("should run v_cmp_gt_i32", func() {
 		state.inst = rdnainsts.NewInst()
 		state.inst.FormatType = rdnainsts.VOPC
