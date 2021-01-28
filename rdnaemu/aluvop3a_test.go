@@ -121,4 +121,20 @@ var _ = Describe("ALU", func() {
 		Expect(sp.DST[0]).To(Equal(uint64(250)))
 	})
 
+	It("should run V_ADD3_U32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP3a
+		state.inst.Opcode = 877
+
+		sp := state.Scratchpad().AsVOP3A()
+		sp.SRC0[0] = uint64(2)
+		sp.SRC1[0] = uint64(2)
+		sp.SRC2[0] = uint64(1)
+		sp.EXEC = 1
+
+		alu.Run(state)
+
+		Expect(sp.DST[0]).To(Equal(uint64(5)))
+	})
+
 })
