@@ -21,6 +21,8 @@ func (u *ALUImpl) runVOP2(state InstEmuState) {
 		u.runVMINF32(state)
 	case 16:
 		u.runVMAXF32(state)
+	case 22:
+		u.runVLSHRREVB32(state)
 	case 24:
 		u.runVASHRREVI32(state)
 	case 26:
@@ -76,6 +78,25 @@ func (u *ALUImpl) runVMULU32U24(state InstEmuState) {
 		src1 := (uint32(sp.SRC1[i]) << 8) >> 8
 		dst := src0 * src1
 		sp.DST[i] = uint64(dst)
+	}
+}
+
+func (u *ALUImpl) runVLSHRREVB32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP2()
+	inst := state.Inst()
+	if inst.IsSdwa == false {
+		var i uint
+		for i = 0; i < 64; i++ {
+			if !laneMasked(sp.EXEC, i) {
+				continue
+			}
+			src0 := sp.SRC0[i]
+			src1 := sp.SRC1[i]
+			dst := src1 >> (src0 & 0x1f)
+			sp.DST[i] = dst
+		}
+	} else {
+		log.Panicf("SDWA for VOP2 instruction opcode %d not implemented \n", inst.Opcode)
 	}
 }
 
