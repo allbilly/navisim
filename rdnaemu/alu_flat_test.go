@@ -75,4 +75,34 @@ var _ = Describe("ALU", func() {
 		}
 	})
 
+	It("should run FLAT_LOAD_DWORD2", func() {
+		for i := 0; i < 64; i++ {
+			pageTable.EXPECT().
+				Find(ca.PID(1), uint64(i*8)+4).
+				Return(vm.Page{
+					PAddr: uint64(0),
+				}, true)
+		}
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.FLAT
+		state.inst.Opcode = 13
+		state.inst.Offset = rdnainsts.NewIntOperand(13, 4)
+
+		layout := state.Scratchpad().AsFlat()
+		for i := 0; i < 64; i++ {
+			layout.ADDR[i] = uint64(i * 8)
+			storage.Write(uint64(i*8)+4, rdnainsts.Uint32ToBytes(uint32(i)))
+			storage.Write(uint64((i*8)+4)+4, rdnainsts.Uint32ToBytes(uint32(i)))
+
+		}
+		layout.EXEC = 0xffffffffffffffff
+
+		alu.Run(state)
+
+		for i := 0; i < 64; i++ {
+			Expect(layout.DST[i*4]).To(Equal(uint32(i)))
+			Expect(layout.DST[i*4+1]).To(Equal(uint32(i)))
+		}
+	})
+
 })
