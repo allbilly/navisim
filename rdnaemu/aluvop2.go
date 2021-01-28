@@ -27,6 +27,8 @@ func (u *ALUImpl) runVOP2(state InstEmuState) {
 		u.runVASHRREVI32(state)
 	case 26:
 		u.runVLSHLREVB32(state)
+	case 27:
+		u.runVANDB32(state)
 	case 29:
 		u.runVXORB32(state)
 	case 37:
@@ -396,6 +398,35 @@ func (u *ALUImpl) runVXORB32(state InstEmuState) {
 			src0 := u.sdwaSrcSelect(uint32(sp.SRC0[i]), inst.Src0Sel)
 			src1 := u.sdwaSrcSelect(uint32(sp.SRC1[i]), inst.Src1Sel)
 			dst := src0 ^ src1
+			dst = u.sdwaDstSelect(uint32(sp.DST[i]), dst,
+				inst.DstSel, inst.DstUnused)
+			sp.DST[i] = uint64(dst)
+		}
+	}
+}
+
+func (u *ALUImpl) runVANDB32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP2()
+	inst := state.Inst()
+	var i uint
+	if !inst.IsSdwa {
+		for i = 0; i < 64; i++ {
+			if !laneMasked(sp.EXEC, i) {
+				continue
+			}
+			src0 := uint32(sp.SRC0[i])
+			src1 := uint32(sp.SRC1[i])
+			dst := src0 & src1
+			sp.DST[i] = uint64(dst)
+		}
+	} else {
+		for i = 0; i < 64; i++ {
+			if !laneMasked(sp.EXEC, i) {
+				continue
+			}
+			src0 := u.sdwaSrcSelect(uint32(sp.SRC0[i]), inst.Src0Sel)
+			src1 := u.sdwaSrcSelect(uint32(sp.SRC1[i]), inst.Src1Sel)
+			dst := src0 & src1
 			dst = u.sdwaDstSelect(uint32(sp.DST[i]), dst,
 				inst.DstSel, inst.DstUnused)
 			sp.DST[i] = uint64(dst)

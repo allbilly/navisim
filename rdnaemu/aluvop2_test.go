@@ -118,4 +118,19 @@ var _ = Describe("ALU", func() {
 		Expect(uint32(sp.DST[0])).To(Equal(uint32(0x02)))
 	})
 
+	It("should run V_AND_B32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP2
+		state.inst.Opcode = 27
+
+		sp := state.Scratchpad().AsVOP2()
+		sp.SRC0[0] = 2 // 10
+		sp.SRC1[0] = 3 // 11
+		sp.EXEC = 1
+
+		alu.Run(state)
+
+		Expect(uint32(sp.DST[0])).To(Equal(uint32(2)))
+	})
+
 })
