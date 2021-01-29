@@ -97,4 +97,14 @@ var _ = Describe("Disassembler", func() {
 		Expect(inst.String(nil)).
 			To(Equal("v_or_b32_e32 v3, s5, v1"))
 	})
+
+	It("should decode D4040000 00020B0F", func() {
+		buf := []byte{0x00, 0x00, 0x04, 0xD4, 0x0F, 0x0B, 0x02, 0x00}
+
+		inst, err := disassembler.Decode(buf)
+
+		Expect(err).To(BeNil())
+		Expect(inst.String(nil)).
+			To(Equal("v_cmp_gt_f32_e64 s0, v15, v5"))
+	})
 })
