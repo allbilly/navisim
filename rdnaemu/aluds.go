@@ -14,13 +14,15 @@ func (u *ALUImpl) runDS(state InstEmuState) {
 	case 55:
 		u.runDSREAD2B32(state)
 	case 223:
-		u.DSWRITEB128(state)
+		u.runDSWRITEB128(state)
+	case 255:
+		u.runDSREADB128(state)
 	default:
 		log.Panicf("Opcode %d for DS format is not implemented", inst.Opcode)
 	}
 }
 
-func (u *ALUImpl) DSWRITEB128(state InstEmuState) {
+func (u *ALUImpl) runDSWRITEB128(state InstEmuState) {
 }
 
 func (u *ALUImpl) runDSWRITEB32(state InstEmuState) {
@@ -79,4 +81,8 @@ func (u *ALUImpl) runDSREAD2B32(state InstEmuState) {
 		addr1 := layout.ADDR[i] + inst.Offset1*4
 		copy(sp[dstOffset+i*16+4:dstOffset+i*16+8], lds[addr1:addr1+4])
 	}
+}
+
+func (u *ALUImpl) runDSREADB128(state InstEmuState) {
+
 }

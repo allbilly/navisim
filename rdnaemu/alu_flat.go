@@ -21,6 +21,8 @@ func (u *ALUImpl) runFlat(state InstEmuState) {
 		u.runFlatLoadDwordx4(state)
 	case 28:
 		u.runFlatStoreDWord(state)
+	case 30:
+		u.runFlatStoreDWordx4(state)
 	default:
 		log.Panicf("Opcode %d for FLAT format is not implemented", inst.Opcode)
 	}
@@ -84,5 +86,23 @@ func (u *ALUImpl) runFlatStoreDWord(state InstEmuState) {
 
 		u.storageAccessor.Write(
 			pid, sp.ADDR[i]+uint64(inst.Offset.IntValue), rdnainsts.Uint32ToBytes(sp.DATA[i*4]))
+	}
+}
+
+func (u *ALUImpl) runFlatStoreDWordx4(state InstEmuState) {
+	sp := state.Scratchpad().AsFlat()
+	pid := state.PID()
+	for i := uint(0); i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		buf := make([]byte, 16)
+		copy(buf[0:4], insts.Uint32ToBytes(sp.DATA[i*4]))
+		copy(buf[4:8], insts.Uint32ToBytes(sp.DATA[(i*4)+1]))
+		copy(buf[8:12], insts.Uint32ToBytes(sp.DATA[(i*4)+2]))
+		copy(buf[12:16], insts.Uint32ToBytes(sp.DATA[(i*4)+3]))
+
+		u.storageAccessor.Write(pid, sp.ADDR[i], buf)
 	}
 }
