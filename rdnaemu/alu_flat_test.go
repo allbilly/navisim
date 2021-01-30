@@ -76,7 +76,7 @@ var _ = Describe("ALU", func() {
 		}
 	})
 
-	It("should run FLAT_STORE_DWORDX4", func() {
+	It("should run Flat Store DWordx4", func() {
 		for i := 0; i < 64; i++ {
 			pageTable.EXPECT().
 				Find(ca.PID(1), uint64(i*16)).
@@ -86,7 +86,7 @@ var _ = Describe("ALU", func() {
 		}
 		state.inst = rdnainsts.NewInst()
 		state.inst.FormatType = rdnainsts.FLAT
-		state.inst.Opcode = 31
+		state.inst.Opcode = 30
 
 		layout := state.Scratchpad().AsFlat()
 		for i := 0; i < 64; i++ {
