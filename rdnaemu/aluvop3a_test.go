@@ -137,4 +137,25 @@ var _ = Describe("ALU", func() {
 		Expect(sp.DST[0]).To(Equal(uint64(5)))
 	})
 
+	It("should run V_CMP_GE_I32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOP3a
+		state.inst.Opcode = 134
+
+		sp := state.Scratchpad().AsVOP3A()
+		sp.EXEC = 0xf
+		sp.SRC0[0] = uint64(int32ToBits(-1))
+		sp.SRC1[0] = uint64(int32ToBits(1))
+		sp.SRC0[1] = uint64(int32ToBits(2))
+		sp.SRC1[1] = uint64(int32ToBits(1))
+		sp.SRC0[2] = uint64(int32ToBits(0))
+		sp.SRC1[2] = uint64(int32ToBits(-1))
+		sp.SRC0[3] = uint64(int32ToBits(-1))
+		sp.SRC1[3] = uint64(int32ToBits(-1))
+
+		alu.Run(state)
+
+		Expect(sp.DST[0]).To(Equal(uint64(0xe)))
+	})
+
 })
