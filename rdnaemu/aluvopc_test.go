@@ -79,4 +79,78 @@ var _ = Describe("ALU", func() {
 		Expect(sp.VCC).To(Equal(uint64(0x4)))
 	})
 
+	It("should run v_cmp_gt_u32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOPC
+		state.inst.Opcode = 198
+
+		sp := state.Scratchpad().AsVOPC()
+		sp.EXEC = 0x7
+		sp.SRC0[0] = 1
+		sp.SRC1[0] = 1
+		sp.SRC0[1] = 1
+		sp.SRC1[1] = 2
+		sp.SRC0[2] = 1
+		sp.SRC1[2] = 0
+
+		alu.Run(state)
+
+		Expect(sp.VCC).To(Equal(uint64(0x5)))
+	})
+
+	It("should run v_cmp_le_u32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOPC
+		state.inst.Opcode = 195
+
+		sp := state.Scratchpad().AsVOPC()
+		sp.EXEC = 0xffffffffffffffff
+		sp.SRC0[0] = 1
+		sp.SRC0[1] = 1
+		sp.SRC0[2] = 1
+		sp.SRC1[0] = 1
+		sp.SRC1[1] = 2
+		sp.SRC1[2] = 0
+
+		alu.Run(state)
+
+		Expect(sp.VCC).To(Equal(uint64(0xfffffffffffffffb)))
+	})
+
+	It("should run v_cmp_ne_u32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOPC
+		state.inst.Opcode = 197
+
+		sp := state.Scratchpad().AsVOPC()
+		sp.EXEC = 0xffffffffffffffff
+		sp.SRC0[0] = 1
+		sp.SRC1[0] = 1
+		sp.SRC0[1] = 0
+		sp.SRC1[1] = 2
+
+		alu.Run(state)
+
+		Expect(sp.VCC).To(Equal(uint64(0x0000000000000002)))
+	})
+
+	It("should run v_cmp_eq_u32", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.VOPC
+		state.inst.Opcode = 194
+
+		sp := state.Scratchpad().AsVOPC()
+		sp.EXEC = 0x7
+		sp.SRC0[0] = 1
+		sp.SRC0[1] = 1
+		sp.SRC0[2] = 1
+		sp.SRC1[0] = 1
+		sp.SRC1[1] = 2
+		sp.SRC1[2] = 0
+
+		alu.Run(state)
+
+		Expect(sp.VCC).To(Equal(uint64(0x1)))
+	})
+
 })

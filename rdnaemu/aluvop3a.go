@@ -4,11 +4,14 @@ import (
 	"log"
 	"math"
 	"strings"
+
+	"gitlab.com/akita/navisim/bitops"
 )
 
 //nolint:gocyclo,funlen
 func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	inst := state.Inst()
+	//log.Printf("%s\n", inst.InstName)
 	u.vop3aPreprocess(state)
 
 	switch inst.Opcode {
@@ -17,7 +20,7 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	case 323:
 		u.runVMADU32U24(state)
 	case 361:
-		u.runVMULLOU32(state)
+		u.runVMULOU32(state)
 	case 362:
 		u.runVMULHIU32(state)
 	case 767:
@@ -26,8 +29,6 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 		u.runVASHRREVI64(state)
 	case 838:
 		u.runVLSHLADDU32(state)
-	case 877:
-		u.runVADD3U32(state)
 	default:
 		log.Panicf("Opcode %d for VOP3a format is not implemented", inst.Opcode)
 	}
@@ -189,6 +190,18 @@ func (u *ALUImpl) vop3aPostprocess(state InstEmuState) {
 		log.Panic("Output modifiers are not supported.")
 	}
 }
+func (u *ALUImpl) runVASHRREVI64(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = int64ToBits(asInt64(sp.SRC1[i]) >> sp.SRC0[i])
+	}
+}
 
 func (u *ALUImpl) runVCNDMASKB32VOP3A(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
@@ -207,45 +220,6 @@ func (u *ALUImpl) runVCNDMASKB32VOP3A(state InstEmuState) {
 	}
 }
 
-func (u *ALUImpl) runVMADU32U24(state InstEmuState) {
-	sp := state.Scratchpad().AsVOP3A()
-
-	var i uint
-	for i = 0; i < 64; i++ {
-		if !laneMasked(sp.EXEC, i) {
-			continue
-		}
-
-		sp.DST[i] = sp.SRC0[i]*sp.SRC1[i] + sp.SRC2[i]
-	}
-}
-
-func (u *ALUImpl) runVMULLOU32(state InstEmuState) {
-	sp := state.Scratchpad().AsVOP3A()
-
-	var i uint
-	for i = 0; i < 64; i++ {
-		if !laneMasked(sp.EXEC, i) {
-			continue
-		}
-
-		sp.DST[i] = (sp.SRC0[i] * sp.SRC1[i])
-	}
-}
-
-func (u *ALUImpl) runVMULHIU32(state InstEmuState) {
-	sp := state.Scratchpad().AsVOP3A()
-
-	var i uint
-	for i = 0; i < 64; i++ {
-		if !laneMasked(sp.EXEC, i) {
-			continue
-		}
-
-		sp.DST[i] = (sp.SRC0[i] * sp.SRC1[i]) >> 32
-	}
-}
-
 func (u *ALUImpl) runVLSHLREVB64(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 
@@ -259,7 +233,7 @@ func (u *ALUImpl) runVLSHLREVB64(state InstEmuState) {
 	}
 }
 
-func (u *ALUImpl) runVASHRREVI64(state InstEmuState) {
+func (u *ALUImpl) runVMADU32U24(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
 
 	var i uint
@@ -267,8 +241,34 @@ func (u *ALUImpl) runVASHRREVI64(state InstEmuState) {
 		if !laneMasked(sp.EXEC, i) {
 			continue
 		}
+		src0 := uint32(bitops.ExtractBitsFromU64(sp.SRC0[i], 0, 23))
+		src1 := uint32(bitops.ExtractBitsFromU64(sp.SRC1[i], 0, 23))
+		src2 := uint32(sp.SRC2[i])
+		sp.DST[i] = uint64(src0*src1 + src2)
+	}
+}
 
-		sp.DST[i] = int64ToBits(asInt64(sp.SRC1[i]) >> sp.SRC0[i])
+func (u *ALUImpl) runVMULOU32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+		sp.DST[i] = (sp.SRC0[i] * sp.SRC1[i])
+	}
+}
+
+func (u *ALUImpl) runVMULHIU32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+		sp.DST[i] = (sp.SRC0[i] * sp.SRC1[i]) >> 32
 	}
 }
 
@@ -280,20 +280,6 @@ func (u *ALUImpl) runVLSHLADDU32(state InstEmuState) {
 		if !laneMasked(sp.EXEC, i) {
 			continue
 		}
-
-		sp.DST[i] = sp.SRC0[i]<<sp.SRC1[i] + sp.SRC2[i]
-	}
-}
-
-func (u *ALUImpl) runVADD3U32(state InstEmuState) {
-	sp := state.Scratchpad().AsVOP3A()
-
-	var i uint
-	for i = 0; i < 64; i++ {
-		if !laneMasked(sp.EXEC, i) {
-			continue
-		}
-
-		sp.DST[i] = sp.SRC0[i] + sp.SRC1[i] + sp.SRC2[i]
+		sp.DST[i] = (sp.SRC0[i] << sp.SRC1[i]) + sp.SRC2[i]
 	}
 }

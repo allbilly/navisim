@@ -70,6 +70,8 @@ func (u *ALUImpl) Run(state InstEmuState) {
 		u.runSOPK(state)
 	case rdnainsts.DS:
 		u.runDS(state)
+	case rdnainsts.MUBUF:
+
 	default:
 		log.Panicf("Inst format %s is not supported", inst.Format.FormatName)
 	}

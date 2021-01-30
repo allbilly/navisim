@@ -26,6 +26,8 @@ func (u *ALUImpl) runSOPP(state InstEmuState) {
 		// Do nothing
 	case 33:
 		u.runSCLAUSE(state)
+	case 35: //SDPCTR
+		//Do noting
 	default:
 		log.Panicf("Opcode %d for SOPP format is not implemented", inst.Opcode)
 	}
