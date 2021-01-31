@@ -27,5 +27,4 @@ vendor
 *.json
 __debug_bin
 *.disasm-llvm
-*/
 
