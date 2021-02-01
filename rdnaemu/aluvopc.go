@@ -10,6 +10,8 @@ func (u *ALUImpl) runVOPC(state InstEmuState) {
 	switch inst.Opcode {
 	case 129:
 		u.runVCMPLTI32(state)
+	case 131:
+		u.runVCMPLEI32(state)
 	case 132: // v_cmp_gt_i32_e32
 		u.runVCMPGTI32(state)
 	case 194:
@@ -45,6 +47,24 @@ func (u *ALUImpl) runVCMPLTI32(state InstEmuState) {
 		}
 	}
 }
+
+func (u *ALUImpl) runVCMPLEI32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOPC()
+	sp.VCC = 0
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		src0 := asInt32(uint32(sp.SRC0[i]))
+		src1 := asInt32(uint32(sp.SRC1[i]))
+		if src0 <= src1 {
+			sp.VCC = sp.VCC | (1 << i)
+		}
+	}
+}
+
 func (u *ALUImpl) runVCMPGTI32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOPC()
 	sp.VCC = 0
