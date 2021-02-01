@@ -238,4 +238,74 @@ var _ = Describe("Disassembler", func() {
 		Expect(inst.String(nil)).
 			To(Equal("v_sub_co_ci_u32_e32 v4, vcc_lo, v1, v4, vcc_lo"))
 	})
+
+	It("should decode D4C20000 00020805", func() {
+		buf := []byte{0x00, 0x00, 0xC2, 0xD4, 0x05, 0x08, 0x02, 0x00}
+
+		inst, err := disassembler.Decode(buf)
+
+		Expect(err).To(BeNil())
+		Expect(inst.String(nil)).
+			To(Equal("v_cmp_eq_u32_e64 s0, s5, v4"))
+	})
+
+	It("should decode 7D861210", func() {
+		buf := []byte{0x10, 0x12, 0x86, 0x7D}
+
+		inst, err := disassembler.Decode(buf)
+
+		Expect(err).To(BeNil())
+		Expect(inst.String(nil)).
+			To(Equal("v_cmp_le_u32_e32 vcc_lo, s16, v9"))
+	})
+
+	It("should decode D5010009 01A98280", func() {
+		buf := []byte{0x09, 0x00, 0x01, 0xD5, 0x80, 0x82, 0xA9, 0x01}
+
+		inst, err := disassembler.Decode(buf)
+
+		Expect(err).To(BeNil())
+		Expect(inst.String(nil)).
+			To(Equal("v_cndmask_b32_e64 v9, 0, -1, vcc_lo"))
+	})
+
+	It("should decode 7D840A05", func() {
+		buf := []byte{0x05, 0x0A, 0x84, 0x7D}
+
+		inst, err := disassembler.Decode(buf)
+
+		Expect(err).To(BeNil())
+		Expect(inst.String(nil)).
+			To(Equal("v_cmp_eq_u32_e32 vcc_lo, s5, v5"))
+	})
+
+	It("should decode 7D8A0A80", func() {
+		buf := []byte{0x80, 0x0A, 0x8A, 0x7D}
+
+		inst, err := disassembler.Decode(buf)
+
+		Expect(err).To(BeNil())
+		Expect(inst.String(nil)).
+			To(Equal("v_cmp_ne_u32_e32 vcc_lo, 0, v5"))
+	})
+
+	It("should decode 7E045702", func() {
+		buf := []byte{0x02, 0x57, 0x04, 0x7E}
+
+		inst, err := disassembler.Decode(buf)
+
+		Expect(err).To(BeNil())
+		Expect(inst.String(nil)).
+			To(Equal("v_rcp_iflag_f32_e32 v2, v2"))
+	})
+
+	It("should decode 4E0A0610", func() {
+		buf := []byte{0x10, 0x06, 0x0A, 0x4E}
+
+		inst, err := disassembler.Decode(buf)
+
+		Expect(err).To(BeNil())
+		Expect(inst.String(nil)).
+			To(Equal("v_subrev_nc_u32_e32 v5, s16, v3"))
+	})
 })
