@@ -200,7 +200,7 @@ func (i Inst) waitcntOperandString() string {
 func (i Inst) vop2String() string {
 	s := fmt.Sprintf("%s %s", i.InstName, i.Dst.String())
 	switch i.Opcode {
-	case 40:
+	case 40, 41, 42:
 		s += ", vcc_lo"
 	}
 
