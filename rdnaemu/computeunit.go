@@ -2,7 +2,6 @@ package rdnaemu
 
 import (
 	"encoding/binary"
-	"fmt"
 	"log"
 	"math"
 	"reflect"
@@ -334,8 +333,8 @@ func (cu *ComputeUnit) runWfUntilBarrier(wf *Wavefront) error {
 		instBuf := cu.storageAccessor.Read(wf.pid, wf.PC, 8)
 
 		inst, _ := cu.decoder.Decode(instBuf)
-		instStr := inst.String(nil)
-		fmt.Println(instStr)
+		// instStr := inst.String(nil)
+		// fmt.Println(instStr)
 		wf.inst = inst
 
 		wf.PC += uint64(inst.ByteSize)
