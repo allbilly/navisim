@@ -21,6 +21,8 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 		u.runVCMPGTI32VOP3A(state)
 	case 134:
 		u.runVCMPGEI32VOP3A(state)
+	case 194:
+		u.runVCMPEQU32VOP3A(state)
 	case 257: //256+1
 		u.runVCNDMASKB32VOP3A(state)
 	case 323:
@@ -201,7 +203,6 @@ func (u *ALUImpl) vop3aPostprocess(state InstEmuState) {
 
 func (u *ALUImpl) runVCMPGTF32VOP3A(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
-	sp.VCC = 0
 	var i uint
 	var src0, src1 float32
 	for i = 0; i < 64; i++ {
@@ -211,14 +212,13 @@ func (u *ALUImpl) runVCMPGTF32VOP3A(state InstEmuState) {
 		src0 = math.Float32frombits(uint32(sp.SRC0[i]))
 		src1 = math.Float32frombits(uint32(sp.SRC1[i]))
 		if src0 > src1 {
-			sp.DST[0] = sp.VCC | (1 << i)
+			sp.DST[0] |= 1 << i
 		}
 	}
 }
 
 func (u *ALUImpl) runVCMPGTI32VOP3A(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
-	sp.VCC = 0
 
 	var i uint
 	for i = 0; i < 64; i++ {
@@ -235,7 +235,6 @@ func (u *ALUImpl) runVCMPGTI32VOP3A(state InstEmuState) {
 
 func (u *ALUImpl) runVCMPGEI32VOP3A(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
-	sp.VCC = 0
 
 	var i uint
 	for i = 0; i < 64; i++ {
@@ -245,6 +244,21 @@ func (u *ALUImpl) runVCMPGEI32VOP3A(state InstEmuState) {
 		src0 := asInt32(uint32(sp.SRC0[i]))
 		src1 := asInt32(uint32(sp.SRC1[i]))
 		if src0 >= src1 {
+			sp.DST[0] |= 1 << i
+		}
+	}
+}
+func (u *ALUImpl) runVCMPEQU32VOP3A(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+		src0 := uint32(sp.SRC0[i])
+		src1 := uint32(sp.SRC1[i])
+		if src0 == src1 {
 			sp.DST[0] |= 1 << i
 		}
 	}

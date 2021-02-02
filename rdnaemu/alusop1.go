@@ -27,7 +27,6 @@ func (u *ALUImpl) runSANDSAVEEXECB32(state InstEmuState) {
 		sp.SCC = 0
 	}
 }
-
 func (u *ALUImpl) runSORSAVEEXECB32(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP1()
 	sp.DST = sp.EXEC

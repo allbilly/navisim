@@ -2,7 +2,6 @@ package rdnaemu
 
 import (
 	"encoding/binary"
-	"fmt"
 	"log"
 	"math"
 	"reflect"
@@ -302,7 +301,7 @@ func (cu *ComputeUnit) initWfRegs(wf *Wavefront) {
 	}
 
 	var x, y, z int
-	for i := wf.FirstWiFlatID; i < wf.FirstWiFlatID+64; i++ {
+	for i := wf.FirstWiFlatID; i < wf.FirstWiFlatID+32; i++ {
 		z = i / (wf.WG.SizeX * wf.WG.SizeY)
 		y = i % (wf.WG.SizeX * wf.WG.SizeY) / wf.WG.SizeX
 		x = i % (wf.WG.SizeX * wf.WG.SizeY) % wf.WG.SizeX
@@ -334,8 +333,8 @@ func (cu *ComputeUnit) runWfUntilBarrier(wf *Wavefront) error {
 		instBuf := cu.storageAccessor.Read(wf.pid, wf.PC, 8)
 
 		inst, _ := cu.decoder.Decode(instBuf)
-		instStr := inst.String(nil)
-		fmt.Println(instStr)
+		// instStr := inst.String(nil)
+		// fmt.Println(instStr)
 		wf.inst = inst
 
 		wf.PC += uint64(inst.ByteSize)

@@ -33,7 +33,6 @@ func (u *ALUImpl) runVMOVB32(state InstEmuState) {
 		sp.DST[i] = sp.SRC0[i]
 	}
 }
-
 func (u *ALUImpl) runVCVTF32U32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP1()
 
