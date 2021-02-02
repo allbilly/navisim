@@ -27,13 +27,10 @@ func (u *ALUImpl) runSOP2(state InstEmuState) {
 		u.runSORB32(state)
 	case 18:
 		u.runSXORB32(state)
-<<<<<<< HEAD
 	case 20:
 		u.runSANDN2B32(state)
-=======
 	case 30:
 		u.runSLSHLB32(state)
->>>>>>> master
 	case 34:
 		u.runSASHRI32(state)
 	case 38:
