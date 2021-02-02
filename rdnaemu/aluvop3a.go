@@ -17,6 +17,8 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 	switch inst.Opcode {
 	case 4:
 		u.runVCMPGTF32VOP3A(state)
+	case 132:
+		u.runVCMPGTI32VOP3A(state)
 	case 134:
 		u.runVCMPGEI32VOP3A(state)
 	case 194:
@@ -35,6 +37,8 @@ func (u *ALUImpl) runVOP3A(state InstEmuState) {
 		u.runVASHRREVI64(state)
 	case 838:
 		u.runVLSHLADDU32(state)
+	case 877:
+		u.runVADD3U32(state)
 	default:
 		log.Panicf("Opcode %d for VOP3a format is not implemented", inst.Opcode)
 	}
@@ -199,7 +203,6 @@ func (u *ALUImpl) vop3aPostprocess(state InstEmuState) {
 
 func (u *ALUImpl) runVCMPGTF32VOP3A(state InstEmuState) {
 	sp := state.Scratchpad().AsVOP3A()
-
 	var i uint
 	var src0, src1 float32
 	for i = 0; i < 64; i++ {
@@ -208,6 +211,22 @@ func (u *ALUImpl) runVCMPGTF32VOP3A(state InstEmuState) {
 		}
 		src0 = math.Float32frombits(uint32(sp.SRC0[i]))
 		src1 = math.Float32frombits(uint32(sp.SRC1[i]))
+		if src0 > src1 {
+			sp.DST[0] |= 1 << i
+		}
+	}
+}
+
+func (u *ALUImpl) runVCMPGTI32VOP3A(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+		src0 := asInt32(uint32(sp.SRC0[i]))
+		src1 := asInt32(uint32(sp.SRC1[i]))
 		if src0 > src1 {
 			sp.DST[0] |= 1 << i
 		}
@@ -336,5 +355,18 @@ func (u *ALUImpl) runVLSHLADDU32(state InstEmuState) {
 			continue
 		}
 		sp.DST[i] = (sp.SRC0[i] << sp.SRC1[i]) + sp.SRC2[i]
+	}
+}
+
+func (u *ALUImpl) runVADD3U32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOP3A()
+
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		sp.DST[i] = sp.SRC0[i] + sp.SRC1[i] + sp.SRC2[i]
 	}
 }

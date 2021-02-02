@@ -27,8 +27,13 @@ func (u *ALUImpl) runSOP2(state InstEmuState) {
 		u.runSORB32(state)
 	case 18:
 		u.runSXORB32(state)
+<<<<<<< HEAD
 	case 20:
 		u.runSANDN2B32(state)
+=======
+	case 30:
+		u.runSLSHLB32(state)
+>>>>>>> master
 	case 34:
 		u.runSASHRI32(state)
 	case 38:
@@ -51,6 +56,24 @@ func (u *ALUImpl) runSADDU32(state InstEmuState) {
 		sp.SCC = 0
 	}
 	sp.DST = uint64(dst)
+}
+
+func (u *ALUImpl) runSSUBI32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP2()
+
+	src0 := asInt32(uint32(sp.SRC0))
+	src1 := asInt32(uint32(sp.SRC1))
+	dst := src0 - src1
+
+	if src1 > 0 && dst > src0 {
+		sp.SCC = 1
+	} else if src1 < 0 && dst < src0 {
+		sp.SCC = 1
+	} else {
+		sp.SCC = 0
+	}
+
+	sp.DST = uint64(int32ToBits(dst))
 }
 
 func (u *ALUImpl) runSADDCU32(state InstEmuState) {
@@ -77,24 +100,6 @@ func (u *ALUImpl) runSMINU32(state InstEmuState) {
 	} else {
 		sp.DST = sp.SRC1
 	}
-}
-
-func (u *ALUImpl) runSSUBI32(state InstEmuState) {
-	sp := state.Scratchpad().AsSOP2()
-
-	src0 := asInt32(uint32(sp.SRC0))
-	src1 := asInt32(uint32(sp.SRC1))
-	dst := src0 - src1
-
-	if src1 > 0 && dst > src0 {
-		sp.SCC = 1
-	} else if src1 < 0 && dst < src0 {
-		sp.SCC = 1
-	} else {
-		sp.SCC = 0
-	}
-
-	sp.DST = uint64(int32ToBits(dst))
 }
 
 func (u *ALUImpl) runSADDI32(state InstEmuState) {
@@ -131,6 +136,16 @@ func (u *ALUImpl) runSANDB64(state InstEmuState) {
 	} else {
 		sp.SCC = 0
 	}
+}
+
+func (u *ALUImpl) runSLSHLB32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP2()
+
+	src0 := uint32(sp.SRC0)
+	src1 := uint8(sp.SRC1)
+	dst := src0 << (src1 & 0x1f)
+
+	sp.DST = uint64(dst)
 }
 
 func (u *ALUImpl) runSORB32(state InstEmuState) {
