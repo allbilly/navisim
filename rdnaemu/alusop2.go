@@ -5,6 +5,8 @@ import (
 	"math"
 )
 
+var count = 0
+
 //nolint:gocyclo,funlen
 func (u *ALUImpl) runSOP2(state InstEmuState) {
 	inst := state.Inst()
@@ -27,6 +29,8 @@ func (u *ALUImpl) runSOP2(state InstEmuState) {
 		u.runSORB32(state)
 	case 18:
 		u.runSXORB32(state)
+	case 20:
+		u.runSANDN2B32(state)
 	case 34:
 		u.runSASHRI32(state)
 	case 38:
@@ -115,6 +119,10 @@ func (u *ALUImpl) runSADDI32(state InstEmuState) {
 func (u *ALUImpl) runSANDB32(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP2()
 	sp.DST = sp.SRC0 & sp.SRC1
+	count++
+	if count == 2 {
+		//log.Panicf("%d\n", sp.DST)
+	}
 	if sp.DST != 0 {
 		sp.SCC = 1
 	} else {
@@ -177,6 +185,17 @@ func (u *ALUImpl) runSXORB32(state InstEmuState) {
 
 	sp.DST = uint64(dst)
 
+	if sp.DST != 0 {
+		sp.SCC = 1
+	} else {
+		sp.SCC = 0
+	}
+}
+
+func (u *ALUImpl) runSANDN2B32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP2()
+	sp.DST = sp.SRC0 &^ sp.SRC1
+	log.Printf("%d\n", sp.DST)
 	if sp.DST != 0 {
 		sp.SCC = 1
 	} else {

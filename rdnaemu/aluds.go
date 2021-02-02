@@ -34,6 +34,8 @@ func (u *ALUImpl) runDSWRITEB32(state InstEmuState) {
 		data0offset := uint(8 + 64*4)
 
 		copy(lds[addr0:addr0+4], sp[data0offset+i*16:data0offset+i*16+4])
+		log.Printf("%t\n", lds[addr0:addr0+4])
+
 	}
 }
 

@@ -626,5 +626,4 @@ var _ = Describe("ScratchpadPreparer", func() {
 			Expect(wf.VRegValue(i, 1)).To(Equal(uint32(i + 1)))
 		}
 	})
-
 })

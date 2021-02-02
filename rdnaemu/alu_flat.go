@@ -51,6 +51,8 @@ func (u *ALUImpl) runFlatLoadDWord(state InstEmuState) {
 		}
 		buf := u.storageAccessor.Read(pid, sp.ADDR[i]+uint64(inst.Offset.IntValue), uint64(4))
 		sp.DST[i*4] = rdnainsts.BytesToUint32(buf)
+		log.Printf("%d\n", sp.DST[i*4])
+
 	}
 }
 func (u *ALUImpl) runFlatStoreDWord(state InstEmuState) {
@@ -63,6 +65,7 @@ func (u *ALUImpl) runFlatStoreDWord(state InstEmuState) {
 			continue
 		}
 
+		log.Printf("%d\n", sp.DATA[i*4])
 		u.storageAccessor.Write(
 			pid, sp.ADDR[i]+uint64(inst.Offset.IntValue), rdnainsts.Uint32ToBytes(sp.DATA[i*4]))
 	}
@@ -77,9 +80,10 @@ func (u *ALUImpl) runFlatLoadDWordX2(state InstEmuState) {
 		if !laneMasked(sp.EXEC, i) {
 			continue
 		}
-
 		buf := u.storageAccessor.Read(pid, sp.ADDR[i]+uint64(inst.Offset.IntValue), uint64(8))
 		sp.DST[i*4] = rdnainsts.BytesToUint32(buf[0:4])
 		sp.DST[i*4+1] = rdnainsts.BytesToUint32(buf[4:8])
+
+		log.Printf("%d,%d\n", sp.DST[i*4], sp.DST[i*4+1])
 	}
 }

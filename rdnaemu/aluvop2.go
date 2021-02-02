@@ -370,6 +370,7 @@ func (u *ALUImpl) runVFMACF32(state InstEmuState) {
 			src1 = asFloat32(uint32(sp.SRC1[i]))
 			dst += src0 * src1
 			sp.DST[i] = uint64(float32ToBits(dst))
+			log.Printf("%f\n", sp.DST[i])
 		}
 	} else {
 		log.Panicf("SDWA for VOP2 instruction opcode  %d not implemented \n", inst.Opcode)
