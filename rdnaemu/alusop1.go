@@ -8,6 +8,8 @@ func (u *ALUImpl) runSOP1(state InstEmuState) {
 	switch inst.Opcode {
 	case 3:
 		u.runSMOVB32(state)
+	case 4:
+		u.runSMOVB64(state)
 	case 60:
 		u.runSANDSAVEEXECB32(state)
 	case 61:
@@ -27,6 +29,12 @@ func (u *ALUImpl) runSANDSAVEEXECB32(state InstEmuState) {
 		sp.SCC = 0
 	}
 }
+
+func (u *ALUImpl) runSMOVB64(state InstEmuState) {
+	sp := state.Scratchpad().AsSOP1()
+	sp.DST = sp.SRC0
+}
+
 func (u *ALUImpl) runSORSAVEEXECB32(state InstEmuState) {
 	sp := state.Scratchpad().AsSOP1()
 	sp.DST = sp.EXEC
