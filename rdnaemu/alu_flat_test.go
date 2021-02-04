@@ -7,7 +7,6 @@ import (
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/mem/idealmemcontroller"
 	"gitlab.com/akita/mem/vm"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/util/ca"
 )
@@ -103,10 +102,10 @@ var _ = Describe("ALU", func() {
 		for i := 0; i < 64; i++ {
 			buf, err := storage.Read(uint64(i*16), uint64(16))
 			Expect(err).To(BeNil())
-			Expect(insts.BytesToUint32(buf[0:4])).To(Equal(uint32(i)))
-			Expect(insts.BytesToUint32(buf[4:8])).To(Equal(uint32(i)))
-			Expect(insts.BytesToUint32(buf[8:12])).To(Equal(uint32(i)))
-			Expect(insts.BytesToUint32(buf[12:16])).To(Equal(uint32(i)))
+			Expect(rdnainsts.BytesToUint32(buf[0:4])).To(Equal(uint32(i)))
+			Expect(rdnainsts.BytesToUint32(buf[4:8])).To(Equal(uint32(i)))
+			Expect(rdnainsts.BytesToUint32(buf[8:12])).To(Equal(uint32(i)))
+			Expect(rdnainsts.BytesToUint32(buf[12:16])).To(Equal(uint32(i)))
 		}
 	})
 
