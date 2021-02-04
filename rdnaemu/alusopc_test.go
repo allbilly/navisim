@@ -21,6 +21,20 @@ var _ = Describe("ALU", func() {
 		state.scratchpad = make([]byte, 4096)
 	})
 
+	It("should run S_CMP_LT_I32 when condition holds", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.SOPC
+		state.inst.Opcode = 4
+
+		layout := state.Scratchpad().AsSOPC()
+		layout.SRC0 = uint64(int32ToBits(5))
+		layout.SRC1 = uint64(int32ToBits(7))
+
+		alu.Run(state)
+
+		Expect(layout.SCC).To(Equal(byte(1)))
+	})
+
 	It("should run S_CMP_EQ_U32 when input is not equal", func() {
 		state.inst = rdnainsts.NewInst()
 		state.inst.FormatType = rdnainsts.SOPC
