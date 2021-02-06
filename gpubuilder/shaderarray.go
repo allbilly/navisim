@@ -39,11 +39,12 @@ type shaderArrayBuilder struct {
 	name  string
 	numCU int
 
-	engine            akita.Engine
-	freq              akita.Freq
-	log2CacheLineSize uint64
-	log2PageSize      uint64
-	visTracer         tracing.Tracer
+	engine                 akita.Engine
+	freq                   akita.Freq
+	log2CacheLineSize      uint64
+	log2PageSize           uint64
+	numSinglePrecisionUnit int
+	visTracer              tracing.Tracer
 }
 
 func makeShaderArrayBuilder() shaderArrayBuilder {
@@ -52,7 +53,7 @@ func makeShaderArrayBuilder() shaderArrayBuilder {
 		name:              "SA",
 		numCU:             4,
 		freq:              1 * akita.GHz,
-		log2CacheLineSize: 6,
+		log2CacheLineSize: 7,
 		log2PageSize:      12,
 	}
 	return b
@@ -82,6 +83,13 @@ func (b shaderArrayBuilder) withLog2CachelineSize(
 	log2Size uint64,
 ) shaderArrayBuilder {
 	b.log2CacheLineSize = log2Size
+	return b
+}
+
+func (b shaderArrayBuilder) withNumSinglePrecisionUnit(
+	numSPUnit int,
+) shaderArrayBuilder {
+	b.numSinglePrecisionUnit = numSPUnit
 	return b
 }
 
@@ -229,7 +237,8 @@ func (b *shaderArrayBuilder) buildCUs(sa *shaderArray) {
 	cuBuilder := cu.MakeBuilder().
 		WithEngine(b.engine).
 		WithFreq(b.freq).
-		WithLog2CachelineSize(b.log2CacheLineSize)
+		WithLog2CachelineSize(b.log2CacheLineSize).
+		WithNumSinglePrecisionUnit(b.numSinglePrecisionUnit)
 
 	for i := 0; i < b.numCU; i++ {
 		cuName := fmt.Sprintf("%s.CU_%02d", b.name, i)

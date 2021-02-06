@@ -60,10 +60,10 @@ type Wavefront struct {
 }
 
 // NewWavefront returns a new Wavefront.
-func NewWavefront() *Wavefront {
+func NewWavefront(size int) *Wavefront {
 	wf := new(Wavefront)
 	wf.UID = akita.GetIDGenerator().Generate()
-	wf.WorkItems = make([]*WorkItem, 0, 32)
+	wf.WorkItems = make([]*WorkItem, 0, size)
 	return wf
 }
 

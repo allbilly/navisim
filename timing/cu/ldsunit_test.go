@@ -3,7 +3,7 @@ package cu
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -46,12 +46,12 @@ var _ = Describe("LDS Unit", func() {
 		wave2.WG = wavefront.NewWorkGroup(nil, nil)
 		wave2.WG.LDS = make([]byte, 0)
 		wave3 := new(wavefront.Wavefront)
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.FormatType = insts.DS
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.FormatType = rdnainsts.DS
 		inst.Opcode = 0
-		inst.Addr = insts.NewVRegOperand(0, 0, 1)
-		inst.Data = insts.NewVRegOperand(2, 2, 2)
-		inst.Data1 = insts.NewVRegOperand(4, 4, 2)
+		inst.Addr = rdnainsts.NewVRegOperand(0, 0, 1)
+		inst.Data = rdnainsts.NewVRegOperand(2, 2, 2)
+		inst.Data1 = rdnainsts.NewVRegOperand(4, 4, 2)
 		inst.ByteSize = 4
 		wave3.SetDynamicInst(inst)
 		wave3.PC = 0x13C
@@ -87,12 +87,12 @@ var _ = Describe("LDS Unit", func() {
 		wave2.WG = wavefront.NewWorkGroup(nil, nil)
 		wave2.WG.LDS = make([]byte, 0)
 		wave3 := new(wavefront.Wavefront)
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.FormatType = insts.DS
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.FormatType = rdnainsts.DS
 		inst.Opcode = 0
-		inst.Addr = insts.NewVRegOperand(0, 0, 1)
-		inst.Data = insts.NewVRegOperand(2, 2, 2)
-		inst.Data1 = insts.NewVRegOperand(4, 4, 2)
+		inst.Addr = rdnainsts.NewVRegOperand(0, 0, 1)
+		inst.Data = rdnainsts.NewVRegOperand(2, 2, 2)
+		inst.Data1 = rdnainsts.NewVRegOperand(4, 4, 2)
 		inst.ByteSize = 4
 		wave3.SetDynamicInst(inst)
 		wave3.PC = 0x13C

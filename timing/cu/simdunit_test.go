@@ -3,7 +3,7 @@ package cu
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -23,6 +23,7 @@ var _ = Describe("SIMD Unit", func() {
 		alu = new(mockALU)
 		name = "simd"
 		bu = NewSIMDUnit(cu, name, sp, alu)
+		bu.NumSinglePrecisionUnit = 32
 
 	})
 
@@ -39,19 +40,19 @@ var _ = Describe("SIMD Unit", func() {
 
 	It("should accept wave", func() {
 		wave := new(wavefront.Wavefront)
-		inst := wavefront.NewInst(insts.NewInst())
+		inst := wavefront.NewInst(rdnainsts.NewInst())
 		wave.SetDynamicInst(inst)
 		bu.AcceptWave(wave, 10)
 		Expect(bu.toExec).To(BeIdenticalTo(wave))
-		Expect(bu.cycleLeft).To(Equal(4))
+		Expect(bu.cycleLeft).To(Equal(1))
 	})
 
 	It("should run", func() {
 		wave := new(wavefront.Wavefront)
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.FormatType = insts.VOPC
-		inst.Src0 = insts.NewVRegOperand(0, 0, 1)
-		inst.Src1 = insts.NewVRegOperand(1, 1, 1)
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.FormatType = rdnainsts.VOPC
+		inst.Src0 = rdnainsts.NewVRegOperand(0, 0, 1)
+		inst.Src1 = rdnainsts.NewVRegOperand(1, 1, 1)
 		inst.ByteSize = 4
 		wave.InstBuffer = make([]byte, 256)
 		wave.InstBufferStartPC = 0x100
@@ -82,10 +83,10 @@ var _ = Describe("SIMD Unit", func() {
 
 	It("should flush SIMD", func() {
 		wave := new(wavefront.Wavefront)
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.FormatType = insts.VOPC
-		inst.Src0 = insts.NewVRegOperand(0, 0, 1)
-		inst.Src1 = insts.NewVRegOperand(1, 1, 1)
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.FormatType = rdnainsts.VOPC
+		inst.Src0 = rdnainsts.NewVRegOperand(0, 0, 1)
+		inst.Src1 = rdnainsts.NewVRegOperand(1, 1, 1)
 		inst.ByteSize = 4
 		wave.InstBuffer = make([]byte, 256)
 		wave.InstBufferStartPC = 0x100

@@ -2,7 +2,7 @@ package cu
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/emu"
+	"gitlab.com/akita/navisim/rdnaemu"
 	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util/tracing"
 )
@@ -16,7 +16,7 @@ type SIMDUnit struct {
 	name string
 
 	scratchpadPreparer ScratchpadPreparer
-	alu                emu.ALU
+	alu                rdnaemu.ALU
 
 	toExec    *wavefront.Wavefront
 	cycleLeft int
@@ -26,13 +26,13 @@ type SIMDUnit struct {
 	isIdle bool
 }
 
-// NewSIMDUnit creates a new branch unit, injecting the dependency of
+// NewSIMDUnit creates a new simd unit, injecting the dependency of
 // the compute unit.
 func NewSIMDUnit(
 	cu *ComputeUnit,
 	name string,
 	scratchpadPreparer ScratchpadPreparer,
-	alu emu.ALU,
+	alu rdnaemu.ALU,
 ) *SIMDUnit {
 	u := new(SIMDUnit)
 	u.name = name
@@ -40,7 +40,7 @@ func NewSIMDUnit(
 	u.scratchpadPreparer = scratchpadPreparer
 	u.alu = alu
 
-	u.NumSinglePrecisionUnit = 16
+	u.NumSinglePrecisionUnit = cu.numSinglePrecisionUnit
 
 	return u
 }
@@ -60,7 +60,7 @@ func (u *SIMDUnit) IsIdle() bool {
 func (u *SIMDUnit) AcceptWave(wave *wavefront.Wavefront, now akita.VTimeInSec) {
 	u.toExec = wave
 
-	u.cycleLeft = 64 / u.NumSinglePrecisionUnit
+	u.cycleLeft = 32 / u.NumSinglePrecisionUnit
 	u.logPipelineTask(now, u.toExec.DynamicInst(), false)
 }
 

@@ -10,18 +10,15 @@ var _ = Describe("DecodeUnit", func() {
 	var (
 		cu        *ComputeUnit
 		du        *DecodeUnit
-		execUnits []*mockCUComponent
+		execUnit *mockCUComponent
 	)
 
 	BeforeEach(func() {
 		cu = NewComputeUnit("cu", nil)
 		du = NewDecodeUnit(cu)
-		execUnits = make([]*mockCUComponent, 4)
-		for i := 0; i < 4; i++ {
-			execUnits[i] = new(mockCUComponent)
-			execUnits[i].canAccept = true
-			du.AddExecutionUnit(execUnits[i])
-		}
+		execUnit = new(mockCUComponent)
+		execUnit.canAccept = true
+		du.ExecUnit = execUnit
 	})
 
 	It("should tell if it cannot accept wave", func() {
@@ -52,34 +49,25 @@ var _ = Describe("DecodeUnit", func() {
 
 	It("should deliver the wave to the execution unit", func() {
 		wave := new(wavefront.Wavefront)
-		wave.SIMDID = 1
 		du.toDecode = wave
 
 		du.Run(10)
 
-		Expect(len(execUnits[0].acceptedWave)).To(Equal(0))
-		Expect(len(execUnits[1].acceptedWave)).To(Equal(1))
-		Expect(len(execUnits[2].acceptedWave)).To(Equal(0))
-		Expect(len(execUnits[3].acceptedWave)).To(Equal(0))
+		Expect(len(execUnit.acceptedWave)).To(Equal(1))
 		Expect(du.toDecode).To(BeNil())
 	})
 
 	It("should not deliver to the execution unit, if busy", func() {
 		wave := new(wavefront.Wavefront)
-		wave.SIMDID = 1
 		du.toDecode = wave
-		execUnits[1].canAccept = false
+		execUnit.canAccept = false
 
 		du.Run(10)
 
-		Expect(len(execUnits[0].acceptedWave)).To(Equal(0))
-		Expect(len(execUnits[1].acceptedWave)).To(Equal(0))
-		Expect(len(execUnits[2].acceptedWave)).To(Equal(0))
-		Expect(len(execUnits[3].acceptedWave)).To(Equal(0))
+		Expect(len(execUnit.acceptedWave)).To(Equal(0))
 	})
 	It("should flush the decode unit", func() {
 		wave := new(wavefront.Wavefront)
-		wave.SIMDID = 1
 		du.toDecode = wave
 
 		du.Flush()

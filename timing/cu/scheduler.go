@@ -5,7 +5,7 @@ import (
 
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util/tracing"
 )
@@ -23,6 +23,7 @@ type Scheduler interface {
 // wavefront to fetch and to issue.
 type SchedulerImpl struct {
 	cu                *ComputeUnit
+	wfPool            *WavefrontPool
 	fetchArbiter      WfArbiter
 	issueArbiter      WfArbiter
 	internalExecuting []*wavefront.Wavefront
@@ -42,11 +43,13 @@ func NewScheduler(
 	cu *ComputeUnit,
 	fetchArbiter WfArbiter,
 	issueArbiter WfArbiter,
+	wfPool *WavefrontPool,
 ) *SchedulerImpl {
 	s := new(SchedulerImpl)
 	s.cu = cu
 	s.fetchArbiter = fetchArbiter
 	s.issueArbiter = issueArbiter
+	s.wfPool = wfPool
 
 	s.barrierBufferSize = 16
 	s.barrierBuffer = make([]*wavefront.Wavefront, 0, s.barrierBufferSize)
@@ -80,34 +83,33 @@ func (s *SchedulerImpl) Run(now akita.VTimeInSec) bool {
 //DecodeNextInst checks
 func (s *SchedulerImpl) DecodeNextInst(now akita.VTimeInSec) bool {
 	madeProgress := false
-	for _, wfPool := range s.cu.WfPools {
-		for _, wf := range wfPool.wfs {
-			if len(wf.InstBuffer) == 0 {
-				wf.InstBufferStartPC = wf.PC & 0xffffffffffffffc0
-				continue
-			}
+	for _, wf := range s.wfPool.wfs {
+		if len(wf.InstBuffer) == 0 {
+			wf.InstBufferStartPC = wf.PC & 0xffffffffffffff80
+			continue
+		}
 
-			if wf.State != wavefront.WfReady {
-				continue
-			}
+		if wf.State != wavefront.WfReady {
+			continue
+		}
 
-			if wf.InstToIssue != nil {
-				continue
-			}
+		if wf.InstToIssue != nil {
+			continue
+		}
 
-			if !s.wfHasAtLeast8BytesInInstBuffer(wf) {
-				continue
-			}
+		if !s.wfHasAtLeast8BytesInInstBuffer(wf) {
+			continue
+		}
 
-			inst, err := s.cu.Decoder.Decode(
-				wf.InstBuffer[wf.PC-wf.InstBufferStartPC:])
-			if err == nil {
-				wf.InstToIssue = wavefront.NewInst(inst)
-				// s.cu.logInstTask(now, wf, wf.InstToIssue, false)
-				madeProgress = true
-			}
+		inst, err := s.cu.Decoder.Decode(
+			wf.InstBuffer[wf.PC-wf.InstBufferStartPC:])
+		if err == nil {
+			wf.InstToIssue = wavefront.NewInst(inst)
+			// s.cu.logInstTask(now, wf, wf.InstToIssue, false)
+			madeProgress = true
 		}
 	}
+
 	return madeProgress
 }
 
@@ -119,23 +121,23 @@ func (s *SchedulerImpl) wfHasAtLeast8BytesInInstBuffer(wf *wavefront.Wavefront) 
 // instruction memory
 func (s *SchedulerImpl) DoFetch(now akita.VTimeInSec) bool {
 	madeProgress := false
-	wfs := s.fetchArbiter.Arbitrate(s.cu.WfPools)
+	wfs := s.fetchArbiter.Arbitrate()
 
 	if len(wfs) > 0 {
 		wf := wfs[0]
 
 		if len(wf.InstBuffer) == 0 {
-			wf.InstBufferStartPC = wf.PC & 0xffffffffffffffc0
+			wf.InstBufferStartPC = wf.PC & 0xffffffffffffff80
 		}
 		addr := wf.InstBufferStartPC + uint64(len(wf.InstBuffer))
-		addr = addr & 0xffffffffffffffc0
+		addr = addr & 0xffffffffffffff80
 		req := mem.ReadReqBuilder{}.
 			WithSendTime(now).
 			WithSrc(s.cu.ToInstMem).
 			WithDst(s.cu.InstMem).
 			WithAddress(addr).
 			WithPID(wf.PID()).
-			WithByteSize(64).
+			WithByteSize(1 << s.cu.log2CacheLineSize).
 			Build()
 
 		err := s.cu.ToInstMem.Send(req)
@@ -164,15 +166,15 @@ func (s *SchedulerImpl) DoIssue(now akita.VTimeInSec) bool {
 	madeProgress := false
 
 	if !s.isPaused {
-		wfs := s.issueArbiter.Arbitrate(s.cu.WfPools)
+		wfs := s.issueArbiter.Arbitrate()
 		for _, wf := range wfs {
-			if wf.InstToIssue.ExeUnit == insts.ExeUnitSpecial {
+			if wf.InstToIssue.ExeUnit == rdnainsts.ExeUnitSpecial {
 				madeProgress = s.issueToInternal(wf, now) || madeProgress
 
 				continue
 			}
 
-			unit := s.getUnitToIssueTo(wf.InstToIssue.ExeUnit)
+			unit := s.getUnitToIssueTo(wf.InstToIssue.ExeUnit, wf.SIMDID)
 			if unit.CanAcceptWave() {
 				wf.SetDynamicInst(wf.InstToIssue)
 				wf.InstToIssue = nil
@@ -202,18 +204,18 @@ func (s *SchedulerImpl) issueToInternal(wf *wavefront.Wavefront, now akita.VTime
 	return true
 }
 
-func (s *SchedulerImpl) getUnitToIssueTo(u insts.ExeUnit) SubComponent {
+func (s *SchedulerImpl) getUnitToIssueTo(u rdnainsts.ExeUnit, i int) SubComponent {
 	switch u {
-	case insts.ExeUnitBranch:
-		return s.cu.BranchUnit
-	case insts.ExeUnitLDS:
+	case rdnainsts.ExeUnitBranch:
+		return s.cu.BranchUnits[i]
+	case rdnainsts.ExeUnitLDS:
 		return s.cu.LDSDecoder
-	case insts.ExeUnitVALU:
-		return s.cu.VectorDecoder
-	case insts.ExeUnitVMem:
-		return s.cu.VectorMemDecoder
-	case insts.ExeUnitScalar:
-		return s.cu.ScalarDecoder
+	case rdnainsts.ExeUnitVALU:
+		return s.cu.VectorDecoders[i]
+	case rdnainsts.ExeUnitVMem:
+		return s.cu.VectorMemDecoders[i]
+	case rdnainsts.ExeUnitScalar:
+		return s.cu.ScalarDecoders[i]
 	default:
 		log.Panic("not sure where to dispatch the instruction")
 	}
@@ -279,7 +281,7 @@ func (s *SchedulerImpl) evalSEndPgm(
 
 func (s *SchedulerImpl) resetRegisterValue(wf *wavefront.Wavefront) {
 	if wf.CodeObject.WIVgprCount > 0 {
-		vRegFile := s.cu.VRegFile[wf.SIMDID].(*SimpleRegisterFile)
+		vRegFile := s.cu.VRegFiles[wf.SIMDID].(*SimpleRegisterFile)
 		vRegStorage := vRegFile.storage
 		data := make([]byte, wf.CodeObject.WIVgprCount*4)
 		for i := 0; i < 64; i++ {
@@ -289,7 +291,7 @@ func (s *SchedulerImpl) resetRegisterValue(wf *wavefront.Wavefront) {
 	}
 
 	if wf.CodeObject.WFSgprCount > 0 {
-		sRegFile := s.cu.SRegFile.(*SimpleRegisterFile)
+		sRegFile := s.cu.SRegFiles[wf.SIMDID].(*SimpleRegisterFile)
 		sRegStorage := sRegFile.storage
 		data := make([]byte, wf.CodeObject.WFSgprCount*4)
 		offset := uint64(wf.SRegOffset)

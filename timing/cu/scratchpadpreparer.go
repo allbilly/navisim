@@ -4,15 +4,15 @@ import (
 	"log"
 	"math"
 
-	"gitlab.com/akita/navisim/emu"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnaemu"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 // ScratchpadPreparer does its jobs
 type ScratchpadPreparer interface {
-	Prepare(instEmuState emu.InstEmuState, wf *wavefront.Wavefront)
-	Commit(instEmuState emu.InstEmuState, wf *wavefront.Wavefront)
+	Prepare(instEmuState rdnaemu.InstEmuState, wf *wavefront.Wavefront)
+	Commit(instEmuState rdnaemu.InstEmuState, wf *wavefront.Wavefront)
 }
 
 // ScratchpadPreparerImpl reads and write registers for the emulator
@@ -31,37 +31,37 @@ func NewScratchpadPreparerImpl(cu *ComputeUnit) *ScratchpadPreparerImpl {
 // Prepare read from the register file and sets the scratchpad layout
 //nolint:gocyclo
 func (p *ScratchpadPreparerImpl) Prepare(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	p.clear(instEmuState.Scratchpad())
 	inst := instEmuState.Inst()
 	switch inst.FormatType {
-	case insts.SOP1:
+	case rdnainsts.SOP1:
 		p.prepareSOP1(instEmuState, wf)
-	case insts.SOP2:
+	case rdnainsts.SOP2:
 		p.prepareSOP2(instEmuState, wf)
-	case insts.SOPC:
+	case rdnainsts.SOPC:
 		p.prepareSOPC(instEmuState, wf)
-	case insts.VOP1:
+	case rdnainsts.VOP1:
 		p.prepareVOP1(instEmuState, wf)
-	case insts.VOP2:
+	case rdnainsts.VOP2:
 		p.prepareVOP2(instEmuState, wf)
-	case insts.VOP3a:
+	case rdnainsts.VOP3a:
 		p.prepareVOP3a(instEmuState, wf)
-	case insts.VOP3b:
+	case rdnainsts.VOP3b:
 		p.prepareVOP3b(instEmuState, wf)
-	case insts.VOPC:
+	case rdnainsts.VOPC:
 		p.prepareVOPC(instEmuState, wf)
-	case insts.FLAT:
+	case rdnainsts.FLAT:
 		p.prepareFlat(instEmuState, wf)
-	case insts.SMEM:
+	case rdnainsts.SMEM:
 		p.prepareSMEM(instEmuState, wf)
-	case insts.SOPP:
+	case rdnainsts.SOPP:
 		p.prepareSOPP(instEmuState, wf)
-	case insts.SOPK:
+	case rdnainsts.SOPK:
 		p.prepareSOPK(instEmuState, wf)
-	case insts.DS:
+	case rdnainsts.DS:
 		p.prepareDS(instEmuState, wf)
 	default:
 		log.Panicf("Inst format %s is not supported", inst.Format.FormatName)
@@ -69,7 +69,7 @@ func (p *ScratchpadPreparerImpl) Prepare(
 }
 
 func (p *ScratchpadPreparerImpl) prepareSOP1(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -82,7 +82,7 @@ func (p *ScratchpadPreparerImpl) prepareSOP1(
 }
 
 func (p *ScratchpadPreparerImpl) prepareSOP2(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -96,7 +96,7 @@ func (p *ScratchpadPreparerImpl) prepareSOP2(
 }
 
 func (p *ScratchpadPreparerImpl) prepareVOP1(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -114,7 +114,7 @@ func (p *ScratchpadPreparerImpl) prepareVOP1(
 }
 
 func (p *ScratchpadPreparerImpl) prepareVOP2(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -140,7 +140,7 @@ func (p *ScratchpadPreparerImpl) prepareVOP2(
 }
 
 func (p *ScratchpadPreparerImpl) prepareVOP3a(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -166,7 +166,7 @@ func (p *ScratchpadPreparerImpl) prepareVOP3a(
 }
 
 func (p *ScratchpadPreparerImpl) prepareVOP3b(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -192,7 +192,7 @@ func (p *ScratchpadPreparerImpl) prepareVOP3b(
 }
 
 func (p *ScratchpadPreparerImpl) prepareVOPC(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -212,7 +212,7 @@ func (p *ScratchpadPreparerImpl) prepareVOPC(
 }
 
 func (p *ScratchpadPreparerImpl) prepareFlat(
-	instEmuState emu.InstEmuState, wf *wavefront.Wavefront,
+	instEmuState rdnaemu.InstEmuState, wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
 	sp := instEmuState.Scratchpad()
@@ -227,7 +227,7 @@ func (p *ScratchpadPreparerImpl) prepareFlat(
 }
 
 func (p *ScratchpadPreparerImpl) prepareSMEM(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -242,7 +242,7 @@ func (p *ScratchpadPreparerImpl) prepareSMEM(
 }
 
 func (p *ScratchpadPreparerImpl) prepareSOPP(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -257,7 +257,7 @@ func (p *ScratchpadPreparerImpl) prepareSOPP(
 }
 
 func (p *ScratchpadPreparerImpl) prepareSOPK(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -269,7 +269,7 @@ func (p *ScratchpadPreparerImpl) prepareSOPK(
 }
 
 func (p *ScratchpadPreparerImpl) prepareSOPC(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -280,7 +280,7 @@ func (p *ScratchpadPreparerImpl) prepareSOPC(
 }
 
 func (p *ScratchpadPreparerImpl) prepareDS(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -312,36 +312,36 @@ func (p *ScratchpadPreparerImpl) prepareDS(
 // Commit write to the register file according to the scratchpad layout
 //nolint:gocyclo
 func (p *ScratchpadPreparerImpl) Commit(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
 	switch inst.FormatType {
-	case insts.SOP1:
+	case rdnainsts.SOP1:
 		p.commitSOP1(instEmuState, wf)
-	case insts.SOP2:
+	case rdnainsts.SOP2:
 		p.commitSOP2(instEmuState, wf)
-	case insts.VOP1:
+	case rdnainsts.VOP1:
 		p.commitVOP1(instEmuState, wf)
-	case insts.VOP2:
+	case rdnainsts.VOP2:
 		p.commitVOP2(instEmuState, wf)
-	case insts.VOP3a:
+	case rdnainsts.VOP3a:
 		p.commitVOP3a(instEmuState, wf)
-	case insts.VOP3b:
+	case rdnainsts.VOP3b:
 		p.commitVOP3b(instEmuState, wf)
-	case insts.VOPC:
+	case rdnainsts.VOPC:
 		p.commitVOPC(instEmuState, wf)
-	case insts.FLAT:
+	case rdnainsts.FLAT:
 		p.commitFlat(instEmuState, wf)
-	case insts.SMEM:
+	case rdnainsts.SMEM:
 		p.commitSMEM(instEmuState, wf)
-	case insts.SOPP:
+	case rdnainsts.SOPP:
 		p.commitSOPP(instEmuState, wf)
-	case insts.SOPK:
+	case rdnainsts.SOPK:
 		p.commitSOPK(instEmuState, wf)
-	case insts.SOPC:
+	case rdnainsts.SOPC:
 		p.commitSOPC(instEmuState, wf)
-	case insts.DS:
+	case rdnainsts.DS:
 		p.commitDS(instEmuState, wf)
 	default:
 		log.Panicf("Inst format %s is not supported", inst.Format.FormatName)
@@ -349,7 +349,7 @@ func (p *ScratchpadPreparerImpl) Commit(
 }
 
 func (p *ScratchpadPreparerImpl) commitSOP1(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -362,7 +362,7 @@ func (p *ScratchpadPreparerImpl) commitSOP1(
 }
 
 func (p *ScratchpadPreparerImpl) commitSOP2(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -373,7 +373,7 @@ func (p *ScratchpadPreparerImpl) commitSOP2(
 }
 
 func (p *ScratchpadPreparerImpl) commitVOP1(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -392,7 +392,7 @@ func (p *ScratchpadPreparerImpl) commitVOP1(
 }
 
 func (p *ScratchpadPreparerImpl) commitVOP2(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -411,7 +411,7 @@ func (p *ScratchpadPreparerImpl) commitVOP2(
 }
 
 func (p *ScratchpadPreparerImpl) commitVOP3a(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -436,7 +436,7 @@ func (p *ScratchpadPreparerImpl) commitVOP3a(
 }
 
 func (p *ScratchpadPreparerImpl) commitVOP3aCmp(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -446,7 +446,7 @@ func (p *ScratchpadPreparerImpl) commitVOP3aCmp(
 }
 
 func (p *ScratchpadPreparerImpl) commitVOP3b(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -454,7 +454,7 @@ func (p *ScratchpadPreparerImpl) commitVOP3b(
 	layout := sp.AsVOP3B()
 	exec := layout.EXEC
 	wf.VCC = layout.VCC
-	// wf.WriteReg(insts.Regs[insts.VCC], 1, 0, sp[520:528])
+	// wf.WriteReg(rdnainsts.Regs[rdnainsts.VCC], 1, 0, sp[520:528])
 
 	for i := 63; i >= 0; i-- {
 		if !laneMasked(exec, uint(i)) {
@@ -464,11 +464,11 @@ func (p *ScratchpadPreparerImpl) commitVOP3b(
 		offset := 8 + i*8
 		p.writeOperand(inst.Dst, wf, i, sp[offset:offset+8])
 	}
-	p.writeOperand(inst.SDst, wf, 0, insts.Uint64ToBytes(layout.SDST))
+	p.writeOperand(inst.SDst, wf, 0, rdnainsts.Uint64ToBytes(layout.SDST))
 }
 
 func (p *ScratchpadPreparerImpl) commitVOPC(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	sp := instEmuState.Scratchpad().AsVOPC()
@@ -477,7 +477,7 @@ func (p *ScratchpadPreparerImpl) commitVOPC(
 }
 
 func (p *ScratchpadPreparerImpl) commitFlat(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -495,7 +495,7 @@ func (p *ScratchpadPreparerImpl) commitFlat(
 }
 
 func (p *ScratchpadPreparerImpl) commitSMEM(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -507,7 +507,7 @@ func (p *ScratchpadPreparerImpl) commitSMEM(
 }
 
 func (p *ScratchpadPreparerImpl) commitSOPK(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -517,7 +517,7 @@ func (p *ScratchpadPreparerImpl) commitSOPK(
 }
 
 func (p *ScratchpadPreparerImpl) commitSOPC(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	scratchpad := instEmuState.Scratchpad()
@@ -525,7 +525,7 @@ func (p *ScratchpadPreparerImpl) commitSOPC(
 }
 
 func (p *ScratchpadPreparerImpl) commitSOPP(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	scratchpad := instEmuState.Scratchpad()
@@ -533,7 +533,7 @@ func (p *ScratchpadPreparerImpl) commitSOPP(
 }
 
 func (p *ScratchpadPreparerImpl) commitDS(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	inst := instEmuState.Inst()
@@ -552,45 +552,45 @@ func (p *ScratchpadPreparerImpl) commitDS(
 }
 
 func (p *ScratchpadPreparerImpl) readOperand(
-	operand *insts.Operand,
+	operand *rdnainsts.Operand,
 	wf *wavefront.Wavefront,
 	laneID int,
 	buf []byte,
 ) {
 	switch operand.OperandType {
-	case insts.RegOperand:
+	case rdnainsts.RegOperand:
 		p.readReg(operand.Register, operand.RegCount, wf, laneID, buf)
-	case insts.IntOperand:
-		copy(buf, insts.Uint64ToBytes(uint64(operand.IntValue)))
-	case insts.FloatOperand:
-		copy(buf, insts.Uint64ToBytes(uint64(math.Float32bits(float32(operand.FloatValue)))))
-	case insts.LiteralConstant:
-		copy(buf, insts.Uint32ToBytes(operand.LiteralConstant))
+	case rdnainsts.IntOperand:
+		copy(buf, rdnainsts.Uint64ToBytes(uint64(operand.IntValue)))
+	case rdnainsts.FloatOperand:
+		copy(buf, rdnainsts.Uint64ToBytes(uint64(math.Float32bits(float32(operand.FloatValue)))))
+	case rdnainsts.LiteralConstant:
+		copy(buf, rdnainsts.Uint32ToBytes(operand.LiteralConstant))
 	default:
 		log.Panicf("Operand %s is not supported", operand.String())
 	}
 }
 
 func (p *ScratchpadPreparerImpl) readRegAsUint32(
-	reg *insts.Reg,
+	reg *rdnainsts.Reg,
 	wf *wavefront.Wavefront,
 	laneID int,
 ) uint32 {
 	buf := make([]byte, 4)
 	p.readReg(reg, 1, wf, laneID, buf)
-	return insts.BytesToUint32(buf)
+	return rdnainsts.BytesToUint32(buf)
 }
 
 //nolint:gocyclo
 func (p *ScratchpadPreparerImpl) readReg(
-	reg *insts.Reg,
+	reg *rdnainsts.Reg,
 	regCount int,
 	wf *wavefront.Wavefront,
 	laneID int,
 	buf []byte,
 ) {
 	if reg.IsSReg() {
-		regFile := p.cu.SRegFile
+		regFile := p.cu.SRegFiles[wf.SIMDID]
 		regRead := RegisterAccess{}
 		regRead.Reg = reg
 		regRead.RegCount = regCount
@@ -599,7 +599,7 @@ func (p *ScratchpadPreparerImpl) readReg(
 		regRead.Data = buf
 		regFile.Read(regRead)
 	} else if reg.IsVReg() {
-		regFile := p.cu.VRegFile[wf.SIMDID]
+		regFile := p.cu.VRegFiles[wf.SIMDID]
 		regRead := RegisterAccess{}
 		regRead.Reg = reg
 		regRead.RegCount = regCount
@@ -607,34 +607,34 @@ func (p *ScratchpadPreparerImpl) readReg(
 		regRead.WaveOffset = wf.VRegOffset
 		regRead.Data = buf
 		regFile.Read(regRead)
-	} else if reg.RegType == insts.SCC {
+	} else if reg.RegType == rdnainsts.SCC {
 		buf[0] = wf.SCC
-	} else if reg.RegType == insts.VCC {
-		copy(buf, insts.Uint64ToBytes(wf.VCC))
-	} else if reg.RegType == insts.VCCLO && regCount == 1 {
-		copy(buf, insts.Uint32ToBytes(uint32(wf.VCC)))
-	} else if reg.RegType == insts.VCCHI && regCount == 1 {
-		copy(buf, insts.Uint32ToBytes(uint32(wf.VCC>>32)))
-	} else if reg.RegType == insts.VCCLO && regCount == 2 {
-		copy(buf, insts.Uint64ToBytes(wf.VCC))
-	} else if reg.RegType == insts.EXEC {
-		copy(buf, insts.Uint64ToBytes(wf.EXEC))
-	} else if reg.RegType == insts.EXECLO && regCount == 2 {
-		copy(buf, insts.Uint64ToBytes(wf.EXEC))
-	} else if reg.RegType == insts.M0 {
-		copy(buf, insts.Uint32ToBytes(wf.M0))
+	} else if reg.RegType == rdnainsts.VCC {
+		copy(buf, rdnainsts.Uint64ToBytes(wf.VCC))
+	} else if reg.RegType == rdnainsts.VCCLO && regCount == 1 {
+		copy(buf, rdnainsts.Uint32ToBytes(uint32(wf.VCC)))
+	} else if reg.RegType == rdnainsts.VCCHI && regCount == 1 {
+		copy(buf, rdnainsts.Uint32ToBytes(uint32(wf.VCC>>32)))
+	} else if reg.RegType == rdnainsts.VCCLO && regCount == 2 {
+		copy(buf, rdnainsts.Uint64ToBytes(wf.VCC))
+	} else if reg.RegType == rdnainsts.EXEC {
+		copy(buf, rdnainsts.Uint64ToBytes(wf.EXEC))
+	} else if reg.RegType == rdnainsts.EXECLO && regCount == 2 {
+		copy(buf, rdnainsts.Uint64ToBytes(wf.EXEC))
+	} else if reg.RegType == rdnainsts.M0 {
+		copy(buf, rdnainsts.Uint32ToBytes(wf.M0))
 	} else {
 		log.Panicf("Unsupported register read %s\n", reg.Name)
 	}
 }
 
 func (p *ScratchpadPreparerImpl) writeOperand(
-	operand *insts.Operand,
+	operand *rdnainsts.Operand,
 	wf *wavefront.Wavefront,
 	laneID int,
 	buf []byte,
 ) {
-	if operand.OperandType != insts.RegOperand {
+	if operand.OperandType != rdnainsts.RegOperand {
 		log.Panic("Can only write into reg operand")
 	}
 
@@ -643,14 +643,14 @@ func (p *ScratchpadPreparerImpl) writeOperand(
 
 //nolint:gocyclo
 func (p *ScratchpadPreparerImpl) writeReg(
-	reg *insts.Reg,
+	reg *rdnainsts.Reg,
 	regCount int,
 	wf *wavefront.Wavefront,
 	laneID int,
 	buf []byte,
 ) {
 	if reg.IsSReg() {
-		regFile := p.cu.SRegFile
+		regFile := p.cu.SRegFiles[wf.SIMDID]
 		regWrite := RegisterAccess{}
 		regWrite.Reg = reg
 		regWrite.RegCount = regCount
@@ -659,7 +659,7 @@ func (p *ScratchpadPreparerImpl) writeReg(
 		regWrite.Data = buf
 		regFile.Write(regWrite)
 	} else if reg.IsVReg() {
-		regFile := p.cu.VRegFile[wf.SIMDID]
+		regFile := p.cu.VRegFiles[wf.SIMDID]
 		regWrite := RegisterAccess{}
 		regWrite.Reg = reg
 		regWrite.RegCount = regCount
@@ -667,24 +667,24 @@ func (p *ScratchpadPreparerImpl) writeReg(
 		regWrite.WaveOffset = wf.VRegOffset
 		regWrite.Data = buf
 		regFile.Write(regWrite)
-	} else if reg.RegType == insts.SCC {
+	} else if reg.RegType == rdnainsts.SCC {
 		wf.SCC = buf[0]
-	} else if reg.RegType == insts.VCC {
-		wf.VCC = insts.BytesToUint64(buf)
-	} else if reg.RegType == insts.VCCLO && regCount == 2 {
-		wf.VCC = insts.BytesToUint64(buf)
-	} else if reg.RegType == insts.VCCLO && regCount == 1 {
+	} else if reg.RegType == rdnainsts.VCC {
+		wf.VCC = rdnainsts.BytesToUint64(buf)
+	} else if reg.RegType == rdnainsts.VCCLO && regCount == 2 {
+		wf.VCC = rdnainsts.BytesToUint64(buf)
+	} else if reg.RegType == rdnainsts.VCCLO && regCount == 1 {
 		wf.VCC &= uint64(0x00000000ffffffff)
-		wf.VCC |= uint64(insts.BytesToUint32(buf))
-	} else if reg.RegType == insts.VCCHI && regCount == 1 {
+		wf.VCC |= uint64(rdnainsts.BytesToUint32(buf))
+	} else if reg.RegType == rdnainsts.VCCHI && regCount == 1 {
 		wf.VCC &= uint64(0xffffffff00000000)
-		wf.VCC |= uint64(insts.BytesToUint32(buf)) << 32
-	} else if reg.RegType == insts.EXEC {
-		wf.EXEC = insts.BytesToUint64(buf)
-	} else if reg.RegType == insts.EXECLO && regCount == 2 {
-		wf.EXEC = insts.BytesToUint64(buf)
-	} else if reg.RegType == insts.M0 {
-		wf.M0 = insts.BytesToUint32(buf)
+		wf.VCC |= uint64(rdnainsts.BytesToUint32(buf)) << 32
+	} else if reg.RegType == rdnainsts.EXEC {
+		wf.EXEC = rdnainsts.BytesToUint64(buf)
+	} else if reg.RegType == rdnainsts.EXECLO && regCount == 2 {
+		wf.EXEC = rdnainsts.BytesToUint64(buf)
+	} else if reg.RegType == rdnainsts.M0 {
+		wf.M0 = rdnainsts.BytesToUint32(buf)
 	} else {
 		log.Panicf("Unsupported register write %s\n", reg.Name)
 	}

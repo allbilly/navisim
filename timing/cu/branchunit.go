@@ -2,7 +2,7 @@ package cu
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/emu"
+	"gitlab.com/akita/navisim/rdnaemu"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -11,7 +11,7 @@ type BranchUnit struct {
 	cu *ComputeUnit
 
 	scratchpadPreparer ScratchpadPreparer
-	alu                emu.ALU
+	alu                rdnaemu.ALU
 
 	toRead  *wavefront.Wavefront
 	toExec  *wavefront.Wavefront
@@ -25,7 +25,7 @@ type BranchUnit struct {
 func NewBranchUnit(
 	cu *ComputeUnit,
 	scratchpadPreparer ScratchpadPreparer,
-	alu emu.ALU,
+	alu rdnaemu.ALU,
 ) *BranchUnit {
 	u := new(BranchUnit)
 	u.cu = cu

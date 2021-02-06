@@ -85,10 +85,12 @@ func (b *gridBuilderImpl) countWG() {
 	}
 }
 
+// NumWG returns how many wg in the grid
 func (b *gridBuilderImpl) NumWG() int {
 	return b.numWG
 }
 
+// NextWG builds the next wg
 func (b *gridBuilderImpl) NextWG() *WorkGroup {
 	wg := NewWorkGroup()
 
@@ -165,7 +167,7 @@ func (b *gridBuilderImpl) formWavefronts(wg *WorkGroup) {
 		wg := wi.WG
 		inWGID := wi.IDZ*wg.SizeX*wg.SizeY + wi.IDY*wg.SizeX + wi.IDX
 		if inWGID%b.wfSize == 0 {
-			wf = NewWavefront()
+			wf = NewWavefront(b.wfSize)
 			wf.FirstWiFlatID = wg.WorkItems[i].FlattenedID()
 			wf.CodeObject = b.hsaco
 			wf.Packet = b.packet

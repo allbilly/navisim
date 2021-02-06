@@ -3,7 +3,7 @@ package cu
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -47,9 +47,9 @@ var _ = Describe("Branch Unit", func() {
 		wave3.State = wavefront.WfRunning
 		wave3.InstBuffer = make([]byte, 256)
 		wave3.InstBufferStartPC = 0x100
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.FormatType = insts.SOPP
-		inst.SImm16 = insts.NewIntOperand(1, 1)
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.FormatType = rdnainsts.SOPP
+		inst.SImm16 = rdnainsts.NewIntOperand(1, 1)
 		inst.ByteSize = 4
 		wave3.SetDynamicInst(inst)
 		wave3.PC = 0x13C
@@ -80,9 +80,9 @@ var _ = Describe("Branch Unit", func() {
 		wave3.State = wavefront.WfRunning
 		wave3.InstBuffer = make([]byte, 256)
 		wave3.InstBufferStartPC = 0x100
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.FormatType = insts.SOPP
-		inst.SImm16 = insts.NewIntOperand(1, 1)
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.FormatType = rdnainsts.SOPP
+		inst.SImm16 = rdnainsts.NewIntOperand(1, 1)
 		inst.ByteSize = 4
 		wave3.SetDynamicInst(inst)
 

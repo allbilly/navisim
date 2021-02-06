@@ -8,10 +8,10 @@ import (
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/mem/cache"
-	"gitlab.com/akita/navisim/emu"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/rdnaemu"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util"
 	"gitlab.com/akita/util/akitaext"
@@ -24,8 +24,11 @@ type ComputeUnit struct {
 	*akita.TickingComponent
 
 	WfDispatcher WfDispatcher
-	Decoder      emu.Decoder
+	Decoder      rdnaemu.Decoder
 	WfPools      []*WavefrontPool
+
+	log2CacheLineSize      uint64
+	numSinglePrecisionUnit int
 
 	InFlightInstFetch            []*InstFetchReqInfo
 	InFlightScalarMemAccess      []*ScalarMemAccessInfo
@@ -38,18 +41,18 @@ type ComputeUnit struct {
 
 	running bool
 
-	Scheduler        Scheduler
-	BranchUnit       SubComponent
-	VectorMemDecoder SubComponent
-	VectorMemUnit    SubComponent
-	ScalarDecoder    SubComponent
-	VectorDecoder    SubComponent
-	LDSDecoder       SubComponent
-	ScalarUnit       SubComponent
-	SIMDUnit         []SubComponent
-	LDSUnit          SubComponent
-	SRegFile         RegisterFile
-	VRegFile         []RegisterFile
+	Schedulers        []Scheduler
+	BranchUnits       []SubComponent
+	VectorMemDecoders []SubComponent
+	VectorMemUnits    []SubComponent
+	ScalarDecoders    []SubComponent
+	VectorDecoders    []SubComponent
+	LDSDecoder        SubComponent
+	ScalarUnits       []SubComponent
+	SIMDUnits         []SubComponent
+	LDSUnit           SubComponent
+	SRegFiles         []RegisterFile
+	VRegFiles         []RegisterFile
 
 	InstMem          akita.Port
 	ScalarMem        akita.Port
@@ -125,23 +128,23 @@ func (cu *ComputeUnit) DispatchingPort() akita.Port {
 // WfPoolSizes returns an array of the numbers of wavefronts that each SIMD unit
 // can execute.
 func (cu *ComputeUnit) WfPoolSizes() []int {
-	return []int{10, 10, 10, 10}
+	return []int{20, 20, 20, 20}
 }
 
 // VRegCounts returns an array of the numbers of vector regsiters in each SIMD
 // unit.
 func (cu *ComputeUnit) VRegCounts() []int {
-	return []int{16384, 16384, 16384, 16384}
+	return []int{32768, 32768, 32768, 32768}
 }
 
 // SRegCounts returns the number of scalar register in the Compute Unit.
 func (cu *ComputeUnit) SRegCounts() []int {
-	return []int{3200, 3200, 3200, 3200}
+	return []int{2560, 2560, 2560, 2560}
 }
 
 // LDSBytes returns the number of bytes in the LDS of the CU.
 func (cu *ComputeUnit) LDSBytes() int {
-	return 64 * 1024
+	return 128 * 1024
 }
 
 // Tick ticks
@@ -165,18 +168,35 @@ func (cu *ComputeUnit) runPipeline(now akita.VTimeInSec) bool {
 	madeProgress := false
 
 	if !cu.isPaused {
-		madeProgress = cu.BranchUnit.Run(now) || madeProgress
-		madeProgress = cu.ScalarUnit.Run(now) || madeProgress
-		madeProgress = cu.ScalarDecoder.Run(now) || madeProgress
-		for _, simdUnit := range cu.SIMDUnit {
+		for _, branchUnit := range cu.BranchUnits {
+			madeProgress = branchUnit.Run(now) || madeProgress
+		}
+
+		for _, scalarUnit := range cu.ScalarUnits {
+			madeProgress = scalarUnit.Run(now) || madeProgress
+		}
+		for _, scalarDecoder := range cu.ScalarDecoders {
+			madeProgress = scalarDecoder.Run(now) || madeProgress
+		}
+
+		for _, simdUnit := range cu.SIMDUnits {
 			madeProgress = simdUnit.Run(now) || madeProgress
 		}
-		madeProgress = cu.VectorDecoder.Run(now) || madeProgress
+		for _, vectorDecoder := range cu.VectorDecoders {
+			madeProgress = vectorDecoder.Run(now) || madeProgress
+		}
 		madeProgress = cu.LDSUnit.Run(now) || madeProgress
 		madeProgress = cu.LDSDecoder.Run(now) || madeProgress
-		madeProgress = cu.VectorMemUnit.Run(now) || madeProgress
-		madeProgress = cu.VectorMemDecoder.Run(now) || madeProgress
-		madeProgress = cu.Scheduler.Run(now) || madeProgress
+		for _, vectorMemUnit := range cu.VectorMemUnits {
+			madeProgress = vectorMemUnit.Run(now) || madeProgress
+		}
+		for _, vectorMemDecoder := range cu.VectorMemDecoders {
+			madeProgress = vectorMemDecoder.Run(now) || madeProgress
+		}
+
+		for _, scheduler := range cu.Schedulers {
+			madeProgress = scheduler.Run(now) || madeProgress
+		}
 	}
 
 	return madeProgress
@@ -304,9 +324,14 @@ func (cu *ComputeUnit) flushPipeline(now akita.VTimeInSec) bool {
 
 	cu.populateShadowBuffers()
 	cu.setWavesToReady()
-	cu.Scheduler.Flush()
+	for i := 0; i < 4; i++ {
+		cu.Schedulers[i].Flush()
+	}
+
 	cu.flushInternalComponents()
-	cu.Scheduler.Pause()
+	for i := 0; i < 4; i++ {
+		cu.Schedulers[i].Pause()
+	}
 	cu.isPaused = true
 
 	respondToCP := protocol.CUPipelineFlushRspBuilder{}.
@@ -322,20 +347,33 @@ func (cu *ComputeUnit) flushPipeline(now akita.VTimeInSec) bool {
 }
 
 func (cu *ComputeUnit) flushInternalComponents() {
-	cu.BranchUnit.Flush()
-
-	cu.ScalarUnit.Flush()
-	cu.ScalarDecoder.Flush()
-
-	for _, simdUnit := range cu.SIMDUnit {
-		simdUnit.Flush()
+	for _, branchUnit := range cu.BranchUnits {
+		branchUnit.Flush()
 	}
 
-	cu.VectorDecoder.Flush()
+	for _, scalarUnit := range cu.ScalarUnits {
+		scalarUnit.Flush()
+	}
+	for _, scalarDecoder := range cu.ScalarDecoders {
+		scalarDecoder.Flush()
+	}
+
+	for _, simdUnit := range cu.SIMDUnits {
+		simdUnit.Flush()
+	}
+	for _, vectorDecoder := range cu.VectorDecoders {
+		vectorDecoder.Flush()
+	}
+
 	cu.LDSUnit.Flush()
 	cu.LDSDecoder.Flush()
-	cu.VectorMemDecoder.Flush()
-	cu.VectorMemUnit.Flush()
+
+	for _, vectorMemDecoder := range cu.VectorMemDecoders {
+		vectorMemDecoder.Flush()
+	}
+	for _, vectorMemUnit := range cu.VectorMemUnits {
+		vectorMemUnit.Flush()
+	}
 }
 
 func (cu *ComputeUnit) processInputFromACE(now akita.VTimeInSec) bool {
@@ -547,13 +585,16 @@ func (cu *ComputeUnit) handleScalarDataLoadReturn(
 	now akita.VTimeInSec,
 	rsp *mem.DataReadyRsp,
 ) {
+	// if rsp.ID == "20282" {
+	// 	fmt.Println("Here")
+	// }
 	if len(cu.InFlightScalarMemAccess) == 0 {
 		return
 	}
 
-	info := cu.InFlightScalarMemAccess[0]
+	info := cu.findScalarMemAccess(rsp.RespondTo)
 	req := info.Req
-	if req.ID != rsp.RespondTo {
+	if info == nil {
 		return
 	}
 
@@ -564,9 +605,7 @@ func (cu *ComputeUnit) handleScalarDataLoadReturn(
 		RegCount:   len(rsp.Data) / 4,
 		Data:       rsp.Data,
 	}
-	cu.SRegFile.Write(access)
-
-	cu.InFlightScalarMemAccess = cu.InFlightScalarMemAccess[1:]
+	cu.SRegFiles[wf.SIMDID].Write(access)
 
 	cu.logInstTask(now, wf, info.Inst, true)
 	tracing.TraceReqFinalize(req, now, cu)
@@ -575,7 +614,18 @@ func (cu *ComputeUnit) handleScalarDataLoadReturn(
 		wf.OutstandingScalarMemAccess--
 	}
 }
-
+func (cu *ComputeUnit) findScalarMemAccess(id string) *ScalarMemAccessInfo {
+	length := len(cu.InFlightScalarMemAccess)
+	for i := 0; i < length; i++ {
+		if cu.InFlightScalarMemAccess[i].Req.ID == id {
+			info := cu.InFlightScalarMemAccess[i]
+			cu.InFlightScalarMemAccess[i] = cu.InFlightScalarMemAccess[length-1]
+			cu.InFlightScalarMemAccess = cu.InFlightScalarMemAccess[:length-1]
+			return info
+		}
+	}
+	return nil
+}
 func (cu *ComputeUnit) isLastRead(req *mem.ReadReq) bool {
 	return !req.CanWaitForCoalesce
 }
@@ -608,17 +658,8 @@ func (cu *ComputeUnit) handleVectorDataLoadReturn(
 		return
 	}
 
-	info := cu.InFlightVectorMemAccess[0]
+	info := cu.findVectorMemAccessRead(rsp.RespondTo)
 
-	if info.Read == nil {
-		return
-	}
-
-	if info.Read.ID != rsp.RespondTo {
-		return
-	}
-
-	cu.InFlightVectorMemAccess = cu.InFlightVectorMemAccess[1:]
 	tracing.TraceReqFinalize(info.Read, now, cu)
 
 	wf := info.Wavefront
@@ -631,26 +672,37 @@ func (cu *ComputeUnit) handleVectorDataLoadReturn(
 		access.Reg = laneInfo.reg
 		access.RegCount = laneInfo.regCount
 		access.LaneID = laneInfo.laneID
-		if inst.FormatType == insts.FLAT && inst.Opcode == 16 { // FLAT_LOAD_UBYTE
-			access.Data = insts.Uint32ToBytes(uint32(rsp.Data[offset]))
-		} else if inst.FormatType == insts.FLAT && inst.Opcode == 18 {
-			access.Data = insts.Uint32ToBytes(uint32(rsp.Data[offset]))
+		if inst.FormatType == rdnainsts.FLAT && inst.Opcode == 16 { // FLAT_LOAD_UBYTE
+			access.Data = rdnainsts.Uint32ToBytes(uint32(rsp.Data[offset]))
+		} else if inst.FormatType == rdnainsts.FLAT && inst.Opcode == 18 {
+			access.Data = rdnainsts.Uint32ToBytes(uint32(rsp.Data[offset]))
 		} else {
 			access.Data = rsp.Data[offset : offset+uint64(4*laneInfo.regCount)]
 		}
-		cu.VRegFile[wf.SIMDID].Write(access)
+		cu.VRegFiles[wf.SIMDID].Write(access)
 	}
 
 	if !info.Read.CanWaitForCoalesce {
 		wf.OutstandingVectorMemAccess--
-		if info.Inst.FormatType == insts.FLAT {
+		if info.Inst.FormatType == rdnainsts.FLAT {
 			wf.OutstandingScalarMemAccess--
 		}
 
 		cu.logInstTask(now, wf, info.Inst, true)
 	}
 }
-
+func (cu *ComputeUnit) findVectorMemAccessRead(id string) VectorMemAccessInfo {
+	length := len(cu.InFlightVectorMemAccess)
+	for i := 0; i < length; i++ {
+		info := cu.InFlightVectorMemAccess[i]
+		if info.Read != nil && info.Read.ID == id {
+			cu.InFlightVectorMemAccess[i] = cu.InFlightVectorMemAccess[length-1]
+			cu.InFlightVectorMemAccess = cu.InFlightVectorMemAccess[:length-1]
+			return info
+		}
+	}
+	return VectorMemAccessInfo{}
+}
 func (cu *ComputeUnit) handleVectorDataStoreRsp(
 	now akita.VTimeInSec,
 	rsp *mem.WriteDoneRsp,
@@ -659,27 +711,30 @@ func (cu *ComputeUnit) handleVectorDataStoreRsp(
 		return
 	}
 
-	info := cu.InFlightVectorMemAccess[0]
+	info := cu.findVectorMemAccessWrite(rsp.RespondTo)
 
-	if info.Write == nil {
-		return
-	}
-
-	if info.Write.ID != rsp.RespondTo {
-		return
-	}
-
-	cu.InFlightVectorMemAccess = cu.InFlightVectorMemAccess[1:]
 	tracing.TraceReqFinalize(info.Write, now, cu)
 
 	wf := info.Wavefront
 	if !info.Write.CanWaitForCoalesce {
 		wf.OutstandingVectorMemAccess--
-		if info.Inst.FormatType == insts.FLAT {
+		if info.Inst.FormatType == rdnainsts.FLAT {
 			wf.OutstandingScalarMemAccess--
 		}
 		cu.logInstTask(now, wf, info.Inst, true)
 	}
+}
+func (cu *ComputeUnit) findVectorMemAccessWrite(id string) VectorMemAccessInfo {
+	length := len(cu.InFlightVectorMemAccess)
+	for i := 0; i < length; i++ {
+		info := cu.InFlightVectorMemAccess[i]
+		if info.Write != nil && info.Write.ID == id {
+			cu.InFlightVectorMemAccess[i] = cu.InFlightVectorMemAccess[length-1]
+			cu.InFlightVectorMemAccess = cu.InFlightVectorMemAccess[:length-1]
+			return info
+		}
+	}
+	return VectorMemAccessInfo{}
 }
 
 // UpdatePCAndSetReady is self explained
@@ -734,21 +789,21 @@ func (cu *ComputeUnit) logInstTask(
 	)
 }
 
-func (cu *ComputeUnit) execUnitToString(u insts.ExeUnit) string {
+func (cu *ComputeUnit) execUnitToString(u rdnainsts.ExeUnit) string {
 	switch u {
-	case insts.ExeUnitVALU:
+	case rdnainsts.ExeUnitVALU:
 		return "VALU"
-	case insts.ExeUnitScalar:
+	case rdnainsts.ExeUnitScalar:
 		return "Scalar"
-	case insts.ExeUnitVMem:
+	case rdnainsts.ExeUnitVMem:
 		return "VMem"
-	case insts.ExeUnitBranch:
+	case rdnainsts.ExeUnitBranch:
 		return "Branch"
-	case insts.ExeUnitLDS:
+	case rdnainsts.ExeUnitLDS:
 		return "LDS"
-	case insts.ExeUnitGDS:
+	case rdnainsts.ExeUnitGDS:
 		return "GDS"
-	case insts.ExeUnitSpecial:
+	case rdnainsts.ExeUnitSpecial:
 		return "Special"
 	}
 	panic("unknown exec unit")
@@ -779,7 +834,9 @@ func (cu *ComputeUnit) checkShadowBuffers(now akita.VTimeInSec) bool {
 
 	if numReqsPendingToSend == 0 {
 		cu.isSendingOutShadowBufferReqs = false
-		cu.Scheduler.Resume()
+		for i := 0; i < 4; i++ {
+			cu.Schedulers[i].Resume()
+		}
 		cu.isPaused = false
 		return true
 	}
@@ -912,6 +969,7 @@ func NewComputeUnit(
 	cu.ToScalarMem = akita.NewLimitNumMsgPort(cu, 4, name+".ToScalarMem")
 	cu.ToVectorMem = akita.NewLimitNumMsgPort(cu, 4, name+".ToVectorMem")
 	cu.ToCP = akita.NewLimitNumMsgPort(cu, 4, name+".ToCP")
+	cu.log2CacheLineSize = 7
 
 	return cu
 }

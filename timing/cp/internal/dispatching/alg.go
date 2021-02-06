@@ -92,8 +92,8 @@ func (a *roundRobinAlgorithm) Next() (location dispatchLocation) {
 			}
 			dispatch.locations =
 				make([]protocol.WfDispatchLocation, len(locations))
-			for i, localtion := range locations {
-				dispatch.locations[i] = protocol.WfDispatchLocation(localtion)
+			for i, location := range locations {
+				dispatch.locations[i] = protocol.WfDispatchLocation(location)
 			}
 
 			a.currWG = nil

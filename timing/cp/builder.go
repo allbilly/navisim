@@ -20,6 +20,7 @@ type Builder struct {
 	visTracer       tracing.Tracer
 	showProgressBar bool
 	numDispatchers  int
+	wavefrontSize   int
 }
 
 // MakeBuilder creates a new builder with default configuration values.
@@ -27,6 +28,7 @@ func MakeBuilder() Builder {
 	b := Builder{
 		freq:           1 * akita.GHz,
 		numDispatchers: 8,
+		wavefrontSize:  32,
 	}
 	return b
 }
@@ -35,6 +37,12 @@ func MakeBuilder() Builder {
 // the dispatchers.
 func (b Builder) WithVisTracer(tracer tracing.Tracer) Builder {
 	b.visTracer = tracer
+	return b
+}
+
+// WithWfSize enables progress bar.
+func (b Builder) WithWfSize(n int) Builder {
+	b.wavefrontSize = n
 	return b
 }
 
@@ -110,7 +118,8 @@ func (b *Builder) buildDispatchers(cp *CommandProcessor) {
 		WithCP(cp).
 		WithCUResourcePool(cuResourcePool).
 		WithDispatchingPort(cp.ToCUs).
-		WithRespondingPort(cp.ToDriver)
+		WithRespondingPort(cp.ToDriver).
+		WithWfSize(b.wavefrontSize)
 	if b.showProgressBar {
 		builder = builder.WithProgressBar()
 	}

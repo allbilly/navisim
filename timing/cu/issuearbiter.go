@@ -4,34 +4,25 @@ import "gitlab.com/akita/navisim/timing/wavefront"
 
 // An IssueArbiter decides which wavefront can issue instruction
 type IssueArbiter struct {
-	lastSIMDID int
+	wfPool *WavefrontPool
 }
 
 // NewIssueArbiter returns a newly created IssueArbiter
-func NewIssueArbiter() *IssueArbiter {
+func NewIssueArbiter(wfPool *WavefrontPool) *IssueArbiter {
 	a := new(IssueArbiter)
-	a.lastSIMDID = -1
+	a.wfPool = wfPool
 	return a
 }
 
-// Arbitrate will take a round-robin fashion at SIMD level. For wavefronts
-// in each SIMD, oldest first.
-func (a *IssueArbiter) Arbitrate(
-	wfPools []*WavefrontPool,
-) []*wavefront.Wavefront {
-	if a.isAllWfPoolsEmpty(wfPools) {
+// Arbitrate will take a 7 wavefronts in its pool, oldest first.
+func (a *IssueArbiter) Arbitrate() []*wavefront.Wavefront {
+	if len(a.wfPool.wfs) == 0 {
 		return []*wavefront.Wavefront{}
 	}
 
-	a.moveToNextSIMD(wfPools)
-	for len(wfPools[a.lastSIMDID].wfs) == 0 {
-		a.moveToNextSIMD(wfPools)
-	}
-
 	typeMask := make([]bool, 7)
-	wfPool := wfPools[a.lastSIMDID]
 	list := make([]*wavefront.Wavefront, 0)
-	for _, wf := range wfPool.wfs {
+	for _, wf := range a.wfPool.wfs {
 		if wf.State != wavefront.WfReady || wf.InstToIssue == nil {
 			continue
 		}
@@ -42,20 +33,4 @@ func (a *IssueArbiter) Arbitrate(
 		}
 	}
 	return list
-}
-
-func (a *IssueArbiter) moveToNextSIMD(wfPools []*WavefrontPool) {
-	a.lastSIMDID++
-	if a.lastSIMDID >= len(wfPools) {
-		a.lastSIMDID = 0
-	}
-}
-
-func (a *IssueArbiter) isAllWfPoolsEmpty(wfPools []*WavefrontPool) bool {
-	for _, wfPool := range wfPools {
-		if len(wfPool.wfs) != 0 {
-			return false
-		}
-	}
-	return true
 }

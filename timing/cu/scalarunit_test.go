@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/gomega"
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
-	"gitlab.com/akita/navisim/emu"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnaemu"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -17,21 +17,21 @@ type mockScratchpadPreparer struct {
 }
 
 func (sp *mockScratchpadPreparer) Prepare(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	sp.wfPrepared = wf
 }
 
 func (sp *mockScratchpadPreparer) Commit(
-	instEmuState emu.InstEmuState,
+	instEmuState rdnaemu.InstEmuState,
 	wf *wavefront.Wavefront,
 ) {
 	sp.wfCommitted = wf
 }
 
 type mockALU struct {
-	wfExecuted emu.InstEmuState
+	wfExecuted rdnaemu.InstEmuState
 }
 
 func (alu *mockALU) SetLDS(lds []byte) {
@@ -41,7 +41,7 @@ func (alu *mockALU) LDS() []byte {
 	return nil
 }
 
-func (alu *mockALU) Run(wf emu.InstEmuState) {
+func (alu *mockALU) Run(wf rdnaemu.InstEmuState) {
 	alu.wfExecuted = wf
 }
 
@@ -96,8 +96,8 @@ var _ = Describe("Scalar Unit", func() {
 	It("should run", func() {
 		wave1 := new(wavefront.Wavefront)
 		wave2 := new(wavefront.Wavefront)
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.FormatType = insts.SOP2
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.FormatType = rdnainsts.SOP2
 		wave2.SetDynamicInst(inst)
 		wave3 := new(wavefront.Wavefront)
 		wave3.SetDynamicInst(inst)
@@ -123,10 +123,10 @@ var _ = Describe("Scalar Unit", func() {
 		wave := wavefront.NewWavefront(nil)
 		bu.toExec = wave
 
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.FormatType = insts.SMEM
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.FormatType = rdnainsts.SMEM
 		inst.Opcode = 0
-		inst.Data = insts.NewSRegOperand(0, 0, 1)
+		inst.Data = rdnainsts.NewSRegOperand(0, 0, 1)
 		wave.SetDynamicInst(inst)
 
 		sp := wave.Scratchpad().AsSMEM()
@@ -149,10 +149,10 @@ var _ = Describe("Scalar Unit", func() {
 		wave := wavefront.NewWavefront(nil)
 		bu.toExec = wave
 
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.FormatType = insts.SMEM
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.FormatType = rdnainsts.SMEM
 		inst.Opcode = 1
-		inst.Data = insts.NewSRegOperand(0, 0, 1)
+		inst.Data = rdnainsts.NewSRegOperand(0, 0, 1)
 		wave.SetDynamicInst(inst)
 
 		sp := wave.Scratchpad().AsSMEM()
@@ -175,18 +175,19 @@ var _ = Describe("Scalar Unit", func() {
 		wave := wavefront.NewWavefront(nil)
 		bu.toExec = wave
 
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.FormatType = insts.SMEM
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.FormatType = rdnainsts.SMEM
 		inst.Opcode = 2
-		inst.Data = insts.NewSRegOperand(0, 0, 1)
+		inst.Data = rdnainsts.NewSRegOperand(0, 0, 1)
 		wave.SetDynamicInst(inst)
 
 		sp := wave.Scratchpad().AsSMEM()
 		sp.Base = 0x1000
 		sp.Offset = 56
-
+		start := sp.Base + sp.Offset
 		bu.Run(10)
 
+		Expect(bu.numCacheline(start, uint64(16))).To(Equal(2))
 		Expect(wave.State).To(Equal(wavefront.WfReady))
 		Expect(wave.OutstandingScalarMemAccess).To(Equal(1))
 		Expect(bu.readBuf).To(HaveLen(2))
@@ -245,10 +246,10 @@ var _ = Describe("Scalar Unit", func() {
 	})
 	It("should flush the scalar unit", func() {
 		wave := wavefront.NewWavefront(nil)
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.FormatType = insts.SMEM
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.FormatType = rdnainsts.SMEM
 		inst.Opcode = 1
-		inst.Data = insts.NewSRegOperand(0, 0, 1)
+		inst.Data = rdnainsts.NewSRegOperand(0, 0, 1)
 		wave.SetDynamicInst(inst)
 
 		bu.toExec = wave
@@ -261,5 +262,8 @@ var _ = Describe("Scalar Unit", func() {
 		Expect(bu.toWrite).To(BeNil())
 		Expect(bu.toExec).To(BeNil())
 
+	})
+	It("should return correct num of cacheline", func() {
+		Expect(bu.numCacheline(0x1038, uint64(80))).To(Equal(3))
 	})
 })

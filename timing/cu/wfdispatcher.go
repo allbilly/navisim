@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -53,13 +53,14 @@ func (d *WfDispatcherImpl) setWfInfo(
 	wf.VRegOffset = location.VGPROffset
 	wf.LDSOffset = location.LDSOffset
 	wf.PC = wf.Packet.KernelObject + wf.CodeObject.KernelCodeEntryByteOffset
-	wf.EXEC = 0xffffffffffffffff
+	wf.EXEC = 0xffffffff
 }
 
 //nolint:gocyclo,funlen
 func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 	co := wf.CodeObject
 	pkt := wf.Packet
+	SRegFile := d.cu.SRegFiles[wf.SIMDID]
 
 	SGPRPtr := 0
 	if co.EnableSgprPrivateSegmentBuffer() {
@@ -69,9 +70,9 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 	}
 
 	if co.EnableSgprDispatchPtr() {
-		d.cu.SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 2, 0, wf.SRegOffset,
-			insts.Uint64ToBytes(wf.PacketAddress),
+		SRegFile.Write(RegisterAccess{
+			0, rdnainsts.SReg(SGPRPtr / 4), 2, 0, wf.SRegOffset,
+			rdnainsts.Uint64ToBytes(wf.PacketAddress),
 			false,
 		})
 
@@ -86,9 +87,9 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 	}
 
 	if co.EnableSgprKernelArgSegmentPtr() {
-		d.cu.SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 2, 0, wf.SRegOffset,
-			insts.Uint64ToBytes(pkt.KernargAddress),
+		SRegFile.Write(RegisterAccess{
+			0, rdnainsts.SReg(SGPRPtr / 4), 2, 0, wf.SRegOffset,
+			rdnainsts.Uint64ToBytes(pkt.KernargAddress),
 			false,
 		})
 
@@ -120,9 +121,9 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 		wgCountX := (pkt.GridSizeX + uint32(pkt.WorkgroupSizeX) - 1) /
 			uint32(pkt.WorkgroupSizeX)
 
-		d.cu.SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(wgCountX),
+		SRegFile.Write(RegisterAccess{
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(wgCountX),
 			false,
 		})
 
@@ -135,9 +136,9 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 		wgCountY := (pkt.GridSizeY + uint32(pkt.WorkgroupSizeY) - 1) /
 			uint32(pkt.WorkgroupSizeY)
 
-		d.cu.SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(wgCountY),
+		SRegFile.Write(RegisterAccess{
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(wgCountY),
 			false,
 		})
 
@@ -150,9 +151,9 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 		wgCountZ := (pkt.GridSizeZ + uint32(pkt.WorkgroupSizeZ) - 1) /
 			uint32(pkt.WorkgroupSizeZ)
 
-		d.cu.SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(wgCountZ),
+		SRegFile.Write(RegisterAccess{
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(wgCountZ),
 			false,
 		})
 
@@ -160,9 +161,9 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 	}
 
 	if co.EnableSgprWorkGroupIDX() {
-		d.cu.SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(uint32(wf.WG.IDX)),
+		SRegFile.Write(RegisterAccess{
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(uint32(wf.WG.IDX)),
 			false,
 		})
 
@@ -171,9 +172,9 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 	}
 
 	if co.EnableSgprWorkGroupIDY() {
-		d.cu.SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(uint32(wf.WG.IDY)),
+		SRegFile.Write(RegisterAccess{
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(uint32(wf.WG.IDY)),
 			false,
 		})
 
@@ -182,9 +183,9 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 	}
 
 	if co.EnableSgprWorkGroupIDZ() {
-		d.cu.SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(uint32(wf.WG.IDZ)),
+		SRegFile.Write(RegisterAccess{
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(uint32(wf.WG.IDZ)),
 			false,
 		})
 
@@ -209,24 +210,24 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 		x = i % (wf.WG.SizeX * wf.WG.SizeY) % wf.WG.SizeX
 		laneID := i - wf.FirstWiFlatID
 
-		d.cu.VRegFile[wf.SIMDID].Write(RegisterAccess{
-			0, insts.VReg(0), 1, laneID, wf.VRegOffset,
-			insts.Uint32ToBytes(uint32(x)),
+		d.cu.VRegFiles[wf.SIMDID].Write(RegisterAccess{
+			0, rdnainsts.VReg(0), 1, laneID, wf.VRegOffset,
+			rdnainsts.Uint32ToBytes(uint32(x)),
 			false,
 		})
 
 		if co.EnableVgprWorkItemID() > 0 {
-			d.cu.VRegFile[wf.SIMDID].Write(RegisterAccess{
-				0, insts.VReg(1), 1, laneID, wf.VRegOffset,
-				insts.Uint32ToBytes(uint32(y)),
+			d.cu.VRegFiles[wf.SIMDID].Write(RegisterAccess{
+				0, rdnainsts.VReg(1), 1, laneID, wf.VRegOffset,
+				rdnainsts.Uint32ToBytes(uint32(y)),
 				false,
 			})
 		}
 
 		if co.EnableVgprWorkItemID() > 1 {
-			d.cu.VRegFile[wf.SIMDID].Write(RegisterAccess{
-				0, insts.VReg(2), 1, laneID, wf.VRegOffset,
-				insts.Uint32ToBytes(uint32(z)),
+			d.cu.VRegFiles[wf.SIMDID].Write(RegisterAccess{
+				0, rdnainsts.VReg(2), 1, laneID, wf.VRegOffset,
+				rdnainsts.Uint32ToBytes(uint32(z)),
 				false,
 			})
 		}

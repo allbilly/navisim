@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util/tracing"
 )
@@ -85,9 +85,9 @@ func (d *ISADebugger) dumpSRegs(
 	access.WaveOffset = wf.SRegOffset
 	output := "\tSGPRs:\n"
 	for i := 0; i < int(wf.CodeObject.WFSgprCount); i++ {
-		access.Reg = insts.SReg(i)
-		cu.SRegFile.Read(access)
-		regValue := insts.BytesToUint32(data)
+		access.Reg = rdnainsts.SReg(i)
+		cu.SRegFiles[wf.SIMDID].Read(access)
+		regValue := rdnainsts.BytesToUint32(data)
 		output += fmt.Sprintf("\t\ts%d: 0x%08x\n", i, regValue)
 	}
 	return output
@@ -106,11 +106,11 @@ func (d *ISADebugger) dumpVRegs(
 	output := "\tVGPRs: \n"
 	for i := 0; i < int(wf.CodeObject.WIVgprCount); i++ {
 		output += fmt.Sprintf("\t\tv%d: ", i)
-		access.Reg = insts.VReg(i)
+		access.Reg = rdnainsts.VReg(i)
 		for laneID := 0; laneID < 64; laneID++ {
 			access.LaneID = laneID
-			cu.VRegFile[simdID].Read(access)
-			regValue := insts.BytesToUint32(data)
+			cu.VRegFiles[simdID].Read(access)
+			regValue := rdnainsts.BytesToUint32(data)
 			output += fmt.Sprintf("0x%08x ", regValue)
 		}
 		output += "\n"

@@ -33,6 +33,7 @@ type R9NanoGPUBuilder struct {
 	log2PageSize                   uint64
 	log2CacheLineSize              uint64
 	log2MemoryBankInterleavingSize uint64
+	numSinglePrecisionUnit         int
 
 	enableISADebugging bool
 	enableMemTracing   bool
@@ -77,9 +78,10 @@ func MakeR9NanoGPUBuilder() R9NanoGPUBuilder {
 		numShaderArray:                 16,
 		numCUPerShaderArray:            4,
 		numMemoryBank:                  8,
-		log2CacheLineSize:              6,
+		log2CacheLineSize:              7,
 		log2PageSize:                   12,
 		log2MemoryBankInterleavingSize: 12,
+		numSinglePrecisionUnit:         32,
 	}
 	return b
 }
@@ -174,6 +176,14 @@ func (b R9NanoGPUBuilder) WithLog2CacheLineSize(
 	log2CacheLine uint64,
 ) R9NanoGPUBuilder {
 	b.log2CacheLineSize = log2CacheLine
+	return b
+}
+
+// WithNumSinglePrecisionUnit sets the number of lanes per SIMD.
+func (b R9NanoGPUBuilder) WithNumSinglePrecisionUnit(
+	n int,
+) R9NanoGPUBuilder {
+	b.numSinglePrecisionUnit = n
 	return b
 }
 
@@ -415,7 +425,8 @@ func (b *R9NanoGPUBuilder) buildSAs() {
 		withGPUID(b.gpu.GPUID).
 		withLog2CachelineSize(b.log2CacheLineSize).
 		withLog2PageSize(b.log2PageSize).
-		withNumCU(b.numCUPerShaderArray)
+		withNumCU(b.numCUPerShaderArray).
+		withNumSinglePrecisionUnit(b.numSinglePrecisionUnit)
 
 	if b.enableVisTracing {
 		saBuilder = saBuilder.withVisTracer(b.visTracer)
@@ -550,7 +561,8 @@ func (b *R9NanoGPUBuilder) buildDMAEngine() {
 func (b *R9NanoGPUBuilder) buildCP() {
 	builder := cp.MakeBuilder().
 		WithEngine(b.engine).
-		WithFreq(b.freq)
+		WithFreq(b.freq).
+		WithWfSize(b.numSinglePrecisionUnit)
 
 	if !b.disableProgressBar {
 		builder = builder.ShowProgressBar()

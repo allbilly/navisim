@@ -9,16 +9,14 @@ import (
 
 var _ = Describe("FetchArbiter", func() {
 	var (
-		wfPools []*WavefrontPool
+		wfPool  *WavefrontPool
 		arbiter *FetchArbiter
 	)
 
 	BeforeEach(func() {
-		wfPools = make([]*WavefrontPool, 0, 4)
-		for i := 0; i < 4; i++ {
-			wfPools = append(wfPools, NewWavefrontPool(10))
-		}
-		arbiter = new(FetchArbiter)
+
+		wfPool = NewWavefrontPool(10)
+		arbiter = NewFetchArbiter(wfPool)
 		arbiter.InstBufByteSize = 256
 	})
 
@@ -36,14 +34,14 @@ var _ = Describe("FetchArbiter", func() {
 			wf := new(wavefront.Wavefront)
 			wf.LastFetchTime = wfLastFetchTime[i]
 			wf.State = wfState[i]
-			wfPools[i%4].AddWf(wf)
+			wfPool.AddWf(wf)
 
 			if i == 4 {
 				wf.InstBuffer = make([]byte, arbiter.InstBufByteSize)
 			}
 		}
 
-		wfs := arbiter.Arbitrate(wfPools)
+		wfs := arbiter.Arbitrate()
 
 		Expect(len(wfs)).To(Equal(1))
 		Expect(wfs[0].LastFetchTime).To(Equal(akita.VTimeInSec(9.5)))
