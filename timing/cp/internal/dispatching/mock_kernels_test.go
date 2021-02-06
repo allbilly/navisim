@@ -71,3 +71,15 @@ func (mr *MockGridBuilderMockRecorder) SetKernel(arg0 interface{}) *gomock.Call 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetKernel", reflect.TypeOf((*MockGridBuilder)(nil).SetKernel), arg0)
 }
+
+// SetWavefrontSize mocks base method
+func (m *MockGridBuilder) SetWavefrontSize(arg0 int) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetWavefrontSize", arg0)
+}
+
+// SetWavefrontSize indicates an expected call of SetWavefrontSize
+func (mr *MockGridBuilderMockRecorder) SetWavefrontSize(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetWavefrontSize", reflect.TypeOf((*MockGridBuilder)(nil).SetWavefrontSize), arg0)
+}

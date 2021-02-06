@@ -7,7 +7,7 @@ import (
 	"math/rand"
 
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
 )
 
@@ -33,7 +33,7 @@ type Benchmark struct {
 	gpus             []int
 	queues           []*driver.CommandQueue
 	useUnifiedMemory bool
-	nbodyKernel      *insts.HsaCo
+	nbodyKernel      *rdnainsts.HsaCo
 	NumParticles     int32
 	delT             float32   // dT (timestep)
 	espSqr           float32   // Softening Factor

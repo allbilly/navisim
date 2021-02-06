@@ -6,7 +6,7 @@ import (
 	"gitlab.com/akita/dnn/layers"
 	"gitlab.com/akita/dnn/tensor"
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
 )
 
@@ -19,8 +19,8 @@ type ReluLayer struct {
 	verifyBackward bool
 	cpuLayer       *layers.ReluLayer
 
-	forwardKernel  *insts.HsaCo
-	backwardKernel *insts.HsaCo
+	forwardKernel  *rdnainsts.HsaCo
+	backwardKernel *rdnainsts.HsaCo
 
 	forwardInput driver.GPUPtr
 }

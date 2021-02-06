@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 // LoadProgram loads program
@@ -53,7 +54,7 @@ func LoadProgram(filePath, kernelName string) *insts.HsaCo {
 }
 
 // LoadProgramFromMemory loads program
-func LoadProgramFromMemory(data []byte, kernelName string) *insts.HsaCo {
+func LoadProgramFromMemory(data []byte, kernelName string) *rdnainsts.HsaCo {
 	reader := bytes.NewReader(data)
 	executable, err := elf.NewFile(reader)
 	if err != nil {
@@ -78,7 +79,7 @@ func LoadProgramFromMemory(data []byte, kernelName string) *insts.HsaCo {
 	// An empty kernel name is for the case where the symbol is not generated.
 	// Use the whole text section in this case.
 	if kernelName == "" {
-		hsaco := insts.NewHsaCoFromData(textSectionData)
+		hsaco := rdnainsts.NewHsaCoFromData(textSectionData)
 		return hsaco
 	}
 
@@ -86,7 +87,7 @@ func LoadProgramFromMemory(data []byte, kernelName string) *insts.HsaCo {
 		if symbol.Name == kernelName {
 			offset := symbol.Value - textSection.Offset
 			hsacoData := textSectionData[offset : offset+symbol.Size]
-			hsaco := insts.NewHsaCoFromData(hsacoData)
+			hsaco := rdnainsts.NewHsaCoFromData(hsacoData)
 
 			//fmt.Println(hsaco.Info())
 

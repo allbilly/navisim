@@ -8,6 +8,7 @@ import (
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -226,7 +227,7 @@ var _ = Describe("Scheduler", func() {
 	It("should evaluate internal executing insts", func() {
 		wf := new(wavefront.Wavefront)
 		wf.Wavefront = new(kernels.Wavefront)
-		wf.CodeObject = insts.NewHsaCo()
+		wf.CodeObject = rdnainsts.NewHsaCo()
 		wf.SIMDID = 0
 		wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
 		wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]

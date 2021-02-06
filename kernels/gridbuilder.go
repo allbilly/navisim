@@ -1,8 +1,6 @@
 package kernels
 
-import (
-	"gitlab.com/akita/navisim/insts"
-)
+import "gitlab.com/akita/navisim/rdnainsts"
 
 // WGFilterFunc is a filter
 type WGFilterFunc func(
@@ -12,7 +10,7 @@ type WGFilterFunc func(
 
 // KernelLaunchInfo includes the necessary information to launch a kernel.
 type KernelLaunchInfo struct {
-	CodeObject *insts.HsaCo
+	CodeObject *rdnainsts.HsaCo
 	Packet     *HsaKernelDispatchPacket
 	PacketAddr uint64
 	WGFilter   WGFilterFunc
@@ -24,31 +22,30 @@ type GridBuilder interface {
 	SetKernel(info KernelLaunchInfo)
 	NumWG() int
 	NextWG() *WorkGroup
+	SetWavefrontSize(n int)
 }
 
 // NewGridBuilder creates a default grid builder
-func NewGridBuilder(wavefrontSize int) GridBuilder {
-	b := &GridBuilderImpl{}
-	b.wavefrontSize = wavefrontSize
-	return b
+func NewGridBuilder() GridBuilder {
+	return &gridBuilderImpl{wfSize: 32}
 }
 
-// GridBuilderImpl implements gridBuilder
-type GridBuilderImpl struct {
-	hsaco         *insts.HsaCo
-	packet        *HsaKernelDispatchPacket
-	filter        WGFilterFunc
-	packetAddr    uint64
-	numWG         int
-	wavefrontSize int
+type gridBuilderImpl struct {
+	hsaco      *rdnainsts.HsaCo
+	packet     *HsaKernelDispatchPacket
+	filter     WGFilterFunc
+	packetAddr uint64
+	numWG      int
+	wfSize     int
 
 	xid, yid, zid int
 }
 
-// SetKernel builds a grid through kernelLaunchInfo
-func (b *GridBuilderImpl) SetKernel(
-	info KernelLaunchInfo,
-) {
+func (b *gridBuilderImpl) SetWavefrontSize(n int) {
+	b.wfSize = n
+}
+
+func (b *gridBuilderImpl) SetKernel(info KernelLaunchInfo) {
 	b.hsaco = info.CodeObject
 	b.packet = info.Packet
 	b.packetAddr = info.PacketAddr
@@ -60,7 +57,7 @@ func (b *GridBuilderImpl) SetKernel(
 	b.countWG()
 }
 
-func (b *GridBuilderImpl) countWG() {
+func (b *gridBuilderImpl) countWG() {
 	x := int(b.packet.GridSizeX-1)/int(b.packet.WorkgroupSizeX) + 1
 	y := int(b.packet.GridSizeY-1)/int(b.packet.WorkgroupSizeY) + 1
 	z := int(b.packet.GridSizeZ-1)/int(b.packet.WorkgroupSizeZ) + 1
@@ -89,12 +86,12 @@ func (b *GridBuilderImpl) countWG() {
 }
 
 // NumWG returns how many wg in the grid
-func (b *GridBuilderImpl) NumWG() int {
+func (b *gridBuilderImpl) NumWG() int {
 	return b.numWG
 }
 
 // NextWG builds the next wg
-func (b *GridBuilderImpl) NextWG() *WorkGroup {
+func (b *gridBuilderImpl) NextWG() *WorkGroup {
 	wg := NewWorkGroup()
 
 	for {
@@ -149,7 +146,7 @@ func (b *GridBuilderImpl) NextWG() *WorkGroup {
 	return wg
 }
 
-func (b *GridBuilderImpl) spawnWorkItems(wg *WorkGroup) {
+func (b *gridBuilderImpl) spawnWorkItems(wg *WorkGroup) {
 	for z := 0; z < wg.CurrSizeZ; z++ {
 		for y := 0; y < wg.CurrSizeY; y++ {
 			for x := 0; x < wg.CurrSizeX; x++ {
@@ -164,14 +161,13 @@ func (b *GridBuilderImpl) spawnWorkItems(wg *WorkGroup) {
 	}
 }
 
-func (b *GridBuilderImpl) formWavefronts(wg *WorkGroup) {
+func (b *gridBuilderImpl) formWavefronts(wg *WorkGroup) {
 	var wf *Wavefront
-
 	for i, wi := range wg.WorkItems {
 		wg := wi.WG
 		inWGID := wi.IDZ*wg.SizeX*wg.SizeY + wi.IDY*wg.SizeX + wi.IDX
-		if inWGID%b.wavefrontSize == 0 {
-			wf = NewWavefront(b.wavefrontSize)
+		if inWGID%b.wfSize == 0 {
+			wf = NewWavefront(b.wfSize)
 			wf.FirstWiFlatID = wg.WorkItems[i].FlattenedID()
 			wf.CodeObject = b.hsaco
 			wf.Packet = b.packet
@@ -180,7 +176,7 @@ func (b *GridBuilderImpl) formWavefronts(wg *WorkGroup) {
 			wg.Wavefronts = append(wg.Wavefronts, wf)
 		}
 		wf.WorkItems = append(wf.WorkItems, wi)
-		wf.InitExecMask |= 1 << uint32(inWGID%b.wavefrontSize)
+		wf.InitExecMask |= 1 << uint32(inWGID%b.wfSize)
 	}
 }
 

@@ -8,7 +8,7 @@ import (
 	"math/rand"
 
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
 )
 
@@ -24,7 +24,7 @@ type Benchmark struct {
 	context *driver.Context
 	gpus    []int
 	queues  []*driver.CommandQueue
-	kernel  *insts.HsaCo
+	kernel  *rdnainsts.HsaCo
 
 	Length         uint32
 	hInputArray    []float32
