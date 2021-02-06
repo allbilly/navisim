@@ -102,7 +102,7 @@ func (b Builder) Build(name string) Dispatcher {
 	switch b.alg {
 	case "round-robin":
 		d.alg = &roundRobinAlgorithm{
-			gridBuilder: kernels.NewGridBuilder(b.wavefrontSize),
+			gridBuilder: kernels.NewGridBuilder(),
 			cuPool:      b.cuResourcePool,
 		}
 	default:

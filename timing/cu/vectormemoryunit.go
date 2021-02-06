@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util"
 	"gitlab.com/akita/util/pipelining"
@@ -117,7 +117,7 @@ func (u *VectorMemoryUnit) execute(now akita.VTimeInSec) (madeProgress bool) {
 	wave := item.(vectorMemInst).wavefront
 	inst := wave.Inst()
 	switch inst.FormatType {
-	case insts.FLAT:
+	case rdnainsts.FLAT:
 		ok := u.executeFlatInsts(now, wave)
 		if !ok {
 			return false

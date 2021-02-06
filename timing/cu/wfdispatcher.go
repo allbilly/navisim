@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -71,8 +71,8 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 
 	if co.EnableSgprDispatchPtr() {
 		SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 2, 0, wf.SRegOffset,
-			insts.Uint64ToBytes(wf.PacketAddress),
+			0, rdnainsts.SReg(SGPRPtr / 4), 2, 0, wf.SRegOffset,
+			rdnainsts.Uint64ToBytes(wf.PacketAddress),
 			false,
 		})
 
@@ -88,8 +88,8 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 
 	if co.EnableSgprKernelArgSegmentPtr() {
 		SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 2, 0, wf.SRegOffset,
-			insts.Uint64ToBytes(pkt.KernargAddress),
+			0, rdnainsts.SReg(SGPRPtr / 4), 2, 0, wf.SRegOffset,
+			rdnainsts.Uint64ToBytes(pkt.KernargAddress),
 			false,
 		})
 
@@ -122,8 +122,8 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 			uint32(pkt.WorkgroupSizeX)
 
 		SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(wgCountX),
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(wgCountX),
 			false,
 		})
 
@@ -137,8 +137,8 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 			uint32(pkt.WorkgroupSizeY)
 
 		SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(wgCountY),
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(wgCountY),
 			false,
 		})
 
@@ -152,8 +152,8 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 			uint32(pkt.WorkgroupSizeZ)
 
 		SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(wgCountZ),
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(wgCountZ),
 			false,
 		})
 
@@ -162,8 +162,8 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 
 	if co.EnableSgprWorkGroupIDX() {
 		SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(uint32(wf.WG.IDX)),
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(uint32(wf.WG.IDX)),
 			false,
 		})
 
@@ -173,8 +173,8 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 
 	if co.EnableSgprWorkGroupIDY() {
 		SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(uint32(wf.WG.IDY)),
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(uint32(wf.WG.IDY)),
 			false,
 		})
 
@@ -184,8 +184,8 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 
 	if co.EnableSgprWorkGroupIDZ() {
 		SRegFile.Write(RegisterAccess{
-			0, insts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
-			insts.Uint32ToBytes(uint32(wf.WG.IDZ)),
+			0, rdnainsts.SReg(SGPRPtr / 4), 1, 0, wf.SRegOffset,
+			rdnainsts.Uint32ToBytes(uint32(wf.WG.IDZ)),
 			false,
 		})
 
@@ -211,23 +211,23 @@ func (d *WfDispatcherImpl) initRegisters(wf *wavefront.Wavefront) {
 		laneID := i - wf.FirstWiFlatID
 
 		d.cu.VRegFiles[wf.SIMDID].Write(RegisterAccess{
-			0, insts.VReg(0), 1, laneID, wf.VRegOffset,
-			insts.Uint32ToBytes(uint32(x)),
+			0, rdnainsts.VReg(0), 1, laneID, wf.VRegOffset,
+			rdnainsts.Uint32ToBytes(uint32(x)),
 			false,
 		})
 
 		if co.EnableVgprWorkItemID() > 0 {
 			d.cu.VRegFiles[wf.SIMDID].Write(RegisterAccess{
-				0, insts.VReg(1), 1, laneID, wf.VRegOffset,
-				insts.Uint32ToBytes(uint32(y)),
+				0, rdnainsts.VReg(1), 1, laneID, wf.VRegOffset,
+				rdnainsts.Uint32ToBytes(uint32(y)),
 				false,
 			})
 		}
 
 		if co.EnableVgprWorkItemID() > 1 {
 			d.cu.VRegFiles[wf.SIMDID].Write(RegisterAccess{
-				0, insts.VReg(2), 1, laneID, wf.VRegOffset,
-				insts.Uint32ToBytes(uint32(z)),
+				0, rdnainsts.VReg(2), 1, laneID, wf.VRegOffset,
+				rdnainsts.Uint32ToBytes(uint32(z)),
 				false,
 			})
 		}

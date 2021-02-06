@@ -3,7 +3,7 @@ package cu
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -25,18 +25,18 @@ var _ = Describe("IssueArbiter", func() {
 			wavefront.WfRunning, wavefront.WfReady, wavefront.WfReady, wavefront.WfReady, wavefront.WfReady,
 			wavefront.WfReady, wavefront.WfReady, wavefront.WfReady, wavefront.WfReady, wavefront.WfReady,
 		}
-		exeUnits := []insts.ExeUnit{
-			insts.ExeUnitVALU, insts.ExeUnitScalar, insts.ExeUnitVMem,
-			insts.ExeUnitBranch, insts.ExeUnitLDS, insts.ExeUnitSpecial,
-			insts.ExeUnitVALU, insts.ExeUnitBranch, insts.ExeUnitVALU,
-			insts.ExeUnitVMem,
+		exeUnits := []rdnainsts.ExeUnit{
+			rdnainsts.ExeUnitVALU, rdnainsts.ExeUnitScalar, rdnainsts.ExeUnitVMem,
+			rdnainsts.ExeUnitBranch, rdnainsts.ExeUnitLDS, rdnainsts.ExeUnitSpecial,
+			rdnainsts.ExeUnitVALU, rdnainsts.ExeUnitBranch, rdnainsts.ExeUnitVALU,
+			rdnainsts.ExeUnitVMem,
 		}
 		wfs := make([]*wavefront.Wavefront, 0)
 
 		for i := 0; i < len(wfState); i++ {
 			wf := new(wavefront.Wavefront)
 			wf.State = wfState[i]
-			wf.InstToIssue = wavefront.NewInst(insts.NewInst())
+			wf.InstToIssue = wavefront.NewInst(rdnainsts.NewInst())
 			wf.InstToIssue.ExeUnit = exeUnits[i]
 			wfs = append(wfs, wf)
 			wfPool.AddWf(wf)

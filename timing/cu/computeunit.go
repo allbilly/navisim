@@ -8,10 +8,10 @@ import (
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/mem/cache"
-	"gitlab.com/akita/navisim/emu"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/navisim/protocol"
+	"gitlab.com/akita/navisim/rdnaemu"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util"
 	"gitlab.com/akita/util/akitaext"
@@ -24,7 +24,7 @@ type ComputeUnit struct {
 	*akita.TickingComponent
 
 	WfDispatcher WfDispatcher
-	Decoder      emu.Decoder
+	Decoder      rdnaemu.Decoder
 	WfPools      []*WavefrontPool
 
 	log2CacheLineSize      uint64
@@ -672,10 +672,10 @@ func (cu *ComputeUnit) handleVectorDataLoadReturn(
 		access.Reg = laneInfo.reg
 		access.RegCount = laneInfo.regCount
 		access.LaneID = laneInfo.laneID
-		if inst.FormatType == insts.FLAT && inst.Opcode == 16 { // FLAT_LOAD_UBYTE
-			access.Data = insts.Uint32ToBytes(uint32(rsp.Data[offset]))
-		} else if inst.FormatType == insts.FLAT && inst.Opcode == 18 {
-			access.Data = insts.Uint32ToBytes(uint32(rsp.Data[offset]))
+		if inst.FormatType == rdnainsts.FLAT && inst.Opcode == 16 { // FLAT_LOAD_UBYTE
+			access.Data = rdnainsts.Uint32ToBytes(uint32(rsp.Data[offset]))
+		} else if inst.FormatType == rdnainsts.FLAT && inst.Opcode == 18 {
+			access.Data = rdnainsts.Uint32ToBytes(uint32(rsp.Data[offset]))
 		} else {
 			access.Data = rsp.Data[offset : offset+uint64(4*laneInfo.regCount)]
 		}
@@ -684,7 +684,7 @@ func (cu *ComputeUnit) handleVectorDataLoadReturn(
 
 	if !info.Read.CanWaitForCoalesce {
 		wf.OutstandingVectorMemAccess--
-		if info.Inst.FormatType == insts.FLAT {
+		if info.Inst.FormatType == rdnainsts.FLAT {
 			wf.OutstandingScalarMemAccess--
 		}
 
@@ -718,7 +718,7 @@ func (cu *ComputeUnit) handleVectorDataStoreRsp(
 	wf := info.Wavefront
 	if !info.Write.CanWaitForCoalesce {
 		wf.OutstandingVectorMemAccess--
-		if info.Inst.FormatType == insts.FLAT {
+		if info.Inst.FormatType == rdnainsts.FLAT {
 			wf.OutstandingScalarMemAccess--
 		}
 		cu.logInstTask(now, wf, info.Inst, true)
@@ -789,21 +789,21 @@ func (cu *ComputeUnit) logInstTask(
 	)
 }
 
-func (cu *ComputeUnit) execUnitToString(u insts.ExeUnit) string {
+func (cu *ComputeUnit) execUnitToString(u rdnainsts.ExeUnit) string {
 	switch u {
-	case insts.ExeUnitVALU:
+	case rdnainsts.ExeUnitVALU:
 		return "VALU"
-	case insts.ExeUnitScalar:
+	case rdnainsts.ExeUnitScalar:
 		return "Scalar"
-	case insts.ExeUnitVMem:
+	case rdnainsts.ExeUnitVMem:
 		return "VMem"
-	case insts.ExeUnitBranch:
+	case rdnainsts.ExeUnitBranch:
 		return "Branch"
-	case insts.ExeUnitLDS:
+	case rdnainsts.ExeUnitLDS:
 		return "LDS"
-	case insts.ExeUnitGDS:
+	case rdnainsts.ExeUnitGDS:
 		return "GDS"
-	case insts.ExeUnitSpecial:
+	case rdnainsts.ExeUnitSpecial:
 		return "Special"
 	}
 	panic("unknown exec unit")

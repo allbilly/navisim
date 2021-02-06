@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/gomega"
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
@@ -84,16 +83,15 @@ var _ = Describe("Scheduler", func() {
 		wfPool := NewWavefrontPool(20)
 
 		vectorDecoder = new(mockCUComponent)
-		cu.VectorDecoders = append(cu.VectorDecoders,vectorDecoder)
+		cu.VectorDecoders = append(cu.VectorDecoders, vectorDecoder)
 		scalarDecoder = new(mockCUComponent)
-		cu.ScalarDecoders = append(cu.ScalarDecoders,scalarDecoder)
+		cu.ScalarDecoders = append(cu.ScalarDecoders, scalarDecoder)
 		branchUnit = new(mockCUComponent)
-		cu.BranchUnits = append(cu.BranchUnits,branchUnit)
+		cu.BranchUnits = append(cu.BranchUnits, branchUnit)
 		vectorMemDecoder = new(mockCUComponent)
-		cu.VectorMemDecoders = append(cu.VectorMemDecoders,vectorMemDecoder)
+		cu.VectorMemDecoders = append(cu.VectorMemDecoders, vectorMemDecoder)
 		ldsDecoder = new(mockCUComponent)
 		cu.LDSDecoder = ldsDecoder
-		
 
 		instMem = NewMockPort(mockCtrl)
 		cu.InstMem = instMem
@@ -152,12 +150,12 @@ var _ = Describe("Scheduler", func() {
 
 	It("should issue", func() {
 		wfs := make([]*wavefront.Wavefront, 0)
-		issueDirs := []insts.ExeUnit{
-			insts.ExeUnitBranch,
-			insts.ExeUnitLDS,
-			insts.ExeUnitVMem,
-			insts.ExeUnitVALU,
-			insts.ExeUnitScalar,
+		issueDirs := []rdnainsts.ExeUnit{
+			rdnainsts.ExeUnitBranch,
+			rdnainsts.ExeUnitLDS,
+			rdnainsts.ExeUnitVMem,
+			rdnainsts.ExeUnitVALU,
+			rdnainsts.ExeUnitScalar,
 		}
 		branchUnit.canAccept = true
 		ldsDecoder.canAccept = true
@@ -172,7 +170,7 @@ var _ = Describe("Scheduler", func() {
 			wf.InstBuffer = make([]byte, 256)
 			wf.InstBufferStartPC = 0x100
 			wf.State = wavefront.WfReady
-			wf.InstToIssue = wavefront.NewInst(insts.NewInst())
+			wf.InstToIssue = wavefront.NewInst(rdnainsts.NewInst())
 			wf.InstToIssue.ExeUnit = issueDirs[i]
 			wf.InstToIssue.ByteSize = 4
 			wfs = append(wfs, wf)
@@ -206,8 +204,8 @@ var _ = Describe("Scheduler", func() {
 		wfs := make([]*wavefront.Wavefront, 0)
 		wf := new(wavefront.Wavefront)
 		wf.Wavefront = kernels.NewWavefront(32)
-		wf.InstToIssue = wavefront.NewInst(insts.NewInst())
-		wf.InstToIssue.ExeUnit = insts.ExeUnitSpecial
+		wf.InstToIssue = wavefront.NewInst(rdnainsts.NewInst())
+		wf.InstToIssue.ExeUnit = rdnainsts.ExeUnitSpecial
 		wf.InstToIssue.ByteSize = 4
 		wf.PC = 10
 		wf.State = wavefront.WfReady
@@ -224,13 +222,13 @@ var _ = Describe("Scheduler", func() {
 		Expect(wf.InstToIssue).To(BeNil())
 	})
 
-	It("should evaluate internal executing insts", func() {
+	It("should evaluate internal executing rdnainsts", func() {
 		wf := new(wavefront.Wavefront)
 		wf.Wavefront = new(kernels.Wavefront)
 		wf.CodeObject = rdnainsts.NewHsaCo()
 		wf.SIMDID = 0
-		wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
-		wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
+		wf.SetDynamicInst(wavefront.NewInst(rdnainsts.NewInst()))
+		wf.DynamicInst().Format = rdnainsts.FormatTable[rdnainsts.SOPP]
 		wf.DynamicInst().Opcode = 1 // S_ENDPGM
 
 		engine.EXPECT().
@@ -242,8 +240,8 @@ var _ = Describe("Scheduler", func() {
 
 	It("should wait for memory access when running wait_cnt", func() {
 		wf := new(wavefront.Wavefront)
-		wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
-		wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
+		wf.SetDynamicInst(wavefront.NewInst(rdnainsts.NewInst()))
+		wf.DynamicInst().Format = rdnainsts.FormatTable[rdnainsts.SOPP]
 		wf.DynamicInst().Opcode = 12 // WAIT_CNT
 		wf.DynamicInst().LKGMCNT = 0
 		wf.State = wavefront.WfRunning
@@ -258,8 +256,8 @@ var _ = Describe("Scheduler", func() {
 
 	It("should wait for memory access when running wait_cnt", func() {
 		wf := new(wavefront.Wavefront)
-		wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
-		wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
+		wf.SetDynamicInst(wavefront.NewInst(rdnainsts.NewInst()))
+		wf.DynamicInst().Format = rdnainsts.FormatTable[rdnainsts.SOPP]
 		wf.DynamicInst().Opcode = 12 // WAIT_CNT
 		wf.DynamicInst().VMCNT = 0
 		wf.State = wavefront.WfRunning
@@ -274,8 +272,8 @@ var _ = Describe("Scheduler", func() {
 
 	It("should pass if memory returns when running wait_cnt", func() {
 		wf := new(wavefront.Wavefront)
-		wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
-		wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
+		wf.SetDynamicInst(wavefront.NewInst(rdnainsts.NewInst()))
+		wf.DynamicInst().Format = rdnainsts.FormatTable[rdnainsts.SOPP]
 		wf.DynamicInst().Opcode = 12 // WAIT_CNT
 		wf.DynamicInst().LKGMCNT = 0
 		wf.DynamicInst().VMCNT = 0
@@ -292,8 +290,8 @@ var _ = Describe("Scheduler", func() {
 
 	It("should not terminate wavefront if there are pending memory requests", func() {
 		wf := new(wavefront.Wavefront)
-		wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
-		wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
+		wf.SetDynamicInst(wavefront.NewInst(rdnainsts.NewInst()))
+		wf.DynamicInst().Format = rdnainsts.FormatTable[rdnainsts.SOPP]
 		wf.DynamicInst().Opcode = 1 // WAIT_CNT
 		wf.State = wavefront.WfRunning
 		wf.OutstandingScalarMemAccess = 1
@@ -310,8 +308,8 @@ var _ = Describe("Scheduler", func() {
 		for i := 0; i < 4; i++ {
 			wf := wavefront.NewWavefront(kernels.NewWavefront(32))
 			wf.State = wavefront.WfRunning
-			wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
-			wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
+			wf.SetDynamicInst(wavefront.NewInst(rdnainsts.NewInst()))
+			wf.DynamicInst().Format = rdnainsts.FormatTable[rdnainsts.SOPP]
 			wf.DynamicInst().Opcode = 10
 			wf.WG = wg
 			wg.Wfs = append(wg.Wfs, wf)
@@ -332,8 +330,8 @@ var _ = Describe("Scheduler", func() {
 		for i := 0; i < 4; i++ {
 			wf := wavefront.NewWavefront(kernels.NewWavefront(32))
 			wf.State = wavefront.WfRunning
-			wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
-			wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
+			wf.SetDynamicInst(wavefront.NewInst(rdnainsts.NewInst()))
+			wf.DynamicInst().Format = rdnainsts.FormatTable[rdnainsts.SOPP]
 			wf.DynamicInst().Opcode = 10
 			wf.WG = wg
 			wg.Wfs = append(wg.Wfs, wf)
@@ -359,8 +357,8 @@ var _ = Describe("Scheduler", func() {
 		wg := new(wavefront.WorkGroup)
 		for i := 0; i < 3; i++ {
 			wf := wavefront.NewWavefront(kernels.NewWavefront(32))
-			wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
-			wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
+			wf.SetDynamicInst(wavefront.NewInst(rdnainsts.NewInst()))
+			wf.DynamicInst().Format = rdnainsts.FormatTable[rdnainsts.SOPP]
 			wf.DynamicInst().Opcode = 10
 			wf.State = wavefront.WfAtBarrier
 			wf.WG = wg
@@ -370,8 +368,8 @@ var _ = Describe("Scheduler", func() {
 
 		wf := wg.Wfs[0]
 		wf.State = wavefront.WfRunning
-		wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
-		wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
+		wf.SetDynamicInst(wavefront.NewInst(rdnainsts.NewInst()))
+		wf.DynamicInst().Format = rdnainsts.FormatTable[rdnainsts.SOPP]
 		wf.DynamicInst().Opcode = 10
 		wg.Wfs = append(wg.Wfs, wf)
 
@@ -392,8 +390,8 @@ var _ = Describe("Scheduler", func() {
 		for i := 0; i < 4; i++ {
 			wf := wavefront.NewWavefront(kernels.NewWavefront(32))
 			wf.State = wavefront.WfRunning
-			wf.SetDynamicInst(wavefront.NewInst(insts.NewInst()))
-			wf.DynamicInst().Format = insts.FormatTable[insts.SOPP]
+			wf.SetDynamicInst(wavefront.NewInst(rdnainsts.NewInst()))
+			wf.DynamicInst().Format = rdnainsts.FormatTable[rdnainsts.SOPP]
 			wf.DynamicInst().Opcode = 10
 			wf.WG = wg
 			wg.Wfs = append(wg.Wfs, wf)

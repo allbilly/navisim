@@ -3,7 +3,6 @@ package resource
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
 	"gitlab.com/akita/navisim/rdnainsts"
 )
@@ -28,7 +27,7 @@ var _ = Describe("cuResource", func() {
 	var (
 		r      *CUResourceImpl
 		wg     *kernels.WorkGroup
-		co     *insts.HsaCo
+		co     *rdnainsts.HsaCo
 		wfSize int
 	)
 

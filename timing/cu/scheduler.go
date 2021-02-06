@@ -5,7 +5,7 @@ import (
 
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util/tracing"
 )
@@ -168,7 +168,7 @@ func (s *SchedulerImpl) DoIssue(now akita.VTimeInSec) bool {
 	if !s.isPaused {
 		wfs := s.issueArbiter.Arbitrate()
 		for _, wf := range wfs {
-			if wf.InstToIssue.ExeUnit == insts.ExeUnitSpecial {
+			if wf.InstToIssue.ExeUnit == rdnainsts.ExeUnitSpecial {
 				madeProgress = s.issueToInternal(wf, now) || madeProgress
 
 				continue
@@ -204,17 +204,17 @@ func (s *SchedulerImpl) issueToInternal(wf *wavefront.Wavefront, now akita.VTime
 	return true
 }
 
-func (s *SchedulerImpl) getUnitToIssueTo(u insts.ExeUnit, i int) SubComponent {
+func (s *SchedulerImpl) getUnitToIssueTo(u rdnainsts.ExeUnit, i int) SubComponent {
 	switch u {
-	case insts.ExeUnitBranch:
+	case rdnainsts.ExeUnitBranch:
 		return s.cu.BranchUnits[i]
-	case insts.ExeUnitLDS:
+	case rdnainsts.ExeUnitLDS:
 		return s.cu.LDSDecoder
-	case insts.ExeUnitVALU:
+	case rdnainsts.ExeUnitVALU:
 		return s.cu.VectorDecoders[i]
-	case insts.ExeUnitVMem:
+	case rdnainsts.ExeUnitVMem:
 		return s.cu.VectorMemDecoders[i]
-	case insts.ExeUnitScalar:
+	case rdnainsts.ExeUnitScalar:
 		return s.cu.ScalarDecoders[i]
 	default:
 		log.Panic("not sure where to dispatch the instruction")

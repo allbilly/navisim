@@ -5,8 +5,8 @@ import (
 
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
-	"gitlab.com/akita/navisim/emu"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnaemu"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util/tracing"
 )
@@ -16,7 +16,7 @@ type ScalarUnit struct {
 	cu *ComputeUnit
 
 	scratchpadPreparer ScratchpadPreparer
-	alu                emu.ALU
+	alu                rdnaemu.ALU
 
 	toRead  *wavefront.Wavefront
 	toExec  *wavefront.Wavefront
@@ -35,7 +35,7 @@ type ScalarUnit struct {
 func NewScalarUnit(
 	cu *ComputeUnit,
 	scratchpadPreparer ScratchpadPreparer,
-	alu emu.ALU,
+	alu rdnaemu.ALU,
 ) *ScalarUnit {
 	u := new(ScalarUnit)
 	u.cu = cu
@@ -92,7 +92,7 @@ func (u *ScalarUnit) runExecStage(now akita.VTimeInSec) bool {
 		return false
 	}
 	if u.toWrite == nil {
-		if u.toExec.Inst().FormatType == insts.SMEM {
+		if u.toExec.Inst().FormatType == rdnainsts.SMEM {
 			u.executeSMEMInst(now)
 			return true
 		}
@@ -159,7 +159,7 @@ func (u *ScalarUnit) executeSMEMLoad(byteSize int, now akita.VTimeInSec) bool {
 		info := &ScalarMemAccessInfo{
 			Req:       req,
 			Wavefront: u.toExec,
-			DstSGPR:   insts.SReg(regIndex + int((curr-start)/4)),
+			DstSGPR:   rdnainsts.SReg(regIndex + int((curr-start)/4)),
 			Inst:      inst,
 		}
 		u.cu.InFlightScalarMemAccess = append(

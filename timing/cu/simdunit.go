@@ -2,7 +2,7 @@ package cu
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/emu"
+	"gitlab.com/akita/navisim/rdnaemu"
 	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util/tracing"
 )
@@ -16,7 +16,7 @@ type SIMDUnit struct {
 	name string
 
 	scratchpadPreparer ScratchpadPreparer
-	alu                emu.ALU
+	alu                rdnaemu.ALU
 
 	toExec    *wavefront.Wavefront
 	cycleLeft int
@@ -32,7 +32,7 @@ func NewSIMDUnit(
 	cu *ComputeUnit,
 	name string,
 	scratchpadPreparer ScratchpadPreparer,
-	alu emu.ALU,
+	alu rdnaemu.ALU,
 ) *SIMDUnit {
 	u := new(SIMDUnit)
 	u.name = name

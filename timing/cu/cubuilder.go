@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/emu"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnaemu"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/util"
 	"gitlab.com/akita/util/pipelining"
 	"gitlab.com/akita/util/tracing"
@@ -24,7 +24,7 @@ type Builder struct {
 	numSinglePrecisionUnit int
 
 	scratchpadPreparer ScratchpadPreparer
-	alu                emu.ALU
+	alu                rdnaemu.ALU
 
 	visTracer        tracing.Tracer
 	enableVisTracing bool
@@ -107,13 +107,13 @@ func (b *Builder) Build(name string) *ComputeUnit {
 	b.name = name
 	cu := NewComputeUnit(name, b.engine)
 	cu.Freq = b.freq
-	cu.Decoder = insts.NewDisassembler()
+	cu.Decoder = rdnainsts.NewDisassembler()
 	cu.WfDispatcher = NewWfDispatcher(cu)
 	cu.InFlightVectorMemAccessLimit = 512
 	cu.log2CacheLineSize = b.log2CachelineSize
 	cu.numSinglePrecisionUnit = b.numSinglePrecisionUnit
 
-	b.alu = emu.NewALU(nil)
+	b.alu = rdnaemu.NewALU(nil)
 	b.scratchpadPreparer = NewScratchpadPreparerImpl(cu)
 
 	for i := 0; i < 4; i++ {

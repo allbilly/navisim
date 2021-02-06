@@ -7,8 +7,8 @@ import (
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
 	"gitlab.com/akita/mem/cache"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -77,10 +77,10 @@ var _ = Describe("Vector Memory Unit", func() {
 	It("should run flat_load_dword", func() {
 		kWave := kernels.NewWavefront(32)
 		wave := wavefront.NewWavefront(kWave)
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.Format = insts.FormatTable[insts.FLAT]
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.Format = rdnainsts.FormatTable[rdnainsts.FLAT]
 		inst.Opcode = 20
-		inst.Dst = insts.NewVRegOperand(0, 0, 1)
+		inst.Dst = rdnainsts.NewVRegOperand(0, 0, 1)
 		wave.SetDynamicInst(inst)
 
 		transactions := make([]VectorMemAccessInfo, 4)
@@ -109,10 +109,10 @@ var _ = Describe("Vector Memory Unit", func() {
 	It("should run flat_store_dword", func() {
 		kWave := kernels.NewWavefront(32)
 		wave := wavefront.NewWavefront(kWave)
-		inst := wavefront.NewInst(insts.NewInst())
-		inst.Format = insts.FormatTable[insts.FLAT]
+		inst := wavefront.NewInst(rdnainsts.NewInst())
+		inst.Format = rdnainsts.FormatTable[rdnainsts.FLAT]
 		inst.Opcode = 28
-		inst.Dst = insts.NewVRegOperand(0, 0, 1)
+		inst.Dst = rdnainsts.NewVRegOperand(0, 0, 1)
 		wave.SetDynamicInst(inst)
 
 		transactions := make([]VectorMemAccessInfo, 4)

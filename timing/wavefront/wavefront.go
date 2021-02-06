@@ -4,9 +4,9 @@ import (
 	"sync"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/emu"
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/rdnaemu"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/util/ca"
 )
 
@@ -32,10 +32,10 @@ type Wavefront struct {
 
 	pid            ca.PID
 	State          WfState
-	inst           *Inst            // The instruction that is being executed
-	scratchpad     emu.Scratchpad   // A temp data buf that is shared by different stages
-	LastFetchTime  akita.VTimeInSec // The time that the last instruction was fetched
-	CompletedLanes int              // The number of lanes that is completed in the SIMD unit
+	inst           *Inst              // The instruction that is being executed
+	scratchpad     rdnaemu.Scratchpad // A temp data buf that is shared by different stages
+	LastFetchTime  akita.VTimeInSec   // The time that the last instruction was fetched
+	CompletedLanes int                // The number of lanes that is completed in the SIMD unit
 
 	InstBuffer        []byte
 	InstBufferStartPC uint64
@@ -70,14 +70,14 @@ func NewWavefront(raw *kernels.Wavefront) *Wavefront {
 }
 
 // Inst return the instruction that is being simulated
-func (wf *Wavefront) Inst() *insts.Inst {
+func (wf *Wavefront) Inst() *rdnainsts.Inst {
 	if wf.inst == nil {
 		return nil
 	}
 	return wf.inst.Inst
 }
 
-// DynamicInst returns the insts with an ID
+// DynamicInst returns the rdnainsts with an ID
 func (wf *Wavefront) DynamicInst() *Inst {
 	return wf.inst
 }
@@ -93,7 +93,7 @@ func (wf *Wavefront) ManagedInst() *Inst {
 }
 
 // Scratchpad returns the scratchpad of the wavefront
-func (wf *Wavefront) Scratchpad() emu.Scratchpad {
+func (wf *Wavefront) Scratchpad() rdnaemu.Scratchpad {
 	return wf.scratchpad
 }
 

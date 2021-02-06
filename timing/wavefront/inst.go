@@ -3,18 +3,18 @@ package wavefront
 
 import (
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
-// Inst in the timing package is a wrapper of the insts.Inst.
+// Inst in the timing package is a wrapper of the rdnainsts.Inst.
 type Inst struct {
-	*insts.Inst
+	*rdnainsts.Inst
 
 	ID string
 }
 
 // NewInst creates a newly created Inst
-func NewInst(raw *insts.Inst) *Inst {
+func NewInst(raw *rdnainsts.Inst) *Inst {
 	i := new(Inst)
 	i.Inst = raw
 

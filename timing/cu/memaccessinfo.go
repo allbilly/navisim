@@ -2,13 +2,13 @@ package cu
 
 import (
 	"gitlab.com/akita/mem"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
 type vectorMemAccessLaneInfo struct {
 	laneID                int
-	reg                   *insts.Reg
+	reg                   *rdnainsts.Reg
 	regCount              int
 	addrOffsetInCacheLine uint64
 }
@@ -39,6 +39,6 @@ type InstFetchReqInfo struct {
 type ScalarMemAccessInfo struct {
 	Req       *mem.ReadReq
 	Wavefront *wavefront.Wavefront
-	DstSGPR   *insts.Reg
+	DstSGPR   *rdnainsts.Reg
 	Inst      *wavefront.Inst
 }

@@ -4,13 +4,13 @@ import (
 	"log"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 // A RegisterAccess is an incidence of reading or writing the register
 type RegisterAccess struct {
 	Time       akita.VTimeInSec
-	Reg        *insts.Reg
+	Reg        *rdnainsts.Reg
 	RegCount   int
 	LaneID     int
 	WaveOffset int
@@ -70,7 +70,7 @@ func (r *SimpleRegisterFile) Read(access RegisterAccess) {
 	access.OK = true
 }
 
-func (r *SimpleRegisterFile) getRegOffset(reg *insts.Reg, offset int, laneID int) int {
+func (r *SimpleRegisterFile) getRegOffset(reg *rdnainsts.Reg, offset int, laneID int) int {
 	if reg.IsSReg() {
 		return reg.RegIndex()*4 + offset
 	}

@@ -2,7 +2,7 @@ package cu
 
 import (
 	"gitlab.com/akita/mem"
-	"gitlab.com/akita/navisim/insts"
+	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 )
 
@@ -28,7 +28,7 @@ func (c defaultCoalescer) generateMemTransactions(
 func (c defaultCoalescer) mustBeAFlatLoadOrStore(
 	wf *wavefront.Wavefront,
 ) {
-	if wf.Inst().FormatType != insts.FLAT {
+	if wf.Inst().FormatType != rdnainsts.FLAT {
 		panic("must be a flat instruction")
 	}
 
@@ -89,7 +89,7 @@ func (c defaultCoalescer) generateWriteReqs(
 		for j := uint(0); j < regCount; j++ {
 			reqData := data[i*4+j]
 			c.findOrCreateWriteReq(&reqs, addr+uint64(j*4),
-				insts.Uint32ToBytes(reqData))
+				rdnainsts.Uint32ToBytes(reqData))
 		}
 	}
 
@@ -218,7 +218,7 @@ func (c defaultCoalescer) addLaneInfo(
 
 		for j := 0; j < regCount; j++ {
 			addr := addrs[i] + uint64(j*4)
-			reg := insts.VReg(wf.Inst().Dst.Register.RegIndex() + j)
+			reg := rdnainsts.VReg(wf.Inst().Dst.Register.RegIndex() + j)
 			if c.isInSameCacheLine(addr, req.Address) {
 				laneInfo := vectorMemAccessLaneInfo{
 					laneID:                int(i),
@@ -244,11 +244,11 @@ func (c defaultCoalescer) addrOffsetInCacheLine(addr uint64) uint64 {
 	return addr & ((1 << c.log2CacheLineSize) - 1)
 }
 
-func (c defaultCoalescer) isLoadInst(inst *insts.Inst) bool {
+func (c defaultCoalescer) isLoadInst(inst *rdnainsts.Inst) bool {
 	return inst.Opcode >= 6 && inst.Opcode <= 23
 }
 
-func (c defaultCoalescer) instRegCount(inst *insts.Inst) int {
+func (c defaultCoalescer) instRegCount(inst *rdnainsts.Inst) int {
 	switch inst.Opcode {
 	case 16, 17, 18, 19, 20:
 		return 1
