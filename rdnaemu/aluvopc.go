@@ -2,12 +2,15 @@ package rdnaemu
 
 import (
 	"log"
+	"math"
 )
 
 //nolint:gocyclo,funlen
 func (u *ALUImpl) runVOPC(state InstEmuState) {
 	inst := state.Inst()
 	switch inst.Opcode {
+	case 1:
+		u.runVCMPLTF32(state)
 	case 129:
 		u.runVCMPLTI32(state)
 	case 131:
@@ -26,11 +29,28 @@ func (u *ALUImpl) runVOPC(state InstEmuState) {
 		u.runVCMPNEU32(state)
 	case 198:
 		u.runVCMPGEU32(state)
-
 	default:
 		log.Panicf("Opcode %d for VOPC format is not implemented", inst.Opcode)
 	}
 }
+
+func (u *ALUImpl) runVCMPLTF32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOPC()
+	sp.VCC = 0
+	var i uint
+	for i = 0; i < 64; i++ {
+		if !laneMasked(sp.EXEC, i) {
+			continue
+		}
+
+		src0 := math.Float32frombits(uint32(sp.SRC0[i]))
+		src1 := math.Float32frombits(uint32(sp.SRC1[i]))
+		if src0 < src1 {
+			sp.VCC = sp.VCC | (1 << i)
+		}
+	}
+}
+
 func (u *ALUImpl) runVCMPLTI32(state InstEmuState) {
 	sp := state.Scratchpad().AsVOPC()
 	sp.VCC = 0

@@ -110,6 +110,21 @@ var _ = Describe("ALU", func() {
 		Expect(sp.DST).To(Equal(uint64(2)))
 		Expect(sp.SCC).To(Equal(uint8(1)))
 	})
+
+	It("should run S_LSHL_B64", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.SOP2
+		state.inst.Opcode = 31
+
+		sp := state.Scratchpad().AsSOP2()
+		sp.SRC0 = 0xAAAA_AAAA_AAAA_AAAA
+		sp.SRC1 = 2
+
+		alu.Run(state)
+
+		Expect(sp.DST).To(Equal(uint64(0xAAAA_AAAA_AAAA_AAA8)))
+	})
+
 	It("should run S_ASHR_I32 (Negative)", func() {
 		state.inst = rdnainsts.NewInst()
 		state.inst.FormatType = rdnainsts.SOP2
