@@ -589,6 +589,9 @@ func (p *ScratchpadPreparerImpl) readReg(
 	laneID int,
 	buf []byte,
 ) {
+	if regCount == 0 {
+		regCount = 1
+	}
 	if reg.IsSReg() {
 		regFile := p.cu.SRegFiles[wf.SIMDID]
 		regRead := RegisterAccess{}
@@ -649,6 +652,9 @@ func (p *ScratchpadPreparerImpl) writeReg(
 	laneID int,
 	buf []byte,
 ) {
+	if regCount == 0 {
+		regCount = 1
+	}
 	if reg.IsSReg() {
 		regFile := p.cu.SRegFiles[wf.SIMDID]
 		regWrite := RegisterAccess{}

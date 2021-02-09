@@ -636,4 +636,17 @@ var _ = Describe("ScratchpadPreparer", func() {
 		}
 	})
 
+	FIt("should read vcc_lo", func() {
+		inst := rdnainsts.NewInst()
+		inst.FormatType = rdnainsts.SOP1
+		inst.Src0 = rdnainsts.NewRegOperand(106, rdnainsts.VCCLO, 0)
+		wf.SetDynamicInst(wavefront.NewInst(inst))
+		wf.VCC = 0xffff00ff0000ffff
+
+		sp.Prepare(wf, wf)
+
+		sp := wf.Scratchpad().AsSOP1()
+		Expect(sp.SRC0).To(Equal(uint64(0x0000ffff)))
+	})
+
 })
