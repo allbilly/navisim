@@ -636,7 +636,7 @@ var _ = Describe("ScratchpadPreparer", func() {
 		}
 	})
 
-	FIt("should read vcc_lo", func() {
+	It("should read vcc_lo", func() {
 		inst := rdnainsts.NewInst()
 		inst.FormatType = rdnainsts.SOP1
 		inst.Src0 = rdnainsts.NewRegOperand(106, rdnainsts.VCCLO, 0)
@@ -649,4 +649,21 @@ var _ = Describe("ScratchpadPreparer", func() {
 		Expect(sp.SRC0).To(Equal(uint64(0x0000ffff)))
 	})
 
+	It("should write vcc_lo", func() {
+		buf := rdnainsts.Uint64ToBytes(0x00000000ff00ffff)
+		reg := rdnainsts.Regs[rdnainsts.VCCLO]
+		wf.VCC = 0x00000f0f00000000
+		sp.writeReg(reg, 1, wf, 0, buf)
+
+		Expect(wf.VCC).To(Equal(uint64(0x00000f0fff00ffff)))
+	})
+
+	It("should write exec_lo", func() {
+		buf := rdnainsts.Uint64ToBytes(0x000000000000ffff)
+		reg := rdnainsts.Regs[rdnainsts.EXECLO]
+		wf.EXEC = 0x00000000
+		sp.writeReg(reg, 1, wf, 0, buf)
+
+		Expect(wf.EXEC).To(Equal(uint64(0x0000ffff)))
+	})
 })
