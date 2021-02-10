@@ -2,6 +2,8 @@ package gpubuilder
 
 import (
 	"fmt"
+	"log"
+	"os"
 
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
@@ -483,9 +485,19 @@ func (b *R9NanoGPUBuilder) buildSA(
 ) {
 	sa := saBuilder.Build(saName)
 
-	for _, cu := range sa.cus {
-		b.gpu.CUs = append(b.gpu.CUs, cu)
-		b.cus = append(b.cus, cu)
+	for _, computeUnit := range sa.cus {
+		b.gpu.CUs = append(b.gpu.CUs, computeUnit)
+		b.cus = append(b.cus, computeUnit)
+
+		if b.enableISADebugging {
+			isaDebug, err := os.Create(
+				fmt.Sprintf("isa_%s.debug", computeUnit.Name()))
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+			isaDebugger := cu.NewISADebugger(log.New(isaDebug, "", 0))
+			computeUnit.AcceptHook(isaDebugger)
+		}
 	}
 
 	for _, rob := range sa.l1vROBs {
