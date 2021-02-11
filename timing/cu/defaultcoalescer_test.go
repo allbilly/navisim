@@ -23,7 +23,7 @@ var _ = Describe("Default Coalescer", func() {
 	It("should coalesce to a single cacheline", func() {
 		inst := rdnainsts.NewInst()
 		inst.FormatType = rdnainsts.FLAT
-		inst.Opcode = 20 // flat_load_dword
+		inst.Opcode = 12 // flat_load_dword
 		inst.Dst = rdnainsts.NewRegOperand(0, 0, 1)
 		wf.SetDynamicInst(wavefront.NewInst(inst))
 
@@ -42,7 +42,7 @@ var _ = Describe("Default Coalescer", func() {
 	It("should coalesce to multiple cachelines", func() {
 		inst := rdnainsts.NewInst()
 		inst.FormatType = rdnainsts.FLAT
-		inst.Opcode = 20 // flat_load_dword
+		inst.Opcode = 12 // flat_load_dword
 		inst.Dst = rdnainsts.NewVRegOperand(0, 0, 1)
 		wf.SetDynamicInst(wavefront.NewInst(inst))
 
@@ -64,7 +64,7 @@ var _ = Describe("Default Coalescer", func() {
 	It("should not generate cross-cache-line requests", func() {
 		inst := rdnainsts.NewInst()
 		inst.FormatType = rdnainsts.FLAT
-		inst.Opcode = 21 // flat_load_dwordx2
+		inst.Opcode = 13 // flat_load_dwordx2
 		inst.Dst = rdnainsts.NewVRegOperand(0, 0, 1)
 		wf.SetDynamicInst(wavefront.NewInst(inst))
 

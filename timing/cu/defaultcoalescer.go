@@ -250,9 +250,9 @@ func (c defaultCoalescer) isLoadInst(inst *rdnainsts.Inst) bool {
 
 func (c defaultCoalescer) instRegCount(inst *rdnainsts.Inst) int {
 	switch inst.Opcode {
-	case 8, 9, 10, 11, 12:
+	case 10, 12:
 		return 1
-	case 24, 25, 26, 27, 28:
+	case 28:
 		return 1
 	case 13, 29:
 		return 2

@@ -79,7 +79,7 @@ var _ = Describe("Vector Memory Unit", func() {
 		wave := wavefront.NewWavefront(kWave)
 		inst := wavefront.NewInst(rdnainsts.NewInst())
 		inst.Format = rdnainsts.FormatTable[rdnainsts.FLAT]
-		inst.Opcode = 20
+		inst.Opcode = 12
 		inst.Dst = rdnainsts.NewVRegOperand(0, 0, 1)
 		wave.SetDynamicInst(inst)
 
