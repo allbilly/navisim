@@ -589,6 +589,9 @@ func (p *ScratchpadPreparerImpl) readReg(
 	laneID int,
 	buf []byte,
 ) {
+	if regCount == 0 {
+		regCount = 1
+	}
 	if reg.IsSReg() {
 		regFile := p.cu.SRegFiles[wf.SIMDID]
 		regRead := RegisterAccess{}
@@ -649,6 +652,9 @@ func (p *ScratchpadPreparerImpl) writeReg(
 	laneID int,
 	buf []byte,
 ) {
+	if regCount == 0 {
+		regCount = 1
+	}
 	if reg.IsSReg() {
 		regFile := p.cu.SRegFiles[wf.SIMDID]
 		regWrite := RegisterAccess{}
@@ -674,15 +680,18 @@ func (p *ScratchpadPreparerImpl) writeReg(
 	} else if reg.RegType == rdnainsts.VCCLO && regCount == 2 {
 		wf.VCC = rdnainsts.BytesToUint64(buf)
 	} else if reg.RegType == rdnainsts.VCCLO && regCount == 1 {
-		wf.VCC &= uint64(0x00000000ffffffff)
+		wf.VCC &= uint64(0xffffffff00000000)
 		wf.VCC |= uint64(rdnainsts.BytesToUint32(buf))
 	} else if reg.RegType == rdnainsts.VCCHI && regCount == 1 {
-		wf.VCC &= uint64(0xffffffff00000000)
+		wf.VCC &= uint64(0x00000000ffffffff)
 		wf.VCC |= uint64(rdnainsts.BytesToUint32(buf)) << 32
 	} else if reg.RegType == rdnainsts.EXEC {
 		wf.EXEC = rdnainsts.BytesToUint64(buf)
 	} else if reg.RegType == rdnainsts.EXECLO && regCount == 2 {
 		wf.EXEC = rdnainsts.BytesToUint64(buf)
+	} else if reg.RegType == rdnainsts.EXECLO && regCount == 1 {
+		wf.EXEC &= uint64(0xffffffff00000000)
+		wf.EXEC |= uint64(rdnainsts.BytesToUint32(buf))
 	} else if reg.RegType == rdnainsts.M0 {
 		wf.M0 = rdnainsts.BytesToUint32(buf)
 	} else {

@@ -138,9 +138,9 @@ func (u *VectorMemoryUnit) executeFlatInsts(
 ) bool {
 	inst := wavefront.DynamicInst()
 	switch inst.Opcode {
-	case 16, 17, 18, 19, 20, 21, 22, 23: // FLAT_LOAD_BYTE
+	case 10, 12, 13, 14:
 		return u.executeFlatLoad(now, wavefront)
-	case 24, 25, 26, 27, 28, 29, 30, 31:
+	case 28, 30:
 		return u.executeFlatStore(now, wavefront)
 	default:
 		log.Panicf("Opcode %d for format FLAT is not supported.", inst.Opcode)

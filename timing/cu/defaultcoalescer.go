@@ -32,7 +32,7 @@ func (c defaultCoalescer) mustBeAFlatLoadOrStore(
 		panic("must be a flat instruction")
 	}
 
-	if wf.Inst().Opcode < 16 || wf.Inst().Opcode > 31 {
+	if wf.Inst().Opcode < 8 || wf.Inst().Opcode > 31 {
 		panic("must be a load or store instruction")
 	}
 }
@@ -250,16 +250,16 @@ func (c defaultCoalescer) isLoadInst(inst *rdnainsts.Inst) bool {
 
 func (c defaultCoalescer) instRegCount(inst *rdnainsts.Inst) int {
 	switch inst.Opcode {
-	case 16, 17, 18, 19, 20:
+	case 10, 12:
 		return 1
-	case 24, 25, 26, 27, 28:
+	case 28:
 		return 1
-	case 21, 29:
+	case 13, 29:
 		return 2
-	case 22, 30:
-		return 3
-	case 23, 31:
+	case 14, 30:
 		return 4
+	case 15, 31:
+		return 3
 	default:
 		panic("not supported opcode")
 	}

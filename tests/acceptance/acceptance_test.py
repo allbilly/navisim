@@ -29,9 +29,6 @@ class Test(object):
 
     def test(self,
              test_disassemble=False,
-             test_unified_multi_gpu=False,
-             test_multi_gpu=False,
-             use_unified_memory=False,
              ):
         err = False
 
@@ -41,39 +38,8 @@ class Test(object):
 
         err |= self.compile()
 
-        if test_unified_multi_gpu:
-            err |= self.run_test(True, False, True,
-                                 use_unified_memory, '1,2')
-            err |= self.run_test(
-                True, False, True,
-                use_unified_memory, '1,2,3,4')
-            err |= self.run_test(True, True, True,
-                                 use_unified_memory, '1,2')
-            err |= self.run_test(True, True, True,
-                                 use_unified_memory, '1,2,3,4')
-        elif test_multi_gpu:
-            if not use_unified_memory:
-                err |= self.run_test(False, False, False,
-                                     use_unified_memory, '1,2')
-                err |= self.run_test(False, False, False,
-                                     use_unified_memory, '1,2,3,4')
-                err |= self.run_test(False, True, False,
-                                     use_unified_memory, '1,2')
-                err |= self.run_test(False, True, False,
-                                     use_unified_memory, '1,2,3,4')
-            err |= self.run_test(True, False, False,
-                                 use_unified_memory, '1,2')
-            err |= self.run_test(True, False, False,
-                                 use_unified_memory, '1,2,3,4')
-            err |= self.run_test(True, True, False,
-                                 use_unified_memory, '1,2')
-            err |= self.run_test(True, True, False,
-                                 use_unified_memory, '1,2,3,4')
-        else:
-            err |= self.run_test(False, False, False, use_unified_memory, '1')
-            err |= self.run_test(False, True, False, use_unified_memory, '1')
-            err |= self.run_test(True, False, False, use_unified_memory, '1')
-            err |= self.run_test(True, True, False, use_unified_memory, '1')
+        err |= self.run_test(False, '1')
+        
 
         return err
 
@@ -90,28 +56,19 @@ class Test(object):
             return True
 
     def run_test(self,
-                 timing, parallel,
-                 unified_multi_gpu,
-                 unified_memory,
+                 timing,
                  gpus):
         fp = open(os.devnull, 'w')
         cmd = ['./'+self.executable, '-verify']
         cmd.extend(self.size_args)
 
-        if unified_multi_gpu:
-            cmd.append('-unified-gpus='+gpus)
-        else:
-            cmd.append('-gpus='+gpus)
+
+        cmd.append('-gpus='+gpus)
 
         if timing:
             cmd.append('-timing')
 
-        if parallel:
-            cmd.append('-parallel')
-
-        if unified_memory:
-            cmd.append('-use-unified-memory')
-
+        
         cmd_string = 'cd ' + self.path + ' && ' + ' '.join(cmd)
         print('Running ' + cmd_string)
 
@@ -161,19 +118,7 @@ class Test(object):
             return True
 
 
-def parseArgs():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--unified-multi-gpu",
-                        help="Run unified multi-GPU tests",
-                        action="store_true")
-    parser.add_argument("--discrete-multi-gpu",
-                        help="Run discrete multi-GPU tests",
-                        action="store_true")
-    parser.add_argument("--unified-memory",
-                        help="Use unified memory",
-                        action="store_true")
-    args = parser.parse_args()
-    return args
+
 
 
 def main():
@@ -277,93 +222,35 @@ def main():
               [],
               '../../benchmarks/shoc/nbody')
 
-    args = parseArgs()
 
     err = False
 
-    if args.unified_multi_gpu:
-        err |= atax.test(test_unified_multi_gpu=True,
-                         use_unified_memory=args.unified_memory)
-        err |= bicg.test(test_unified_multi_gpu=True,
-                         use_unified_memory=args.unified_memory)
-        err |= aes.test(test_unified_multi_gpu=True,
-                        use_unified_memory=args.unified_memory)
-        err |= fir.test(test_unified_multi_gpu=True,
-                        use_unified_memory=args.unified_memory)
-        err |= km.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= pagerank.test(test_unified_multi_gpu=True,
-                             use_unified_memory=args.unified_memory)
-        err |= mm.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= mt.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= mt.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= bs.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= sc.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= fw.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= re.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= mp.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= bfs.test(test_unified_multi_gpu=True,
-                        use_unified_memory=args.unified_memory)
-        err |= st.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= sp.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= fft.test(test_unified_multi_gpu=True,
-                        use_unified_memory=args.unified_memory)
-        err |= nb.test(test_unified_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-    elif args.discrete_multi_gpu:
-        err |= aes.test(test_multi_gpu=True,
-                        use_unified_memory=args.unified_memory)
-        err |= fir.test(test_multi_gpu=True,
-                        use_unified_memory=args.unified_memory)
-        err |= km.test(test_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= pagerank.test(test_multi_gpu=True,
-                             use_unified_memory=args.unified_memory)
-        err |= mm.test(test_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= mt.test(test_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= bs.test(test_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-        err |= sc.test(test_multi_gpu=True,
-                       use_unified_memory=args.unified_memory)
-    else:
-        err |= compile('../../insts/gcn3disassembler')
-        err |= atax.test(test_multi_gpu=False)
-        err |= bicg.test(test_multi_gpu=False)
-        #err |= aes.test()
-        err |= fir.test()
-        # err |= km.test()
-        # err |= pagerank.test()
-        # err |= mm.test()
-        err |= mt.test()
-        # err |= bs.test()
-        #err |= sc.test()
-        err |= fw.test(test_multi_gpu=False)
-        err |= re.test()
-        err |= mp.test(test_multi_gpu=False)
-        err |= bfs.test(test_multi_gpu=False)
-        err |= st.test(test_multi_gpu=False)
-        err |= sp.test(test_multi_gpu=False)
-        err |= fft.test(test_multi_gpu=False)
-        err |= nb.test(test_multi_gpu=False)
+    err |= compile('../../rdnainsts/rdnadisassembler')
+    err |= atax.test()
+    err |= bicg.test()
+    #err |= aes.test()
+    err |= fir.test()
+    err |= km.test()
+    # err |= pagerank.test()
+    # err |= mm.test()
+    err |= mt.test()
+    # err |= bs.test()
+    #err |= sc.test()
+    #err |= fw.test(test_multi_gpu=False)
+    err |= re.test()
+    err |= mp.test()
+    # err |= bfs.test(test_multi_gpu=False)
+    err |= st.test()
+    # err |= sp.test(test_multi_gpu=False)
+    # err |= fft.test(test_multi_gpu=False)
+    # err |= nb.test(test_multi_gpu=False)
 
-        err |= ck.test(test_disassemble=False,
-                       test_unified_multi_gpu=False,
-                       test_multi_gpu=False)
-        err |= cw.test(test_disassemble=False,
-                       test_unified_multi_gpu=False,
-                       test_multi_gpu=False)
+    # err |= ck.test(test_disassemble=False,
+    #                 test_unified_multi_gpu=False,
+    #                 test_multi_gpu=False)
+    # err |= cw.test(test_disassemble=False,
+    #                 test_unified_multi_gpu=False,
+    #                 test_multi_gpu=False)
 
     # error |= compile('acceptancetests/cupipelinedraining')
     # error |= run_test('CU Pipeline Draining',
