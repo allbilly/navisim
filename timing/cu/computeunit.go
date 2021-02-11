@@ -593,11 +593,11 @@ func (cu *ComputeUnit) handleScalarDataLoadReturn(
 	}
 
 	info := cu.findScalarMemAccess(rsp.RespondTo)
-	req := info.Req
+
 	if info == nil {
 		return
 	}
-
+	req := info.Req
 	wf := info.Wavefront
 	access := RegisterAccess{
 		WaveOffset: wf.SRegOffset,
