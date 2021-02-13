@@ -22,6 +22,7 @@ type Scheduler interface {
 // A Scheduler is the controlling unit of a compute unit. It decides which
 // wavefront to fetch and to issue.
 type SchedulerImpl struct {
+	name              string
 	cu                *ComputeUnit
 	wfPool            *WavefrontPool
 	fetchArbiter      WfArbiter
@@ -40,12 +41,14 @@ type SchedulerImpl struct {
 // NewScheduler returns a newly created scheduler, injecting dependency
 // of the compute unit, the fetch arbiter, and the issue arbiter.
 func NewScheduler(
+	name string,
 	cu *ComputeUnit,
 	fetchArbiter WfArbiter,
 	issueArbiter WfArbiter,
 	wfPool *WavefrontPool,
 ) *SchedulerImpl {
 	s := new(SchedulerImpl)
+	s.name = name
 	s.cu = cu
 	s.fetchArbiter = fetchArbiter
 	s.issueArbiter = issueArbiter
@@ -243,6 +246,8 @@ func (s *SchedulerImpl) EvaluateInternalInst(now akita.VTimeInSec) bool {
 			instProgress, instCompleted = s.evalSBarrier(executing, now)
 		case 12: // S_WAITCNT
 			instProgress, instCompleted = s.evalSWaitCnt(executing, now)
+		case 33: // S_Clause
+			instProgress, instCompleted = s.evalSCaluse(executing, now)
 		default:
 			// The program has to make progress
 			executing.State = wavefront.WfReady
@@ -372,6 +377,14 @@ func (s *SchedulerImpl) evalSWaitCnt(
 	}
 
 	return false, false
+}
+
+func (s *SchedulerImpl) evalSCaluse(
+	wf *wavefront.Wavefront,
+	now akita.VTimeInSec,
+) (madeProgress bool, instCompleted bool) {
+	s.cu.UpdatePCAndSetReady(wf)
+	return true, true
 }
 
 // Pause pauses
