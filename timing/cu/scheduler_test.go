@@ -101,7 +101,7 @@ var _ = Describe("Scheduler", func() {
 
 		fetchArbitor = newMockWfArbitor()
 		issueArbitor = newMockWfArbitor()
-		scheduler = NewScheduler(cu, fetchArbitor, issueArbitor, wfPool)
+		scheduler = NewScheduler("scheduler", cu, fetchArbitor, issueArbitor, wfPool)
 	})
 
 	It("should always fetch 128 bytes", func() {

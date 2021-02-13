@@ -132,10 +132,11 @@ func (b *Builder) Build(name string) *ComputeUnit {
 
 func (b *Builder) equipSchedulers(cu *ComputeUnit) {
 	for i := 0; i < b.schedulerCount; i++ {
+		name := fmt.Sprintf(b.name+".Scheduler%d", i)
 		fetchArbitor := NewFetchArbiter(cu.WfPools[i])
 		fetchArbitor.InstBufByteSize = 256
 		issueArbitor := NewIssueArbiter(cu.WfPools[i])
-		scheduler := NewScheduler(cu, fetchArbitor, issueArbitor, cu.WfPools[i])
+		scheduler := NewScheduler(name, cu, fetchArbitor, issueArbitor, cu.WfPools[i])
 		cu.Schedulers = append(cu.Schedulers, scheduler)
 	}
 }
