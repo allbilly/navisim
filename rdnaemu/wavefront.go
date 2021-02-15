@@ -146,6 +146,8 @@ func (wf *Wavefront) WriteReg(
 	} else if reg.RegType == rdnainsts.VCCLO && regCount == 2 {
 		wf.VCC = rdnainsts.BytesToUint64(data)
 	} else if reg.RegType == rdnainsts.VCCLO && regCount == 1 {
+		log.Printf("%d\n", wf.VCC)
+		//wf.VCC &= uint64(0x00000000ffffffff)
 		wf.VCC &= uint64(0xffff_ffff_0000_0000)
 		wf.VCC |= uint64(rdnainsts.BytesToUint32(data))
 	} else if reg.RegType == rdnainsts.VCCHI && regCount == 1 {
@@ -156,7 +158,10 @@ func (wf *Wavefront) WriteReg(
 	} else if reg.RegType == rdnainsts.EXECLO && regCount == 2 {
 		wf.Exec = rdnainsts.BytesToUint64(data)
 	} else if reg.RegType == rdnainsts.EXECLO && regCount == 1 {
+		log.Printf("%d\n", wf.Exec)
 		wf.Exec &= uint64(0xffff_ffff_0000_0000)
+
+		//wf.Exec &= uint64(0x00000000ffffffff)
 		wf.Exec |= uint64(rdnainsts.BytesToUint32(data))
 	} else if reg.RegType == rdnainsts.M0 {
 		wf.M0 = rdnainsts.BytesToUint32(data)

@@ -13,6 +13,10 @@ func (u *ALUImpl) runDS(state InstEmuState) {
 		u.runDSREADB32(state)
 	case 55:
 		u.runDSREAD2B32(state)
+	case 223:
+		u.runDSWRITEB128(state)
+	case 255:
+		u.runDSREADB128(state)
 	default:
 		log.Panicf("Opcode %d for DS format is not implemented", inst.Opcode)
 	}
@@ -34,8 +38,6 @@ func (u *ALUImpl) runDSWRITEB32(state InstEmuState) {
 		data0offset := uint(8 + 64*4)
 
 		copy(lds[addr0:addr0+4], sp[data0offset+i*16:data0offset+i*16+4])
-		log.Printf("%t\n", lds[addr0:addr0+4])
-
 	}
 }
 
@@ -75,5 +77,42 @@ func (u *ALUImpl) runDSREAD2B32(state InstEmuState) {
 
 		addr1 := layout.ADDR[i] + inst.Offset1*4
 		copy(sp[dstOffset+i*16+4:dstOffset+i*16+8], lds[addr1:addr1+4])
+	}
+}
+
+func (u *ALUImpl) runDSWRITEB128(state InstEmuState) {
+	inst := state.Inst()
+	sp := state.Scratchpad()
+	layout := sp.AsDS()
+	lds := u.LDS()
+
+	i := uint(0)
+	for i = 0; i < 64; i++ {
+		if !laneMasked(layout.EXEC, i) {
+			continue
+		}
+
+		addr0 := layout.ADDR[i] + inst.Offset0
+		data0offset := uint(8 + 64*4)
+
+		copy(lds[addr0:addr0+16], sp[data0offset+i*16:data0offset+i*16+16])
+	}
+}
+
+func (u *ALUImpl) runDSREADB128(state InstEmuState) {
+	inst := state.Inst()
+	sp := state.Scratchpad()
+	layout := sp.AsDS()
+	lds := u.LDS()
+
+	i := uint(0)
+	for i = 0; i < 64; i++ {
+		if !laneMasked(layout.EXEC, i) {
+			continue
+		}
+
+		addr0 := layout.ADDR[i] + inst.Offset0
+		dstOffset := uint(8 + 64*4 + 256*4*2)
+		copy(sp[dstOffset+i*16:dstOffset+i*16+16], lds[addr0:addr0+16])
 	}
 }
