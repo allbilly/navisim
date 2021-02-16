@@ -36,6 +36,7 @@ func (p *ScratchpadPreparerImpl) Prepare(
 ) {
 	p.clear(instEmuState.Scratchpad())
 	inst := instEmuState.Inst()
+	//log.Printf("%s\n", inst.InstName)
 	switch inst.FormatType {
 	case rdnainsts.SOP1:
 		p.prepareSOP1(instEmuState, wf)
@@ -63,6 +64,8 @@ func (p *ScratchpadPreparerImpl) Prepare(
 		p.prepareSOPK(instEmuState, wf)
 	case rdnainsts.DS:
 		p.prepareDS(instEmuState, wf)
+	case rdnainsts.MUBUF:
+		p.prepareMUBUF(instEmuState, wf)
 	default:
 		log.Panicf("Inst format %s is not supported", inst.Format.FormatName)
 	}
@@ -307,6 +310,18 @@ func (p *ScratchpadPreparerImpl) prepareDS(
 			p.readOperand(inst.Data1, wf, i, sp[offset+i*16:offset+i*16+16])
 		}
 	}
+}
+
+func (p *ScratchpadPreparerImpl) prepareMUBUF(
+	instEmuState rdnaemu.InstEmuState,
+	wf *wavefront.Wavefront,
+) {
+	//inst := instEmuState.Inst()
+	sp := instEmuState.Scratchpad()
+	layout := sp.AsDS()
+
+	layout.EXEC = wf.EXEC
+
 }
 
 // Commit write to the register file according to the scratchpad layout
@@ -626,6 +641,8 @@ func (p *ScratchpadPreparerImpl) readReg(
 		copy(buf, rdnainsts.Uint64ToBytes(wf.EXEC))
 	} else if reg.RegType == rdnainsts.M0 {
 		copy(buf, rdnainsts.Uint32ToBytes(wf.M0))
+	} else if reg.RegType == rdnainsts.NULL {
+
 	} else {
 		log.Panicf("Unsupported register read %s\n", reg.Name)
 	}
@@ -694,6 +711,8 @@ func (p *ScratchpadPreparerImpl) writeReg(
 		wf.EXEC |= uint64(rdnainsts.BytesToUint32(buf))
 	} else if reg.RegType == rdnainsts.M0 {
 		wf.M0 = rdnainsts.BytesToUint32(buf)
+	} else if reg.RegType == rdnainsts.NULL {
+
 	} else {
 		log.Panicf("Unsupported register write %s\n", reg.Name)
 	}

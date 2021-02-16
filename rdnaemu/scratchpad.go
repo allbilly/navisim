@@ -84,6 +84,12 @@ func (sp Scratchpad) AsDS() *DSLayout {
 	return (*DSLayout)(unsafe.Pointer(&sp[0]))
 }
 
+// AsDS returns the ScratchPad as a struct representing the DS scratchpad
+// layout
+func (sp Scratchpad) AsMUBUF() *MUBUFLayout {
+	return (*MUBUFLayout)(unsafe.Pointer(&sp[0]))
+}
+
 // SOP1Layout represents the scratchpad layout for SOP1 instructions
 type SOP1Layout struct {
 	SRC0 uint64

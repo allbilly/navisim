@@ -18,3 +18,5 @@ require (
 	gitlab.com/akita/util v0.6.3
 	golang.org/x/sys v0.0.0-20201020230747-6e5568b54d1a // indirect
 )
+
+replace gitlab.com/akita/mem => ../mem

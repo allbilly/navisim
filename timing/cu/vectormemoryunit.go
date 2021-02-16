@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"gitlab.com/akita/akita"
+	"gitlab.com/akita/mem"
 	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util"
@@ -116,9 +117,16 @@ func (u *VectorMemoryUnit) execute(now akita.VTimeInSec) (madeProgress bool) {
 
 	wave := item.(vectorMemInst).wavefront
 	inst := wave.Inst()
+	log.Printf("%s\n", inst.FormatType)
+
 	switch inst.FormatType {
 	case rdnainsts.FLAT:
 		ok := u.executeFlatInsts(now, wave)
+		if !ok {
+			return false
+		}
+	case rdnainsts.MUBUF:
+		ok := u.executeMUBUFInsts(now, wave)
 		if !ok {
 			return false
 		}
@@ -130,6 +138,20 @@ func (u *VectorMemoryUnit) execute(now akita.VTimeInSec) (madeProgress bool) {
 	u.numInstInFlight--
 
 	return true
+}
+
+func (u *VectorMemoryUnit) executeMUBUFInsts(
+	now akita.VTimeInSec,
+	wavefront *wavefront.Wavefront,
+) bool {
+	inst := wavefront.DynamicInst()
+	switch inst.Opcode {
+	case 113:
+		return u.executeMUBUFGLOInvalidate(now, wavefront)
+	default:
+		log.Panicf("Opcode %d for format MUBUF is not supported.", inst.Opcode)
+	}
+	panic("never")
 }
 
 func (u *VectorMemoryUnit) executeFlatInsts(
@@ -147,6 +169,28 @@ func (u *VectorMemoryUnit) executeFlatInsts(
 	}
 
 	panic("never")
+}
+
+func (u *VectorMemoryUnit) executeMUBUFGLOInvalidate(
+	now akita.VTimeInSec,
+	wave *wavefront.Wavefront,
+) bool {
+	u.scratchpadPreparer.Prepare(wave, wave)
+	lowModule := u.cu.VectorMemModules.Find(0)
+
+	req := mem.GL0InvalidateReqBuilder{}.
+		WithSendTime(now).
+		WithSrc(u.cu.ToVectorMem).
+		WithDst(lowModule).
+		Build()
+	err := u.cu.ToVectorMem.Send(req)
+
+	if err == nil {
+		u.postTransactionPipelineBuffer.Pop()
+		u.numTransactionInFlight--
+		return true
+	}
+	return false
 }
 
 func (u *VectorMemoryUnit) executeFlatLoad(
