@@ -624,6 +624,8 @@ func (p *ScratchpadPreparerImpl) readReg(
 		copy(buf, rdnainsts.Uint64ToBytes(wf.EXEC))
 	} else if reg.RegType == rdnainsts.EXECLO && regCount == 2 {
 		copy(buf, rdnainsts.Uint64ToBytes(wf.EXEC))
+	} else if reg.RegType == rdnainsts.EXECLO && regCount == 1 {
+		copy(buf, rdnainsts.Uint32ToBytes(uint32(wf.EXEC)))
 	} else if reg.RegType == rdnainsts.M0 {
 		copy(buf, rdnainsts.Uint32ToBytes(wf.M0))
 	} else {
