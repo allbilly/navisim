@@ -24,9 +24,9 @@ func (u *ALUImpl) runSOPP(state InstEmuState) {
 		u.runSCBRANCHEXECNZ(state)
 	case 12: // S_WAITCNT
 		// Do nothing
-	case 33:
-		u.runSCLAUSE(state)
-	case 35: //SDPCTR
+	case 33: // S_CLAUSE
+		// Do nothing
+	case 35: //S_WAINTCNT_DEPCTR
 		//Do noting
 	default:
 		log.Panicf("Opcode %d for SOPP format is not implemented", inst.Opcode)
@@ -89,8 +89,4 @@ func (u *ALUImpl) runSCBRANCHEXECNZ(state InstEmuState) {
 
 func laneMasked(Exec uint64, laneID uint) bool {
 	return Exec&(1<<laneID) > 0
-}
-
-func (u *ALUImpl) runSCLAUSE(state InstEmuState) {
-
 }

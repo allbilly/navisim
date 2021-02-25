@@ -296,7 +296,7 @@ func (d *Disassembler) initializeDecodeTable() {
 	d.addInstType(&InstType{"s_code_end", 31, FormatTable[SOPP], 0, ExeUnitSpecial, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"s_inst_prefetch", 32, FormatTable[SOPP], 0, ExeUnitSpecial, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"s_clause", 33, FormatTable[SOPP], 0, ExeUnitSpecial, 32, 32, 32, 0, 0})
-	d.addInstType(&InstType{"s_depctr", 35, FormatTable[SOPP], 0, ExeUnitSpecial, 32, 32, 32, 0, 0})
+	d.addInstType(&InstType{"s_waitcnt_depctr", 35, FormatTable[SOPP], 0, ExeUnitSpecial, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"s_round_mode", 36, FormatTable[SOPP], 0, ExeUnitSpecial, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"s_denorm_mode", 37, FormatTable[SOPP], 0, ExeUnitSpecial, 32, 32, 32, 0, 0})
 	d.addInstType(&InstType{"s_ttracedata_imm", 40, FormatTable[SOPP], 0, ExeUnitSpecial, 32, 32, 32, 0, 0})
