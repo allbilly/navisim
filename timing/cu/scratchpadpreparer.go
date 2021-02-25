@@ -628,6 +628,8 @@ func (p *ScratchpadPreparerImpl) readReg(
 		copy(buf, rdnainsts.Uint32ToBytes(uint32(wf.EXEC)))
 	} else if reg.RegType == rdnainsts.M0 {
 		copy(buf, rdnainsts.Uint32ToBytes(wf.M0))
+	} else if reg.RegType == rdnainsts.NULL {
+
 	} else {
 		log.Panicf("Unsupported register read %s\n", reg.Name)
 	}
@@ -696,6 +698,8 @@ func (p *ScratchpadPreparerImpl) writeReg(
 		wf.EXEC |= uint64(rdnainsts.BytesToUint32(buf))
 	} else if reg.RegType == rdnainsts.M0 {
 		wf.M0 = rdnainsts.BytesToUint32(buf)
+	} else if reg.RegType == rdnainsts.NULL {
+
 	} else {
 		log.Panicf("Unsupported register write %s\n", reg.Name)
 	}
