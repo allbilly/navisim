@@ -14,9 +14,9 @@ import (
 	"sync"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/benchmarks"
-	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/platform"
+	"gitlab.com/akita/navisim/benchmarks"
+	"gitlab.com/akita/navisim/driver"
+	"gitlab.com/akita/navisim/platform"
 	"gitlab.com/akita/util/tracing"
 )
 

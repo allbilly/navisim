@@ -666,4 +666,13 @@ var _ = Describe("ScratchpadPreparer", func() {
 
 		Expect(wf.EXEC).To(Equal(uint64(0x0000ffff)))
 	})
+
+	It("should read exec_lo", func() {
+		buf := make([]byte, 4)
+		reg := rdnainsts.Regs[rdnainsts.EXECLO]
+		wf.EXEC = 0x0000000000ffffff
+		sp.readReg(reg, 1, wf, 0, buf)
+
+		Expect(buf).To(Equal(rdnainsts.Uint32ToBytes(uint32(0x00ffffff))))
+	})
 })

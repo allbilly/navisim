@@ -5,12 +5,11 @@ import (
 	"debug/elf"
 	"log"
 
-	"gitlab.com/akita/navisim/insts"
 	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 // LoadProgram loads program
-func LoadProgram(filePath, kernelName string) *insts.HsaCo {
+func LoadProgram(filePath, kernelName string) *rdnainsts.HsaCo {
 	executable, err := elf.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -34,7 +33,7 @@ func LoadProgram(filePath, kernelName string) *insts.HsaCo {
 	// An empty kernel name is for the case where the symbol is not generated.
 	// Use the whole text section in this case.
 	if kernelName == "" {
-		hsaco := insts.NewHsaCoFromData(textSectionData)
+		hsaco := rdnainsts.NewHsaCoFromData(textSectionData)
 		return hsaco
 	}
 
@@ -42,7 +41,7 @@ func LoadProgram(filePath, kernelName string) *insts.HsaCo {
 		if symbol.Name == kernelName {
 			offset := symbol.Value - textSection.Offset
 			hsacoData := textSectionData[offset : offset+symbol.Size]
-			hsaco := insts.NewHsaCoFromData(hsacoData)
+			hsaco := rdnainsts.NewHsaCoFromData(hsacoData)
 
 			//fmt.Println(hsaco.Info())
 

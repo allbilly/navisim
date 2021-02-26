@@ -24,7 +24,8 @@ func (u *ALUImpl) runSOPC(state InstEmuState) {
 		u.runSCMPEQU32(state)
 	case 7:
 		u.runSCMPLGU32(state)
-
+	case 9:
+		u.runSCMPGEU32(state)
 	default:
 		log.Panicf("Opcode %d for SOPC format is not implemented", inst.Opcode)
 	}
@@ -90,6 +91,17 @@ func (u *ALUImpl) runSCMPLEI32(state InstEmuState) {
 	src0 := asInt32(uint32(sp.SRC0))
 	src1 := asInt32(uint32(sp.SRC1))
 	if src0 <= src1 {
+		sp.SCC = 1
+	} else {
+		sp.SCC = 0
+	}
+}
+
+func (u *ALUImpl) runSCMPGEU32(state InstEmuState) {
+	sp := state.Scratchpad().AsSOPC()
+	src0 := uint32(sp.SRC0)
+	src1 := uint32(sp.SRC1)
+	if src0 >= src1 {
 		sp.SCC = 1
 	} else {
 		sp.SCC = 0

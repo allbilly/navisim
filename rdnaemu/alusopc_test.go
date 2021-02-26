@@ -161,4 +161,18 @@ var _ = Describe("ALU", func() {
 		Expect(layout.SCC).To(Equal(byte(0)))
 	})
 
+	It("should run S_CMP_GE_U32 when input is greater", func() {
+		state.inst = rdnainsts.NewInst()
+		state.inst.FormatType = rdnainsts.SOPC
+		state.inst.Opcode = 9
+
+		layout := state.Scratchpad().AsSOPC()
+		layout.SRC0 = 10
+		layout.SRC1 = 2
+
+		alu.Run(state)
+
+		Expect(layout.SCC).To(Equal(byte(1)))
+	})
+
 })

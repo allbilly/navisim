@@ -8,8 +8,8 @@ import (
 	"math/rand"
 
 	"gitlab.com/akita/navisim/driver"
-	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/rdnainsts"
 )
 
 // KernelArgs defines kernel arguments
@@ -71,7 +71,6 @@ func (b *Benchmark) Run() {
 
 	b.initMem()
 	b.exec()
-	b.Verify()
 }
 
 func (b *Benchmark) initMem() {

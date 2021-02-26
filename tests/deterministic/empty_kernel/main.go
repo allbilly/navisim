@@ -5,10 +5,10 @@ import (
 	"log"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/insts"
-	"gitlab.com/akita/mgpusim/kernels"
-	"gitlab.com/akita/mgpusim/tests/deterministic/runner"
+	"gitlab.com/akita/navisim/driver"
+	"gitlab.com/akita/navisim/kernels"
+	"gitlab.com/akita/navisim/rdnainsts"
+	"gitlab.com/akita/navisim/tests/deterministic/runner"
 )
 
 // KernelArgs defines kernel arguments
@@ -23,7 +23,7 @@ type Benchmark struct {
 	driver  *driver.Driver
 	context *driver.Context
 
-	hsaco *insts.HsaCo
+	hsaco *rdnainsts.HsaCo
 
 	useUnifiedMemory bool
 }
