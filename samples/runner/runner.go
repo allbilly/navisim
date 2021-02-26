@@ -17,10 +17,10 @@ import (
 	"github.com/tebeka/atexit"
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem/idealmemcontroller"
-	"gitlab.com/akita/mgpusim/rdma"
 	"gitlab.com/akita/navisim/benchmarks"
 	"gitlab.com/akita/navisim/driver"
 	"gitlab.com/akita/navisim/platform"
+	"gitlab.com/akita/navisim/rdma"
 	"gitlab.com/akita/util/tracing"
 )
 
