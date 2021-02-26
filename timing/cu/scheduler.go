@@ -227,6 +227,7 @@ func (s *SchedulerImpl) getUnitToIssueTo(u rdnainsts.ExeUnit, i int) SubComponen
 
 // EvaluateInternalInst updates the status of the instruction being executed
 // in the scheduler.
+//nolint:gocyclo
 func (s *SchedulerImpl) EvaluateInternalInst(now akita.VTimeInSec) bool {
 	if s.internalExecuting == nil {
 		return false
