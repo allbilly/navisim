@@ -251,6 +251,8 @@ func (s *SchedulerImpl) EvaluateInternalInst(now akita.VTimeInSec) bool {
 			instProgress, instCompleted = s.evalSCaluse(executing, now)
 		case 35: // S_waitcnt_depctr
 			instProgress, instCompleted = s.evalSWaitCntDepctr(executing, now)
+		case 23: // S_waitcnt_vscnt
+			instProgress, instCompleted = s.evalSWaitCntVscnt(executing, now)
 		default:
 			// The program has to make progress
 			executing.State = wavefront.WfReady
@@ -391,6 +393,14 @@ func (s *SchedulerImpl) evalSCaluse(
 }
 
 func (s *SchedulerImpl) evalSWaitCntDepctr(
+	wf *wavefront.Wavefront,
+	now akita.VTimeInSec,
+) (madeProgress bool, instCompleted bool) {
+	s.cu.UpdatePCAndSetReady(wf)
+	return true, true
+}
+
+func (s *SchedulerImpl) evalSWaitCntVscnt(
 	wf *wavefront.Wavefront,
 	now akita.VTimeInSec,
 ) (madeProgress bool, instCompleted bool) {
