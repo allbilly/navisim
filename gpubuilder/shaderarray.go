@@ -273,7 +273,7 @@ func (b *shaderArrayBuilder) buildL1VAddressTranslators(sa *shaderArray) {
 	builder := addresstranslator.MakeBuilder().
 		WithEngine(b.engine).
 		WithFreq(b.freq).
-		WithGPUID(b.gpuID).
+		WithDeviceID(b.gpuID).
 		WithLog2PageSize(b.log2PageSize)
 
 	for i := 0; i < b.numCU; i++ {
@@ -350,7 +350,7 @@ func (b *shaderArrayBuilder) buildL1SAddressTranslator(sa *shaderArray) {
 	builder := addresstranslator.MakeBuilder().
 		WithEngine(b.engine).
 		WithFreq(b.freq).
-		WithGPUID(b.gpuID).
+		WithDeviceID(b.gpuID).
 		WithLog2PageSize(b.log2PageSize)
 
 	name := fmt.Sprintf("%s.L1SAddrTrans", b.name)
@@ -421,7 +421,7 @@ func (b *shaderArrayBuilder) buildL1IAddressTranslator(sa *shaderArray) {
 	builder := addresstranslator.MakeBuilder().
 		WithEngine(b.engine).
 		WithFreq(b.freq).
-		WithGPUID(b.gpuID).
+		WithDeviceID(b.gpuID).
 		WithLog2PageSize(b.log2PageSize)
 
 	name := fmt.Sprintf("%s.L1IAddrTrans", b.name)

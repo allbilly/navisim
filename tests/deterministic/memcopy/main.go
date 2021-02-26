@@ -6,8 +6,8 @@ import (
 	"math/rand"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mgpusim/driver"
-	"gitlab.com/akita/mgpusim/samples/runner"
+	"gitlab.com/akita/navisim/driver"
+	"gitlab.com/akita/navisim/samples/runner"
 )
 
 // Benchmark defines a benchmark
