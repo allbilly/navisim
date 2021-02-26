@@ -1,10 +1,10 @@
 package cu
 
 import (
+	"gitlab.com/akita/mem"
 	"log"
 
 	"gitlab.com/akita/akita"
-	"gitlab.com/akita/mem"
 	"gitlab.com/akita/navisim/rdnainsts"
 	"gitlab.com/akita/navisim/timing/wavefront"
 	"gitlab.com/akita/util"
@@ -117,7 +117,6 @@ func (u *VectorMemoryUnit) execute(now akita.VTimeInSec) (madeProgress bool) {
 
 	wave := item.(vectorMemInst).wavefront
 	inst := wave.Inst()
-	log.Printf("%s\n", inst.FormatType)
 
 	switch inst.FormatType {
 	case rdnainsts.FLAT:
@@ -176,6 +175,12 @@ func (u *VectorMemoryUnit) executeMUBUFGLOInvalidate(
 	wave *wavefront.Wavefront,
 ) bool {
 	u.scratchpadPreparer.Prepare(wave, wave)
+
+	if len(u.cu.InFlightVectorMemAccess) >
+		u.cu.InFlightVectorMemAccessLimit {
+		return false
+	}
+
 	lowModule := u.cu.VectorMemModules.Find(0)
 
 	req := mem.GL0InvalidateReqBuilder{}.
@@ -183,14 +188,16 @@ func (u *VectorMemoryUnit) executeMUBUFGLOInvalidate(
 		WithSrc(u.cu.ToVectorMem).
 		WithDst(lowModule).
 		Build()
-	err := u.cu.ToVectorMem.Send(req)
 
-	if err == nil {
-		u.postTransactionPipelineBuffer.Pop()
-		u.numTransactionInFlight--
-		return true
+	transaction := VectorMemAccessInfo{
+		GL0Invalidate: req,
+		Wavefront:     wave,
+		Inst:          wave.DynamicInst(),
 	}
-	return false
+
+	transaction.GL0Invalidate.PID = wave.PID()
+	u.transactionsWaiting = append(u.transactionsWaiting, transaction)
+	return true
 }
 
 func (u *VectorMemoryUnit) executeFlatLoad(
@@ -283,8 +290,11 @@ func (u *VectorMemoryUnit) sendRequest(now akita.VTimeInSec) bool {
 	info := item.(VectorMemAccessInfo)
 	if info.Read != nil {
 		req = info.Read
-	} else {
+	} else if info.Write != nil {
 		req = info.Write
+	} else if info.GL0Invalidate != nil {
+		log.Printf("GL0 inv \n")
+		req = info.GL0Invalidate
 	}
 
 	req.Meta().SendTime = now

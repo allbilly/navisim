@@ -19,18 +19,35 @@ func (c *coalescer) Reset() {
 }
 
 func (c *coalescer) Tick(now akita.VTimeInSec) bool {
+
+	madeProgress := false
+
+	madeProgress = c.processRequestsFromTop(now) || madeProgress
+	//madeProgress = c.processGL0InvalidateStatus(now) || madeProgress
+	return madeProgress
+}
+
+func (c *coalescer) processRequestsFromTop(now akita.VTimeInSec) bool {
 	req := c.cache.TopPort.Peek()
 	if req == nil {
 		return false
 	}
-
-	return c.processReq(now, req.(mem.AccessReq))
+	return c.processRequests(now, req.(mem.AccessReq))
 }
 
-func (c *coalescer) processReq(
+
+
+
+
+func (c *coalescer) processRequests(
 	now akita.VTimeInSec,
 	req mem.AccessReq,
 ) bool {
+
+	switch item := req.(type) {
+	case *mem.GL0InvalidateReq:
+		return c.processGL0InvalidateReq(item, now)
+	}
 	if c.isReqLastInWave(req) {
 		if len(c.toCoalesce) == 0 || c.canReqCoalesce(req) {
 			return c.processReqLastInWaveCoalescable(now, req)
@@ -43,6 +60,29 @@ func (c *coalescer) processReq(
 	}
 	return c.processReqNoncoalescable(now, req)
 }
+
+
+func (c *coalescer) processGL0InvalidateReq(req *mem.GL0InvalidateReq, now akita.VTimeInSec) bool {
+	c.cache.directory.Reset()
+
+	rsp := mem.GL0InvalidateRspBuilder{}.
+		   WithPID(req.GetPID()).
+		   WithSrc(c.cache.TopPort).
+		   WithDst(req.Meta().Src).
+		   WithSendTime(now).
+		   Build()
+
+	err := c.cache.TopPort.Send(rsp)
+	if err == nil {
+		c.cache.TopPort.Retrieve(now)
+		return true
+	}
+	return false
+}
+
+
+
+
 
 func (c *coalescer) processReqCoalescable(
 	now akita.VTimeInSec,

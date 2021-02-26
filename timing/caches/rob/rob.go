@@ -3,6 +3,7 @@ package rob
 
 import (
 	"container/list"
+	"log"
 
 	"gitlab.com/akita/akita"
 	"gitlab.com/akita/mem"
@@ -185,6 +186,8 @@ func (b *ReorderBuffer) parseBottom(now akita.VTimeInSec) bool {
 		trans.rspFromBottom = rsp
 
 		tracing.TraceReqFinalize(trans.reqToBottom, now, b)
+	} else {
+		log.Panicf("Not found \n")
 	}
 
 	b.BottomPort.Retrieve(now)
@@ -248,6 +251,8 @@ func (b *ReorderBuffer) duplicateReq(req mem.AccessReq) mem.AccessReq {
 		return b.duplicateReadReq(req)
 	case *mem.WriteReq:
 		return b.duplicateWriteReq(req)
+	case *mem.GL0InvalidateReq:
+		return b.duplicateGL0InvalidateReq(req)
 	default:
 		panic("unsupported type")
 	}
@@ -272,6 +277,13 @@ func (b *ReorderBuffer) duplicateWriteReq(req *mem.WriteReq) *mem.WriteReq {
 		Build()
 }
 
+func (b *ReorderBuffer) duplicateGL0InvalidateReq(req *mem.GL0InvalidateReq) *mem.GL0InvalidateReq {
+	return mem.GL0InvalidateReqBuilder{}.
+		   WithPID(req.PID).
+		   WithDst(b.BottomUnit).
+		   Build()
+}
+
 func (b *ReorderBuffer) duplicateRsp(
 	rsp mem.AccessRsp,
 	rspTo string,
@@ -281,10 +293,23 @@ func (b *ReorderBuffer) duplicateRsp(
 		return b.duplicateDataReadyRsp(rsp, rspTo)
 	case *mem.WriteDoneRsp:
 		return b.duplicateWriteDoneRsp(rsp, rspTo)
+	case *mem.GL0InvalidateRsp:
+		return b.duplicateGL0InvalidateRsp(rsp, rspTo)
 	default:
 		panic("type not supported")
 	}
 }
+
+
+func (b *ReorderBuffer) duplicateGL0InvalidateRsp(
+	rsp *mem.GL0InvalidateRsp,
+	rspTo string,
+) *mem.GL0InvalidateRsp {
+	return mem.GL0InvalidateRspBuilder{}.
+		WithRspTo(rspTo).
+		Build()
+}
+
 
 func (b *ReorderBuffer) duplicateDataReadyRsp(
 	rsp *mem.DataReadyRsp,

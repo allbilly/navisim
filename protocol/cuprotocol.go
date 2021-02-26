@@ -334,3 +334,4 @@ func (b WGCompletionMsgBuilder) Build() *WGCompletionMsg {
 	msg.RspTo = b.rspTo
 	return msg
 }
+

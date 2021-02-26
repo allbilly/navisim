@@ -641,12 +641,19 @@ func (cu *ComputeUnit) processInputFromVectorMem(now akita.VTimeInSec) bool {
 		cu.handleVectorDataLoadReturn(now, rsp)
 	case *mem.WriteDoneRsp:
 		cu.handleVectorDataStoreRsp(now, rsp)
+	case *mem.GL0InvalidateRsp:
+		cu.handleGL0InvalidateRsp(now,rsp)
 	default:
-		log.Panicf("cannot handle request of type %s from ToInstMem port",
+		log.Panicf("cannot handle request of type %s from Vector Mem port",
 			reflect.TypeOf(rsp))
 	}
 
 	return true
+}
+
+func (cu *ComputeUnit) handleGL0InvalidateRsp(now akita.VTimeInSec, rsp *mem.GL0InvalidateRsp) {
+log.Printf("GL0 rsp \n")
+
 }
 
 //nolint:gocyclo
