@@ -188,7 +188,7 @@ func (u *VectorMemoryUnit) executeMUBUFGLOInvalidate(
 		WithSrc(u.cu.ToVectorMem).
 		WithDst(lowModule).
 		Build()
-
+	
 	transaction := VectorMemAccessInfo{
 		GL0Invalidate: req,
 		Wavefront:     wave,
@@ -197,6 +197,7 @@ func (u *VectorMemoryUnit) executeMUBUFGLOInvalidate(
 
 	transaction.GL0Invalidate.PID = wave.PID()
 	u.transactionsWaiting = append(u.transactionsWaiting, transaction)
+	u.cu.InFlightGL0InvalidateMemAccess = append(u.cu.InFlightGL0InvalidateMemAccess, transaction)
 	return true
 }
 
@@ -293,7 +294,6 @@ func (u *VectorMemoryUnit) sendRequest(now akita.VTimeInSec) bool {
 	} else if info.Write != nil {
 		req = info.Write
 	} else if info.GL0Invalidate != nil {
-		log.Printf("GL0 inv \n")
 		req = info.GL0Invalidate
 	}
 

@@ -33,6 +33,7 @@ type ComputeUnit struct {
 	InFlightInstFetch            []*InstFetchReqInfo
 	InFlightScalarMemAccess      []*ScalarMemAccessInfo
 	InFlightVectorMemAccess      []VectorMemAccessInfo
+	InFlightGL0InvalidateMemAccess []VectorMemAccessInfo
 	InFlightVectorMemAccessLimit int
 
 	shadowInFlightInstFetch       []*InstFetchReqInfo
@@ -652,7 +653,15 @@ func (cu *ComputeUnit) processInputFromVectorMem(now akita.VTimeInSec) bool {
 }
 
 func (cu *ComputeUnit) handleGL0InvalidateRsp(now akita.VTimeInSec, rsp *mem.GL0InvalidateRsp) {
-log.Printf("GL0 rsp \n")
+	if len(cu.InFlightGL0InvalidateMemAccess) == 0 {
+		return
+	}
+
+    info := cu.findVectorMemGL0Invalidate(rsp.RespondTo)
+
+    wf := info.Wavefront
+	inst := info.Inst
+	cu.logInstTask(now, wf, inst, true)
 
 }
 
@@ -698,6 +707,23 @@ func (cu *ComputeUnit) handleVectorDataLoadReturn(
 		cu.logInstTask(now, wf, info.Inst, true)
 	}
 }
+
+
+func (cu *ComputeUnit) findVectorMemGL0Invalidate(id string) VectorMemAccessInfo {
+	length := len(cu.InFlightGL0InvalidateMemAccess)
+	for i := 0; i < length; i++ {
+		info := cu.InFlightGL0InvalidateMemAccess[i]
+		if info.GL0Invalidate != nil && info.GL0Invalidate.ID == id {
+			cu.InFlightGL0InvalidateMemAccess[i] = cu.InFlightGL0InvalidateMemAccess[length-1]
+			cu.InFlightGL0InvalidateMemAccess = cu.InFlightGL0InvalidateMemAccess[:length-1]
+			return info
+		}
+	}
+	log.Panicf("GL0 inv not found")
+	return VectorMemAccessInfo{}
+}
+
+
 func (cu *ComputeUnit) findVectorMemAccessRead(id string) VectorMemAccessInfo {
 	length := len(cu.InFlightVectorMemAccess)
 	for i := 0; i < length; i++ {
