@@ -674,8 +674,6 @@ func (cu *ComputeUnit) handleVectorDataLoadReturn(
 		access.LaneID = laneInfo.laneID
 		if inst.FormatType == rdnainsts.FLAT && inst.Opcode == 8 { // FLAT_LOAD_UBYTE
 			access.Data = rdnainsts.Uint32ToBytes(uint32(rsp.Data[offset]))
-		} else if inst.FormatType == rdnainsts.FLAT && inst.Opcode == 18 {
-			access.Data = rdnainsts.Uint32ToBytes(uint32(rsp.Data[offset]))
 		} else {
 			access.Data = rsp.Data[offset : offset+uint64(4*laneInfo.regCount)]
 		}
