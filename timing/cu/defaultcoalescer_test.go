@@ -25,6 +25,7 @@ var _ = Describe("Default Coalescer", func() {
 		inst.FormatType = rdnainsts.FLAT
 		inst.Opcode = 12 // flat_load_dword
 		inst.Dst = rdnainsts.NewRegOperand(0, 0, 1)
+		inst.Offset = rdnainsts.NewIntOperand(0, 0)
 		wf.SetDynamicInst(wavefront.NewInst(inst))
 
 		sp := wf.Scratchpad().AsFlat()
@@ -44,6 +45,7 @@ var _ = Describe("Default Coalescer", func() {
 		inst.FormatType = rdnainsts.FLAT
 		inst.Opcode = 12 // flat_load_dword
 		inst.Dst = rdnainsts.NewVRegOperand(0, 0, 1)
+		inst.Offset = rdnainsts.NewIntOperand(0, 0)
 		wf.SetDynamicInst(wavefront.NewInst(inst))
 
 		sp := wf.Scratchpad().AsFlat()
@@ -66,6 +68,7 @@ var _ = Describe("Default Coalescer", func() {
 		inst.FormatType = rdnainsts.FLAT
 		inst.Opcode = 13 // flat_load_dwordx2
 		inst.Dst = rdnainsts.NewVRegOperand(0, 0, 1)
+		inst.Offset = rdnainsts.NewIntOperand(0, 0)
 		wf.SetDynamicInst(wavefront.NewInst(inst))
 
 		sp := wf.Scratchpad().AsFlat()
@@ -88,6 +91,7 @@ var _ = Describe("Default Coalescer", func() {
 		inst := rdnainsts.NewInst()
 		inst.FormatType = rdnainsts.FLAT
 		inst.Opcode = 28 // flat_store_dword
+		inst.Offset = rdnainsts.NewIntOperand(0, 0)
 		wf.SetDynamicInst(wavefront.NewInst(inst))
 
 		sp := wf.Scratchpad().AsFlat()
