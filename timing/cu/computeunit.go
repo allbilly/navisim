@@ -715,7 +715,7 @@ func (cu *ComputeUnit) handleVectorDataStoreRsp(
 
 	wf := info.Wavefront
 	if !info.Write.CanWaitForCoalesce {
-		wf.OutstandingVectorMemAccess--
+		wf.OutstandingVectorStoreAccess--
 		if info.Inst.FormatType == rdnainsts.FLAT {
 			wf.OutstandingScalarMemAccess--
 		}

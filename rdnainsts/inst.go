@@ -71,6 +71,7 @@ type Inst struct {
 	Clamp               bool
 	GDS                 bool
 	VMCNT               int
+	VSCNT               int
 	LKGMCNT             int
 
 	//Fields for SDWA extensions

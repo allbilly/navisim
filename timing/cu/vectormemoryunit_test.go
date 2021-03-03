@@ -129,7 +129,7 @@ var _ = Describe("Vector Memory Unit", func() {
 
 		Expect(madeProgress).To(BeTrue())
 		Expect(wave.State).To(Equal(wavefront.WfReady))
-		Expect(wave.OutstandingVectorMemAccess).To(Equal(1))
+		Expect(wave.OutstandingVectorStoreAccess).To(Equal(1))
 		Expect(wave.OutstandingScalarMemAccess).To(Equal(1))
 		Expect(cu.InFlightVectorMemAccess).To(HaveLen(4))
 		Expect(cu.InFlightVectorMemAccess[3].Write.CanWaitForCoalesce).

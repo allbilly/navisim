@@ -404,8 +404,17 @@ func (s *SchedulerImpl) evalSWaitCntVscnt(
 	wf *wavefront.Wavefront,
 	now akita.VTimeInSec,
 ) (madeProgress bool, instCompleted bool) {
-	s.cu.UpdatePCAndSetReady(wf)
-	return true, true
+	done := true
+	inst := wf.Inst()
+
+	if wf.OutstandingVectorStoreAccess > inst.VSCNT {
+		done = false
+	}
+	if done {
+		s.cu.UpdatePCAndSetReady(wf)
+		return true, true
+	}
+	return false, false
 }
 
 // Pause pauses

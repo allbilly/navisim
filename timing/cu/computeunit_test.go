@@ -421,6 +421,7 @@ var _ = Describe("ComputeUnit", func() {
 			wf.VRegOffset = 0
 			wf.OutstandingVectorMemAccess = 1
 			wf.OutstandingScalarMemAccess = 1
+			wf.OutstandingVectorStoreAccess = 1
 
 			writeReq = mem.WriteReqBuilder{}.
 				WithSendTime(8).
@@ -453,7 +454,7 @@ var _ = Describe("ComputeUnit", func() {
 
 			cu.processInputFromVectorMem(10)
 
-			Expect(wf.OutstandingVectorMemAccess).To(Equal(0))
+			Expect(wf.OutstandingVectorStoreAccess).To(Equal(0))
 			Expect(wf.OutstandingScalarMemAccess).To(Equal(0))
 			Expect(cu.InFlightVectorMemAccess).To(HaveLen(0))
 		})
