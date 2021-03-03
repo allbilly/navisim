@@ -211,7 +211,7 @@ func (u *VectorMemoryUnit) executeFlatStore(
 		return false
 	}
 
-	wave.OutstandingVectorMemAccess++
+	wave.OutstandingVectorStoreAccess++
 	wave.OutstandingScalarMemAccess++
 
 	for i, t := range transactions {

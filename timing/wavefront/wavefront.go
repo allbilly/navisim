@@ -53,8 +53,9 @@ type Wavefront struct {
 	M0   uint32
 	SCC  uint8
 
-	OutstandingScalarMemAccess int
-	OutstandingVectorMemAccess int
+	OutstandingScalarMemAccess   int
+	OutstandingVectorMemAccess   int
+	OutstandingVectorStoreAccess int
 }
 
 // NewWavefront creates a new Wavefront of the timing package, wrapping the

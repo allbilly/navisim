@@ -623,6 +623,9 @@ func (d *Disassembler) decodeSOPK(inst *Inst, buf []byte) error {
 	bytes := binary.LittleEndian.Uint32(buf)
 	inst.SImm16 = NewIntOperand(0, int64(extractBits(bytes, 0, 15)))
 	inst.Dst, _ = getOperand(uint16(extractBits(bytes, 16, 22)))
+	if inst.Opcode == 23 {
+		inst.VSCNT = int(extractBits(uint32(inst.SImm16.IntValue), 0, 5))
+	}
 	return nil
 }
 
