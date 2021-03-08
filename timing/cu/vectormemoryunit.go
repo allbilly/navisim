@@ -188,7 +188,7 @@ func (u *VectorMemoryUnit) executeMUBUFGLOInvalidate(
 		WithSrc(u.cu.ToVectorMem).
 		WithDst(lowModule).
 		Build()
-	
+
 	transaction := VectorMemAccessInfo{
 		GL0Invalidate: req,
 		Wavefront:     wave,
