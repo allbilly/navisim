@@ -17,6 +17,8 @@ func (u *ALUImpl) runVOPC(state InstEmuState) {
 		u.runVCMPLEI32(state)
 	case 132: // v_cmp_gt_i32_e32
 		u.runVCMPGTI32(state)
+	case 193: // v_cmp_lt_u32
+		u.runVCMPLTU32(state)
 	case 194:
 		u.runVCMPEQU32(state)
 	case 195:
