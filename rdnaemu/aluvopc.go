@@ -191,3 +191,16 @@ func (u *ALUImpl) runVCMPNEU32(state InstEmuState) {
 		}
 	}
 }
+
+func (u *ALUImpl) runVCMPLTU32(state InstEmuState) {
+	sp := state.Scratchpad().AsVOPC()
+	sp.VCC = 0
+	var i uint
+	for i = 0; i < 64; i++ {
+		if laneMasked(sp.EXEC, i) {
+			if sp.SRC0[i] < sp.SRC1[i] {
+				sp.VCC = sp.VCC | (1 << i)
+			}
+		}
+	}
+} 
