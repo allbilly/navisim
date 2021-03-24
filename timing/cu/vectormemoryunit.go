@@ -1,6 +1,7 @@
 package cu
 
 import (
+	"gitlab.com/akita/mem"
 	"log"
 
 	"gitlab.com/akita/akita"
@@ -116,9 +117,15 @@ func (u *VectorMemoryUnit) execute(now akita.VTimeInSec) (madeProgress bool) {
 
 	wave := item.(vectorMemInst).wavefront
 	inst := wave.Inst()
+
 	switch inst.FormatType {
 	case rdnainsts.FLAT:
 		ok := u.executeFlatInsts(now, wave)
+		if !ok {
+			return false
+		}
+	case rdnainsts.MUBUF:
+		ok := u.executeMUBUFInsts(now, wave)
 		if !ok {
 			return false
 		}
@@ -130,6 +137,20 @@ func (u *VectorMemoryUnit) execute(now akita.VTimeInSec) (madeProgress bool) {
 	u.numInstInFlight--
 
 	return true
+}
+
+func (u *VectorMemoryUnit) executeMUBUFInsts(
+	now akita.VTimeInSec,
+	wavefront *wavefront.Wavefront,
+) bool {
+	inst := wavefront.DynamicInst()
+	switch inst.Opcode {
+	case 113:
+		return u.executeMUBUFGLOInvalidate(now, wavefront)
+	default:
+		log.Panicf("Opcode %d for format MUBUF is not supported.", inst.Opcode)
+	}
+	panic("never")
 }
 
 func (u *VectorMemoryUnit) executeFlatInsts(
@@ -147,6 +168,37 @@ func (u *VectorMemoryUnit) executeFlatInsts(
 	}
 
 	panic("never")
+}
+
+func (u *VectorMemoryUnit) executeMUBUFGLOInvalidate(
+	now akita.VTimeInSec,
+	wave *wavefront.Wavefront,
+) bool {
+	u.scratchpadPreparer.Prepare(wave, wave)
+
+	if len(u.cu.InFlightVectorMemAccess) >
+		u.cu.InFlightVectorMemAccessLimit {
+		return false
+	}
+
+	lowModule := u.cu.VectorMemModules.Find(0)
+
+	req := mem.GL0InvalidateReqBuilder{}.
+		WithSendTime(now).
+		WithSrc(u.cu.ToVectorMem).
+		WithDst(lowModule).
+		Build()
+
+	transaction := VectorMemAccessInfo{
+		GL0Invalidate: req,
+		Wavefront:     wave,
+		Inst:          wave.DynamicInst(),
+	}
+
+	transaction.GL0Invalidate.PID = wave.PID()
+	u.transactionsWaiting = append(u.transactionsWaiting, transaction)
+	u.cu.InFlightGL0InvalidateMemAccess = append(u.cu.InFlightGL0InvalidateMemAccess, transaction)
+	return true
 }
 
 func (u *VectorMemoryUnit) executeFlatLoad(
@@ -239,8 +291,10 @@ func (u *VectorMemoryUnit) sendRequest(now akita.VTimeInSec) bool {
 	info := item.(VectorMemAccessInfo)
 	if info.Read != nil {
 		req = info.Read
-	} else {
+	} else if info.Write != nil {
 		req = info.Write
+	} else if info.GL0Invalidate != nil {
+		req = info.GL0Invalidate
 	}
 
 	req.Meta().SendTime = now

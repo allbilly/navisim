@@ -6,6 +6,8 @@ import (
 	"gitlab.com/akita/util/ca"
 )
 
+/**************/
+
 //A CUPipelineRestartReq is a message from CP to ask the CU pipeline to resume after a flush/drain
 type CUPipelineRestartReq struct {
 	akita.MsgMeta
@@ -332,3 +334,4 @@ func (b WGCompletionMsgBuilder) Build() *WGCompletionMsg {
 	msg.RspTo = b.rspTo
 	return msg
 }
+

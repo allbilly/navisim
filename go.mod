@@ -27,3 +27,5 @@ require (
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+replace gitlab.com/akita/mem => ../mem

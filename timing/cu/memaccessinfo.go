@@ -15,12 +15,13 @@ type vectorMemAccessLaneInfo struct {
 
 // VectorMemAccessInfo defines access info
 type VectorMemAccessInfo struct {
-	ID        string
-	Read      *mem.ReadReq
-	Write     *mem.WriteReq
-	Wavefront *wavefront.Wavefront
-	Inst      *wavefront.Inst
-	laneInfo  []vectorMemAccessLaneInfo
+	ID            string
+	Read          *mem.ReadReq
+	Write         *mem.WriteReq
+	GL0Invalidate *mem.GL0InvalidateReq
+	Wavefront     *wavefront.Wavefront
+	Inst          *wavefront.Inst
+	laneInfo      []vectorMemAccessLaneInfo
 }
 
 // TaskID returns the ID of the VectorMemAccess transaction
