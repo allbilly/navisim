@@ -249,7 +249,7 @@ var _ = Describe("ALU", func() {
 
 		alu.Run(state)
 
-		Expect(sp.VCC).To(Equal(uint64(0x3)))
+		Expect(sp.VCC).To(Equal(uint64(0x1)))
 	})
 
 })
