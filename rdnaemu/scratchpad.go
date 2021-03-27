@@ -84,7 +84,7 @@ func (sp Scratchpad) AsDS() *DSLayout {
 	return (*DSLayout)(unsafe.Pointer(&sp[0]))
 }
 
-// AsDS returns the ScratchPad as a struct representing the DS scratchpad
+// AsMUBUF returns the ScratchPad as a struct representing the DS scratchpad
 // layout
 func (sp Scratchpad) AsMUBUF() *MUBUFLayout {
 	return (*MUBUFLayout)(unsafe.Pointer(&sp[0]))

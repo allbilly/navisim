@@ -662,7 +662,6 @@ func (cu *ComputeUnit) handleGL0InvalidateRsp(now akita.VTimeInSec, rsp *mem.GL0
 	wf := info.Wavefront
 	inst := info.Inst
 	cu.logInstTask(now, wf, inst, true)
-
 }
 
 //nolint:gocyclo

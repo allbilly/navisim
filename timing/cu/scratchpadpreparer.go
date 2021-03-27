@@ -321,7 +321,6 @@ func (p *ScratchpadPreparerImpl) prepareMUBUF(
 	layout := sp.AsDS()
 
 	layout.EXEC = wf.EXEC
-
 }
 
 // Commit write to the register file according to the scratchpad layout

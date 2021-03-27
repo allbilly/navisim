@@ -19,7 +19,6 @@ func (c *coalescer) Reset() {
 }
 
 func (c *coalescer) Tick(now akita.VTimeInSec) bool {
-
 	madeProgress := false
 
 	madeProgress = c.processRequestsFromTop(now) || madeProgress
@@ -35,15 +34,10 @@ func (c *coalescer) processRequestsFromTop(now akita.VTimeInSec) bool {
 	return c.processRequests(now, req.(mem.AccessReq))
 }
 
-
-
-
-
 func (c *coalescer) processRequests(
 	now akita.VTimeInSec,
 	req mem.AccessReq,
 ) bool {
-
 	switch item := req.(type) {
 	case *mem.GL0InvalidateReq:
 		return c.processGL0InvalidateReq(item, now)
@@ -61,16 +55,15 @@ func (c *coalescer) processRequests(
 	return c.processReqNoncoalescable(now, req)
 }
 
-
 func (c *coalescer) processGL0InvalidateReq(req *mem.GL0InvalidateReq, now akita.VTimeInSec) bool {
 	c.cache.directory.Reset()
 
 	rsp := mem.GL0InvalidateRspBuilder{}.
-		   WithPID(req.GetPID()).
-		   WithSrc(c.cache.TopPort).
-		   WithDst(req.Meta().Src).
-		   WithSendTime(now).
-		   Build()
+		WithPID(req.GetPID()).
+		WithSrc(c.cache.TopPort).
+		WithDst(req.Meta().Src).
+		WithSendTime(now).
+		Build()
 
 	err := c.cache.TopPort.Send(rsp)
 	if err == nil {
@@ -79,10 +72,6 @@ func (c *coalescer) processGL0InvalidateReq(req *mem.GL0InvalidateReq, now akita
 	}
 	return false
 }
-
-
-
-
 
 func (c *coalescer) processReqCoalescable(
 	now akita.VTimeInSec,
