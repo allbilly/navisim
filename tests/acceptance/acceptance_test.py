@@ -39,6 +39,7 @@ class Test(object):
         err |= self.compile()
 
         err |= self.run_test(False, '1')
+        err |= self.run_test(True, '1')
         
 
         return err
@@ -232,10 +233,10 @@ def main():
     err |= fir.test()
     err |= km.test()
     # err |= pagerank.test()
-    # err |= mm.test()
+    err |= mm.test()
     err |= mt.test()
     # err |= bs.test()
-    #err |= sc.test()
+    err |= sc.test()
     #err |= fw.test(test_multi_gpu=False)
     err |= re.test()
     err |= mp.test()
