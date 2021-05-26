@@ -242,7 +242,7 @@ def main():
     err |= mp.test()
     # err |= bfs.test(test_multi_gpu=False)
     err |= st.test()
-    # err |= sp.test(test_multi_gpu=False)
+    err |= sp.test(test_multi_gpu=False)
     # err |= fft.test(test_multi_gpu=False)
     # err |= nb.test(test_multi_gpu=False)
 
