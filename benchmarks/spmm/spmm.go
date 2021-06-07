@@ -2,8 +2,11 @@
 package spmm
 
 import (
+	"fmt"
+	"gitlab.com/akita/navisim/benchmarks/matrix/csr"
 	"gitlab.com/akita/navisim/driver"
 	"log"
+	"math/rand"
 
 	// embed hsaco files
 	_ "embed"
@@ -23,9 +26,20 @@ type Benchmark struct {
 	gpus             []int
 	queues           []*driver.CommandQueue
 	useUnifiedMemory bool
-	spmmKernel *rdnainsts.HsaCo
+	spmmKernel       *rdnainsts.HsaCo
 
+	Dim       int32
+	Sparsity  float64
+	dAValData driver.GPUPtr
+	dBMatData driver.GPUPtr
+	dAColData driver.GPUPtr
+	dARowData driver.GPUPtr
+	dOutData  driver.GPUPtr
+	numItems  int32
+	matB      [][]float32
+	matOut    [][]float32
 	maxval    float32
+	sparseMat csr.Matrix
 }
 
 func NewBenchmark(driver *driver.Driver) *Benchmark {
@@ -70,7 +84,42 @@ func (b *Benchmark) Run() {
 }
 
 func (b *Benchmark) initMem() {
-	//TODO: this
+	b.numItems = int32(float64(b.Dim) * float64(b.Dim) * b.Sparsity)
+	fmt.Printf("Number of non-zero elements %d\n", b.numItems)
+
+	b.sparseMat = csr.
+		MakeMatrixGenerator(uint32(b.Dim), uint32(b.numItems)).
+		GenerateMatrix()
+	b.matB = make([][]float32, b.Dim)
+	for i := range b.matB {
+		b.matB[i] = make([]float32, b.Dim)
+	}
+	b.matOut = make([][]float32, b.Dim)
+	for i := range b.matOut {
+		b.matOut[i] = make([]float32, b.Dim)
+	}
+
+	for j := range b.matB {
+		for i := range b.matB[j] {
+			b.matB[j][i] = rand.Float32() * b.maxval
+		}
+	}
+
+	var memoryAlloc func(ctx *driver.Context, byteSize uint64) driver.GPUPtr
+	if b.useUnifiedMemory {
+		memoryAlloc = func(ctx *driver.Context, byteSize uint64) driver.GPUPtr {
+			return b.driver.AllocateUnifiedMemory(ctx, byteSize)
+		}
+	} else {
+		memoryAlloc = func(ctx *driver.Context, byteSize uint64) driver.GPUPtr {
+			return b.driver.AllocateMemory(ctx, byteSize)
+		}
+	}
+	b.dAValData = memoryAlloc(b.context, uint64(b.numItems*4))
+	b.dBMatData = memoryAlloc(b.context, uint64(b.Dim*b.Dim*4))
+	b.dAColData = memoryAlloc(b.context, uint64(b.numItems*4))
+	b.dARowData = memoryAlloc(b.context, uint64((b.Dim+1)*4))
+	b.dOutData = memoryAlloc(b.context, uint64(b.Dim*b.Dim*4))
 }
 
 func (b *Benchmark) exec() {
