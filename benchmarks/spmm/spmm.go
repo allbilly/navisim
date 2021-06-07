@@ -36,8 +36,8 @@ type Benchmark struct {
 	dARowData driver.GPUPtr
 	dOutData  driver.GPUPtr
 	numItems  int32
-	matB      [][]float32
-	matOut    [][]float32
+	matB      []float32
+	matOut    []float32
 	maxval    float32
 	sparseMat csr.Matrix
 }
@@ -90,19 +90,11 @@ func (b *Benchmark) initMem() {
 	b.sparseMat = csr.
 		MakeMatrixGenerator(uint32(b.Dim), uint32(b.numItems)).
 		GenerateMatrix()
-	b.matB = make([][]float32, b.Dim)
-	for i := range b.matB {
-		b.matB[i] = make([]float32, b.Dim)
-	}
-	b.matOut = make([][]float32, b.Dim)
-	for i := range b.matOut {
-		b.matOut[i] = make([]float32, b.Dim)
-	}
+	b.matB = make([]float32, b.Dim*b.Dim)
+	b.matOut = make([]float32, b.Dim*b.Dim)
 
-	for j := range b.matB {
-		for i := range b.matB[j] {
-			b.matB[j][i] = rand.Float32() * b.maxval
-		}
+	for i := range b.matB {
+		b.matB[i] = rand.Float32() * b.maxval
 	}
 
 	var memoryAlloc func(ctx *driver.Context, byteSize uint64) driver.GPUPtr
