@@ -6,7 +6,7 @@ The largest generated files are root-level `isa_*.debug` files. The current set 
 
 There are also sample executables under `samples/` (about 147 MiB total). These are compiled Go binaries and can be rebuilt from their sample packages. `samples/spmv/spmv` was untracked in Git but identified as an ELF executable; it is treated as a generated binary here.
 
-`localmem/cache/` is source code for the simulator's cache model, not a cache directory to clean. It is part of the untracked `localmem/` working-tree content, so leave it intact. Go's compiler cache is stored outside this repository and is not responsible for the large repository size. The small `metrics.csv` files are run results and are not included in the cleanup commands below.
+`localmem/cache/` is source code from a local Akita memory checkout, not a cache directory to clean. The optional `localmem/` directory is ignored by Git; leave it intact. The root `go.mod` uses `gitlab.com/akita/mem v1.12.0` without a local replacement, so normal builds use the downloaded module. Go's compiler cache is stored outside this repository and is not responsible for the large repository size. The small `metrics.csv` files are run results and are not included in the cleanup commands below.
 
 ## Build
 

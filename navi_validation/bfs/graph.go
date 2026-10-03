@@ -1,3 +1,7 @@
+//go:build ignore
+// +build ignore
+
+// This graph helper belongs to the excluded MGPUSim v2 validation source.
 package bfs
 
 import (

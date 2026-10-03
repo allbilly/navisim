@@ -1,4 +1,9 @@
+//go:build ignore
+// +build ignore
+
 // Package bfs implements the bfs benchmark from the SHOC suite.
+// This validation source requires the MGPUSim v2 driver and KernelTable API;
+// it is kept as a reference and excluded from the NaviSim module build.
 package bfs
 
 import (
