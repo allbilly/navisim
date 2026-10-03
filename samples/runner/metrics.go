@@ -28,10 +28,7 @@ func (c *collector) Dump(name string) {
 	if err != nil {
 		panic(err)
 	}
-	err = f.Close()
-	if err != nil {
-		panic(err)
-	}
+	defer f.Close()
 
 	fmt.Fprintf(f, ", where, what, value\n")
 	for i, m := range c.metrics {
